@@ -39,6 +39,11 @@ MainApplication.NewRequestComponent.ApplicationDetails = function () {
   this.tableRecord = {};
   this.retrievedtableData = {};
   this.action = "";
+  this.stepByStepCTX = new Speed();
+  this.approvalTableCTX = new Speed();
+  this.notificationTableCTX = new Speed();
+  this.userAccessCTX = new Speed();
+  this.reportTableCTX = new Speed();
 };
 
 function whenNewRequestDependeciesLoaded() {
@@ -75,34 +80,41 @@ function whenNewRequestDependeciesLoaded() {
     },
   );
 
-  AppRequest.activityCTX.dynamicTable("Activity", {
-        root: "activitydetails",
+  AppRequest.stepByStepCTX.dynamicTable("StepByStepProcess", {
+        root: "stepByStepDescription",
         pagesize: 200,
         paginateSize: 5,
         bindExtensions: {
-            "activity": function (valueToEva, pos) {
-                return "<input id='" + $spcontext.uniqueIdGenerator() + "' type='text' speed-bind-validate='TempData' class='form-control no-border-radius speed-table-include' speed-as-static='true' value='" + valueToEva.activity + "'/>";
+            "description": function (valueToEva, pos) {
+                return "<input id='" + $spcontext.uniqueIdGenerator() + "' placeholder='Enter text' type='text' speed-bind-validate='TempData' class='form-control no-border-radius speed-table-include' speed-as-static='true' value='" + valueToEva.description + "'/>";
             },
-            "project": function (valueToEva, pos) {
-                return "<input id='" + $spcontext.uniqueIdGenerator() + "' type='text' speed-bind-validate='TempData' class='form-control no-border-radius speed-table-include' speed-as-static='true' value='" + valueToEva.project + "'/>";
-            },
-            "durationofactivity": function (valueToEva, pos) {
-                return "<input id='" + $spcontext.uniqueIdGenerator() + "' type='number' speed-bind-validate='TempData' class='form-control no-border-radius speed-table-include' speed-as-static='true' value='" + valueToEva.durationofactivity + "' onkeyup='checkTotalDuration(this)'/>";
+            "actors": function (valueToEva, pos) {
+                return "<input id='" + $spcontext.uniqueIdGenerator() + "' placeholder='Enter text' type='text' speed-bind-validate='TempData' class='form-control no-border-radius speed-table-include' speed-as-static='true' value='" + valueToEva.actors + "'/>";
             },
             "action": function (valueToEva, pos) {
-                return `<i class="fa-solid fa-trash" style="color: #e6053d; cursor: pointer;" onclick='MainApplication.WorkflowsComponent.HRMS.Timesheet.ApproveRequest.deleteTableRow(${pos},"Activity")';></i>`;
+                return `
+                    <i
+                        class="fa-solid fa-trash delete-step-row"
+                        style="color:#e6053d;cursor:pointer;"
+                        data-pos="${pos}"
+                        data-table="StepByStepProcess">
+                    </i>
+                `;
+                // return `<i class="fa-solid fa-trash" style="color: #e6053d; cursor: pointer;" onclick='MainApplication.NewRequestComponent.deleteTableRow(${pos},"StepByStepProcess")';></i>`;
             },
         },
         afterRowAdded: function () {
             $spcontext.applyValidationEvents();
+            MainApplication.NewRequestComponent.bindDeleteEvents();
         },
         afterRowRemoved: function () {
             $spcontext.applyValidationEvents();
+            MainApplication.NewRequestComponent.bindDeleteEvents();
         }
     });
-    MainApplication.WorkflowsComponent.HRMS.Timesheet.ApproveRequest.addTableRow("Activity");
-    $("#addactivitybutton").on("click", () => {
-        MainApplication.WorkflowsComponent.HRMS.Timesheet.ApproveRequest.addTableRow("Activity");
+    MainApplication.NewRequestComponent.addTableRow("StepByStepProcess");
+    $("#stepByStepButton").on("click", () => {
+        MainApplication.NewRequestComponent.addTableRow("StepByStepProcess");
     });
 
     $spcontext.applyValidationEvents();
@@ -110,6 +122,25 @@ function whenNewRequestDependeciesLoaded() {
   
   $("#newrequest-page").removeClass("hidden");
   globalDefinitions.closeLoader();
+}
+
+MainApplication.NewRequestComponent.bindDeleteEvents = function () {
+    $(".delete-step-row")
+        .off("click")
+        .on("click", function () {
+            const pos = $(this).data("pos");
+            const table = $(this).data("table");
+
+            MainApplication.NewRequestComponent.deleteTableRow(pos, table);
+        });
+}
+
+MainApplication.NewRequestComponent.addTableRow = function (bindclass) {
+    AppRequest.stepByStepCTX.dynamicTableSettings[bindclass].addRow();
+}
+
+MainApplication.NewRequestComponent.deleteTableRow = function (pos, bindclass) {
+    AppRequest.stepByStepCTX.dynamicTableSettings[bindclass].deleteRow(pos);
 }
 
 // Form submission processes
