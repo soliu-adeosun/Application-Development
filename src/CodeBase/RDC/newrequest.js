@@ -44,22 +44,28 @@ MainApplication.NewRequestComponent.ApplicationDetails = function () {
   this.notificationTableCTX = new Speed();
   this.userAccessCTX = new Speed();
   this.reportTableCTX = new Speed();
+  this.tableCtxRegistry = {};
 };
 
 function whenNewRequestDependeciesLoaded() {
   globalDefinitions.callLoader();
   $spcontext.assignAttributes();
   MainApplication.CurrentPageSubmitFunction =
-  MainApplication.NewRequestComponent.confirmSubmit;
+    MainApplication.NewRequestComponent.confirmSubmit;
   AppRequest = new MainApplication.NewRequestComponent.ApplicationDetails();
   globalDefinitions.extendStages();
 
-  AppRequest.itemId = $spcontext.getParameterByName("itemid", window.location.href);
+  AppRequest.itemId = $spcontext.getParameterByName(
+    "itemid",
+    window.location.href,
+  );
   AppRequest.mode = $spcontext.getParameterByName("mode", window.location.href);
 
   customWorkflowEngine = new WorkflowManagerEngine(CurrentUserProperties);
   globalDefinitions.SetWorkflowRouting(customWorkflowEngine);
-  customWorkflowEngine.routeEngine(customWorkflowEngine).setCurrentUserAsInitiator();
+  customWorkflowEngine
+    .routeEngine(customWorkflowEngine)
+    .setCurrentUserAsInitiator();
 
   $spcontext.appliedEvents.attachments = [];
   $spcontext.applyAttachmentEvent(
@@ -80,68 +86,152 @@ function whenNewRequestDependeciesLoaded() {
     },
   );
 
-  AppRequest.stepByStepCTX.dynamicTable("StepByStepProcess", {
-        root: "stepByStepDescription",
-        pagesize: 200,
-        paginateSize: 5,
-        bindExtensions: {
-            "description": function (valueToEva, pos) {
-                return "<input id='" + $spcontext.uniqueIdGenerator() + "' placeholder='Enter text' type='text' speed-bind-validate='TempData' class='form-control no-border-radius speed-table-include' speed-as-static='true' value='" + valueToEva.description + "'/>";
-            },
-            "actors": function (valueToEva, pos) {
-                return "<input id='" + $spcontext.uniqueIdGenerator() + "' placeholder='Enter text' type='text' speed-bind-validate='TempData' class='form-control no-border-radius speed-table-include' speed-as-static='true' value='" + valueToEva.actors + "'/>";
-            },
-            "action": function (valueToEva, pos) {
-                return `
-                    <i
-                        class="fa-solid fa-trash delete-step-row"
-                        style="color:#e6053d;cursor:pointer;"
-                        data-pos="${pos}"
-                        data-table="StepByStepProcess">
-                    </i>
-                `;
-                // return `<i class="fa-solid fa-trash" style="color: #e6053d; cursor: pointer;" onclick='MainApplication.NewRequestComponent.deleteTableRow(${pos},"StepByStepProcess")';></i>`;
-            },
-        },
-        afterRowAdded: function () {
-            $spcontext.applyValidationEvents();
-            MainApplication.NewRequestComponent.bindDeleteEvents();
-        },
-        afterRowRemoved: function () {
-            $spcontext.applyValidationEvents();
-            MainApplication.NewRequestComponent.bindDeleteEvents();
-        }
-    });
-    MainApplication.NewRequestComponent.addTableRow("StepByStepProcess");
-    $("#stepByStepButton").on("click", () => {
-        MainApplication.NewRequestComponent.addTableRow("StepByStepProcess");
-    });
+  MainApplication.NewRequestComponent.initializeDynamicTable({
+    ctx: AppRequest.stepByStepCTX,
 
-    $spcontext.applyValidationEvents();
+    tableName: "StepByStepProcess",
 
-  
+    root: "stepByStepDescription",
+
+    addButton: "#stepByStepButton",
+
+    bindExtensions: {
+      description:
+        MainApplication.NewRequestComponent.textColumn("description", "StepByStepProcess"),
+
+      actors: MainApplication.NewRequestComponent.textColumn("actors", "StepByStepProcess"),
+
+      action:
+        MainApplication.NewRequestComponent.deleteColumn(AppRequest.stepByStepCTX, "StepByStepProcess"),
+    },
+  });
+
+  MainApplication.NewRequestComponent.initializeDynamicTable({
+    ctx: AppRequest.approvalTableCTX,
+
+    tableName: "Approvers",
+
+    root: "approvalStages",
+
+    addButton: "#addApproverButton",
+
+    bindExtensions: {
+      approver: MainApplication.NewRequestComponent.textColumn("approver", "Approvers"),
+
+      reason: MainApplication.NewRequestComponent.textColumn("reason", "Approvers"),
+
+      approved: MainApplication.NewRequestComponent.textColumn("approved", "Approvers"),
+
+      declined: MainApplication.NewRequestComponent.textColumn("declined", "Approvers"),
+
+      action:
+        MainApplication.NewRequestComponent.deleteColumn(AppRequest.approvalTableCTX, "Approvers"),
+    },
+  });
+
+  MainApplication.NewRequestComponent.initializeDynamicTable({
+    ctx: AppRequest.notificationTableCTX,
+
+    tableName: "Notifications",
+
+    root: "notifications",
+
+    addButton: "#addNotificationButton",
+
+    bindExtensions: {
+      event: MainApplication.NewRequestComponent.textColumn("event", "Notifications"),
+
+      users: MainApplication.NewRequestComponent.textColumn("users", "Notifications"),
+
+      template: MainApplication.NewRequestComponent.textColumn("template", "Notifications"),
+
+      action:
+        MainApplication.NewRequestComponent.deleteColumn(AppRequest.notificationTableCTX, "Notifications"),
+    },
+  });
+
+  $spcontext.applyValidationEvents();
+
   $("#newrequest-page").removeClass("hidden");
   globalDefinitions.closeLoader();
 }
 
+// MainApplication.NewRequestComponent.tableCtxRegistry = {};
+
 MainApplication.NewRequestComponent.bindDeleteEvents = function () {
-    $(".delete-step-row")
-        .off("click")
-        .on("click", function () {
-            const pos = $(this).data("pos");
-            const table = $(this).data("table");
+  $(".delete-row")
+    .off("click")
+    .on("click", function () {
+      const pos = $(this).data("pos");
+      const table = $(this).data("table");
+      const ctx = AppRequest.tableCtxRegistry[table];
 
-            MainApplication.NewRequestComponent.deleteTableRow(pos, table);
-        });
-}
+      MainApplication.NewRequestComponent.deleteTableRow(ctx, pos, table);
+    });
+};
 
-MainApplication.NewRequestComponent.addTableRow = function (bindclass) {
-    AppRequest.stepByStepCTX.dynamicTableSettings[bindclass].addRow();
-}
+MainApplication.NewRequestComponent.initializeDynamicTable = function (config) {
+  AppRequest.tableCtxRegistry[config.tableName] = config.ctx;
 
-MainApplication.NewRequestComponent.deleteTableRow = function (pos, bindclass) {
-    AppRequest.stepByStepCTX.dynamicTableSettings[bindclass].deleteRow(pos);
-}
+  config.ctx.dynamicTable(config.tableName, {
+    root: config.root,
+    pagesize: 200,
+    paginateSize: 5,
+    bindExtensions: config.bindExtensions,
+
+    afterRowAdded: function () {
+      $spcontext.applyValidationEvents();
+      MainApplication.NewRequestComponent.bindDeleteEvents();
+    },
+
+    afterRowRemoved: function () {
+      $spcontext.applyValidationEvents();
+      MainApplication.NewRequestComponent.bindDeleteEvents();
+    },
+  });
+
+  MainApplication.NewRequestComponent.addTableRow(config.ctx, config.tableName);
+
+  $(config.addButton).on("click", function () {
+    MainApplication.NewRequestComponent.addTableRow(config.ctx, config.tableName);
+  });
+};
+
+MainApplication.NewRequestComponent.deleteColumn = function (ctx, tableName) {
+  return function (valueToEva, pos) {
+    return `
+            <i class="fa-solid fa-trash delete-row"
+                data-pos="${pos}"
+                data-table="${tableName}"
+                style="cursor:pointer;color:#e6053d;">
+            </i>
+        `;
+  };
+};
+
+MainApplication.NewRequestComponent.textColumn = function (field, tableName) {
+  return function (valueToEva) {
+    return `
+            <input
+                id="${$spcontext.uniqueIdGenerator()}"
+                type="text"
+                placeholder="Enter text"
+                speed-bind-validate="${tableName}_${field}"
+                speed-as-static="true"
+                class="form-control no-border-radius speed-table-include"
+                value="${valueToEva[field] || ""}"
+            />
+        `;
+  };
+};
+
+MainApplication.NewRequestComponent.addTableRow = function (ctx, tableName) {
+    ctx.dynamicTableSettings[tableName].addRow();
+};
+
+MainApplication.NewRequestComponent.deleteTableRow = function (ctx, pos, tableName) {
+    ctx.dynamicTableSettings[tableName].deleteRow(pos);
+};
 
 // Form submission processes
 MainApplication.NewRequestComponent.confirmSubmit = function (action) {
@@ -163,38 +253,47 @@ MainApplication.NewRequestComponent.saveDataToList = function () {
   var pickerValues = PeoplePicker.getValue();
   var people = PeoplePicker.getConfiguredValue();
   if ($spcontext.checkPassedValidation()) {
-        formData.Employee = pickerValues.Employee;
-        formData.Witness = pickerValues.Witness;
-        formData.ReportedBy = pickerValues.ReportedBy;
+    formData.Employee = pickerValues.Employee;
+    formData.Witness = pickerValues.Witness;
+    formData.ReportedBy = pickerValues.ReportedBy;
 
-        formData.EmployeeEmail = people.Employee;
-        formData.HOD = SP.FieldUserValue.fromUser(MainApplication.staffDetails[formData.EmployeeEmail].HodEmail);
-        formData.HODEmail = MainApplication.staffDetails[formData.EmployeeEmail].HodEmail;
-        formData.Division = MainApplication.staffDetails[formData.EmployeeEmail].Department;
+    formData.EmployeeEmail = people.Employee;
+    formData.HOD = SP.FieldUserValue.fromUser(
+      MainApplication.staffDetails[formData.EmployeeEmail].HodEmail,
+    );
+    formData.HODEmail =
+      MainApplication.staffDetails[formData.EmployeeEmail].HodEmail;
+    formData.Division =
+      MainApplication.staffDetails[formData.EmployeeEmail].Department;
 
-        formData.Title = MainApplication.staffDetails[formData.EmployeeEmail].Title;
-        globalDefinitions.callLoader();
-        AppRequest.returned = AppRequest.requestDetails.ReturnForCorrection;
+    formData.Title = MainApplication.staffDetails[formData.EmployeeEmail].Title;
+    globalDefinitions.callLoader();
+    AppRequest.returned = AppRequest.requestDetails.ReturnForCorrection;
 
-        customWorkflowEngine.updateStageByName({
-          name: globalDefinitions.stageDefinitions.employee,
-          username: formData.Title,
-          authenticationValue: formData.EmployeeEmail,
-          emails: [formData.EmployeeEmail],
-        });
-        
-        formData = customWorkflowEngine.routeEngine(customWorkflowEngine).requestHistoryHandler(formData, AppRequest.transactionHistory, { stage: "Management Rep", action: "Violation Notice Issued" });
-        formData = customWorkflowEngine.routeEngine(customWorkflowEngine).runRouting(formData);
+    customWorkflowEngine.updateStageByName({
+      name: globalDefinitions.stageDefinitions.employee,
+      username: formData.Title,
+      authenticationValue: formData.EmployeeEmail,
+      emails: [formData.EmployeeEmail],
+    });
 
+    formData = customWorkflowEngine
+      .routeEngine(customWorkflowEngine)
+      .requestHistoryHandler(formData, AppRequest.transactionHistory, {
+        stage: "Management Rep",
+        action: "Violation Notice Issued",
+      });
+    formData = customWorkflowEngine
+      .routeEngine(customWorkflowEngine)
+      .runRouting(formData);
 
-        globalDefinitions.onActionCompleted();
-        MainApplication.NewRequestComponent.proceedToList(formData, false);
-        // console.log("Form Data to be submitted:", formData);
-    }
-    else {
-        globalDefinitions.HandlerError("", true);
-        globalDefinitions.onActionFailed();
-    }
+    globalDefinitions.onActionCompleted();
+    MainApplication.NewRequestComponent.proceedToList(formData, false);
+    // console.log("Form Data to be submitted:", formData);
+  } else {
+    globalDefinitions.HandlerError("", true);
+    globalDefinitions.onActionFailed();
+  }
 };
 
 MainApplication.NewRequestComponent.proceedToList = function (formData) {
@@ -217,14 +316,14 @@ MainApplication.NewRequestComponent.proceedToList = function (formData) {
         updateObj.Year = $spcontext.serverDate().getFullYear();
         updateObj.Month = $spcontext.serverDate().getMonth() + 1;
 
-
         speedctxRoot.updateItems(
           [updateObj],
           globalDefinitions.stageDefinitions.listname,
           function () {
-            globalDefinitions.HandlerSuccess(`Violation Notice issued successfully`);
+            globalDefinitions.HandlerSuccess(
+              `Violation Notice issued successfully`,
+            );
             //   MainApplication.NewRequestComponent.resetFoodInspectionForm();
-            
 
             globalDefinitions.AuditLogManager_SaveLog({
               Action: `Issued Violation Notice Form ${AppRequest.requestDetails.WorkflowRequestID}`,
@@ -232,9 +331,8 @@ MainApplication.NewRequestComponent.proceedToList = function (formData) {
             // });
             globalDefinitions.closeLoader();
             $spcontext.redirect("#/", false);
-            
-            globalDefinitions.onActionCompleted();
 
+            globalDefinitions.onActionCompleted();
           },
         );
       },
