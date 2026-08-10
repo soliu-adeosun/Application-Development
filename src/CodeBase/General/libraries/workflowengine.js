@@ -321,7 +321,7 @@ function WorkflowManagerEngine(currentUserInformation) {
         approve: "Approved",
         reject: "Declined",
         more: "MoreInfo",
-        save: "Save For Later",
+        save: "Draft",
         modified: "Returned For Approval",
         current: "",
         previous: "",

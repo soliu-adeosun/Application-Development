@@ -29,11 +29,19 @@ MainApplication.ApproveRequestComponent.ApplicationDetails = function () {
 };
 
 whenApproveRequestDependeciesLoaded = function () {
-  globalDefinitions.callLoader();
+  // globalDefinitions.callLoader();
   globalDefinitions.extendStages();
   $spcontext.assignAttributes();
 
   $spcontext.filesDictionary = {};
+
+  $spcontext.validationProperties.text.extend["Comments"] = function (field) {
+      var passed = false;
+      if ((field.trim() !== "" && (AppRequest.actionTaken === globalDefinitions.stageDefinitions.decline ||
+          AppRequest.actionTaken === globalDefinitions.stageDefinitions.correction || AppRequest.actionTaken === "Revise")) ||
+          AppRequest.actionTaken === globalDefinitions.stageDefinitions.approve) passed = true;
+      return passed;
+  }
 
   AppRequest = new MainApplication.ApproveRequestComponent.ApplicationDetails();
   globalDefinitions.extendStages();
@@ -71,7 +79,7 @@ whenApproveRequestDependeciesLoaded = function () {
 
 MainApplication.ApproveRequestComponent.recoverListData = function () {
   if (AppRequest.itemId !== null && AppRequest.itemId !== "") {
-    var query = vnContext.camlBuilder([
+    var query = speedctxRoot.camlBuilder([
       {
         rowlimit: 1,
       },
@@ -109,28 +117,38 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
       "PendingUserLogin",
       "Attachment_Folder",
       "AttachmentURL",
-      "Author",
-
-      "Title",
-      "Employee",
-      "WarningNotice",
-      "DateOfWarning",
-      "DateOfViolation",
-      "TimeOfViolation",
-      "Location",
-      "ViolationExplained",
-      "Severity",
-      "Witness",
-      "ReportedBy",
       "Comment",
-      "HODComment",
       "HOD",
-	  "EmployeeComment",
-	  "Correction"
-
+      "Division",
+      "ProcessName",
+      "Modified",
+      "IsApprovalsNeeded",
+      "ConditionalApproval",
+      "RetentionPeriod",
+      "ReasonForAutomation",
+      "Period",
+      "DivisionsInvolved",
+      "StepByStepProcess",
+      "ExistingLink",
+      "PainPoints",
+      "CriteriaForCompletion",
+      "IsProcessRelated",
+      "PullDataFromAnotherSystem",
+      "Approvers",
+      "MaxApprovalTime",
+      "RevokeUser",
+      "ProcessOwner",
+      "OtherFeatures",
+      "ExtraFeatures",
+      "Notifications",
+      "UserAccess",
+      "Reports",
+      "RequirementStatement",
+      "JustificationStatement",
+      "DateRequired"
     ];
 
-    vnContext.getListToControl(
+    speedctxRoot.getListToControl(
       globalDefinitions.stageDefinitions.listname,
       query,
       extraProperties,
@@ -154,19 +172,28 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                   function (error) {
                     // if (MainApplication.configuredTaskMembers[listProperties.Current_Approver].belongs) {
 
+
                     if (typeof error === "undefined") {
-                      listProperties.DateOfWarning = $spcontext.stringnifyDate({
-                        value: listProperties.DateOfWarning,
+                      listProperties.RequestCreated = $spcontext.stringnifyDate({
+                        value: listProperties.RequestCreated,
                         includeTime: false,
                         format: "dd/mm/yy",
                       });
 
-                      listProperties.DateOfViolation =
-                        $spcontext.stringnifyDate({
-                          value: listProperties.DateOfViolation,
-                          includeTime: false,
-                          format: "dd/mm/yy",
-                        });
+                      listProperties.DateRequired = $spcontext.stringnifyDate({
+                        value: listProperties.DateRequired,
+                        includeTime: false,
+                        format: "dd/mm/yy",
+                      });
+
+                      listProperties.StepByStepProcess = $spcontext.JSONToObject(listProperties.StepByStepProcess);
+                      listProperties.Approvers = $spcontext.JSONToObject(listProperties.Approvers);
+                      listProperties.Notifications = $spcontext.JSONToObject(listProperties.Notifications);
+                      listProperties.UserAccess = $spcontext.JSONToObject(listProperties.UserAccess);
+                      listProperties.Reports = $spcontext.JSONToObject(listProperties.Reports);
+                      listProperties.DivisionsInvolved = $spcontext.JSONToObject(listProperties.DivisionsInvolved);
+                      listProperties.ExtraFeatures = $spcontext.JSONToObject(listProperties.ExtraFeatures);
+                      listProperties.ExtraFeatures = MainApplication.buildReadOnlyData(listProperties.ExtraFeatures);
 
                       listProperties.Transaction_History =
                         $spcontext.JSONToObject(
@@ -177,10 +204,13 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                         "object",
                       );
 
+                      listProperties.Delegate = listProperties.Delegate.value;
+
                       AppRequest.FolderUrl = listProperties.Attachment_Folder;
                       AppRequest.FileUrls = $spcontext.deferenceObject(
                         listProperties.AttachmentURL,
                       );
+
 
                       for (var file in AppRequest.FileUrls) {
                         $spcontext.filesDictionary[file] = {
@@ -196,99 +226,9 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                           listProperties.Transaction_History,
                         );
                       }
-
-                      // if (listProperties.Current_Approver !== "Employee" && listProperties.Current_Approver_Code !== "AA1") {
-                      // 	listProperties.Comment = "";
-                      // }
-
-                      if (listProperties.Current_Approver === "Employee") {
-                        $("#actor-section").append(`
-										<h1 class="form-card-title">
-											Employee SECTION
-										</h1>
-										
-											<div class="form-group">
-												<label class="form-label">
-													Employee Comment
-													<span class="req" aria-hidden="true">
-														*
-													</span>
-												</label>
-												<textarea speed-bind-validate="EmployeeComment" speed-bind-class="ApprovalData" class="form-input" rows="4" placeholder="Enter text here..."></textarea>
-											</div>
-										
-									`);
-                        // display Employee Section
-                        // display HOD Section
-                      } else if (listProperties.Current_Approver === "HOD") {
-                        $("#actor-section").append(`
-										<h1 class="form-card-title">
-											Employee SECTION
-										</h1>
-										
-											<div class="form-group">
-												<label class="form-label">
-													Employee Comment
-												</label>
-												<textarea speed-bind="EmployeeComment" readOnly class="form-input" rows="4" placeholder="Enter text here..."></textarea>
-											</div>
-									
-
-										<h1 class="form-card-title">
-											HOD SECTION
-										</h1>
-
-
-											<div class="form-group">
-												<label class="form-label">
-													HOD Comment
-													<span class="req" aria-hidden="true">
-														*
-													</span>
-												</label>
-												<textarea speed-bind-validate="HODComment" speed-bind-class="ApprovalData" class="form-input" rows="4" placeholder="Enter text here..."></textarea>
-											</div>
-									`);
-                      } else if (
-                        listProperties.Current_Approver === "Management Rep"
-                      ) {
-                        $("#actor-section").append(`
-										<h1 class="form-card-title">
-											Employee SECTION
-										</h1>
-											<div class="form-group">
-												<label class="form-label">
-													Employee Comment
-												</label>
-												<textarea speed-bind="EmployeeComment" readOnly class="form-input" rows="4" placeholder="Enter text here..."></textarea>
-											</div>
-
-										<h1 class="form-card-title">
-											HOD SECTION
-										</h1>
-
-											<div class="form-group">
-												<label class="form-label">
-													HOD Comment
-												</label>
-												<textarea readOnly speed-bind="HODComment" class="form-input" rows="4" placeholder="Enter text here..."></textarea>
-											</div>
-
-										<h1 class="form-card-title">
-											QHSE SECTION
-											<span class="req" aria-hidden="true">
-												*
-											</span>
-										</h1>
-
-											<div class="form-group">
-												<label class="form-label">
-													Correction Comment
-												</label>
-												<textarea speed-bind-validate="Correction" speed-bind-class="ApprovalData" class="form-input" rows="4" placeholder="Enter text here..."></textarea>
-											</div>
-									`);
-                      }
+                      console.log("List Properties: ", listProperties);
+                      MainApplication.populateSelect2(listProperties.DivisionsInvolved);
+                      MainApplication.renderReadOnlyTable("extraFeaturesTable", listProperties.ExtraFeatures);
 
                       AppRequest.requestDetails = listProperties;
 
@@ -301,8 +241,9 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                       // }
                       // $spcontext.assignAttributes();
                       setTimeout(function () {
+                        $("#newLoader").hide();
+						            $("#approverequest-page").removeClass("hidden");
                         globalDefinitions.closeLoader();
-						$("#approverequest-page").removeClass("hidden");
                       }, 2000);
                     } else {
                       globalDefinitions.HandlerError(
@@ -346,25 +287,26 @@ MainApplication.ApproveRequestComponent.actionConfirmed = function () {
   );
 };
 
-MainApplication.ApproveRequestComponent.saveDataToList = function (
-  actionTaken,
-) {
+MainApplication.ApproveRequestComponent.saveDataToList = function (actionTaken) {
   globalDefinitions.onActionClicked();
 
-  var formData = $spcontext.bind({}, "ApprovalData");
-
+  // var formData = $spcontext.bind({}, "ApprovalData");
+  var tempData = $spcontext.bind({});
   if ($spcontext.checkPassedValidation()) {
     // if (CurrentUserProperties.title === AppRequest.requestDetails.EmployeeName) {
     // var formData = $spcontext.bind({});
     // } else {
     // var formData = {};
     // }
+    var formData = {};
 
+    AppRequest.comment = $("#approvercomment").val();
+
+    formData.Comment = AppRequest.comment;
     // Build custom message for history action	
     let historyActionMessage = "";
 
     // if (actionTaken === "Approved") {
-		console.log("Action: ", actionTaken);
       if (
         AppRequest.requestDetails.Current_Approver === "Employee" &&
         AppRequest.requestDetails.PendingUserEmail ===
@@ -438,7 +380,7 @@ MainApplication.ApproveRequestComponent.proceedToList = function (formData) {
 
   formData.ID = AppRequest.requestDetails.ID;
 
-  vnContext.updateItems(
+  speedctxRoot.updateItems(
     [formData],
     globalDefinitions.stageDefinitions.listname,
     function () {

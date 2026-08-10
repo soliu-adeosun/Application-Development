@@ -93,13 +93,13 @@ const GlobalSideNav: React.FC<GlobalSideNavProps> = ({isOpen, onClose}) => {
                     </span>
                     <div>
                         <h1>App Dev Request</h1>
-                        <p>ARX-DSD-SAD-ADM-P-10010</p>
                     </div>
                 </div>
 
                 <nav aria-label="Section navigation">
                     {NAV_ITEMS.map((item) => (
                         <Link
+                            id={item.icon}
                             key={item.path}
                             to={item.path}
                             onClick={onClose}

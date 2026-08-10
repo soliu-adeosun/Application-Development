@@ -162,7 +162,8 @@ div.welcome {
 
 .pagination li a {
   padding: 5px 10px;
-  background-color: #ddd;
+  background: #ddd;
+  color: #8C3F1D;
   border-radius: 5px;
   cursor: pointer;
   text-decoration: none;
@@ -170,7 +171,7 @@ div.welcome {
 
 .pagination li.active a {
   color: #fff;
-  background-color: #000;
+  background: linear-gradient(135deg,#4b2b20 0%,#8C3F1D 60%,#B85B27 100%);;
 }
 
 .pagination li.active a:hover {

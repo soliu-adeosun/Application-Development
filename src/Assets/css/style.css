@@ -61,7 +61,7 @@
 .AdrPrimaryButton:disabled, .AdrSecondaryButton:disabled, .AdrApproveButton:disabled, .AdrRejectButton:disabled { cursor: not-allowed; opacity: .6; box-shadow: none; }
 
 /* ---- Stat cards ---- */
-.AdrStatsGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+.AdrStatsGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
 .AdrStatsGrid article { padding: 22px; border-radius: 17px; background: #fff; box-shadow: var(--adr-shadow); }
 .AdrStatsGrid span { color: var(--adr-muted); font-size: 11px; font-weight: 900; text-transform: uppercase; }
 .AdrStatsGrid strong { display: block; margin-top: 8px; font-size: 32px; }
@@ -181,6 +181,33 @@
 .AdrModalBody h4 { margin: 0 0 12px; font-size: 15px; } .AdrModalBody h4:not(:first-child) { margin-top: 24px; }
 .AdrModal footer { display: flex; justify-content: flex-end; gap: 12px; padding: 17px 24px 22px; border-top: 1px solid #eceef1; }
 
+.EhConfirmDialog {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 28px 80px rgba(0, 0, 0, .3);
+    display: grid;
+    gap: 15px;
+    grid-template-columns: 50px 1fr;
+    padding: 22px;
+    width: min(460px, 100%);
+}
+
+.EhConfirmIcon {
+    background: var(--adr-gradient);
+    border-radius: 50%;
+    color: #fff;
+    display: grid;
+    font-size: 22px;
+    font-weight: 900;
+    height: 46px;
+    place-items: center;
+    width: 46px;
+}
+
+.EhConfirmDialog p {
+    color: var(--adr-muted);
+    margin: 0;
+}
 /* ---- Pagination ---- */
 .AdrTablePagination { min-height: 60px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 20px; border-top: 1px solid #eceef1; background: #fff; color: var(--adr-muted); font-size: 12px; font-weight: 750; }
 .AdrTablePagination > div { display: flex; align-items: center; gap: 10px; }
@@ -189,6 +216,20 @@
 .AdrTablePagination strong { min-width: 92px; color: var(--adr-ink); font-size: 11px; text-align: center; }
 
 .AdrSidebarOverlay { display: none; }
+.left-filter-grid {
+    width: 80%;
+  }
+
+.AdrReportControls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 22px 24px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: var(--adr-shadow);
+}
 
 @media (max-width: 900px) {
   .AdrApp { display: block; }
@@ -211,6 +252,12 @@
   .AdrCompactHero { align-items: flex-start; flex-direction: column; } .AdrExportButton { width: 100%; }
   .AdrTabs { padding: 0 12px; } .AdrTabs button { min-width: 78px; } .AdrTabs strong { font-size: 10px; }
   .AdrTablePagination { align-items: stretch; flex-direction: column; text-align: center; } .AdrTablePagination > div { justify-content: center; }
+  .left-filter-grid {
+    width: 100%;
+  }
+  .filter-container{
+    flex-direction: column;
+  }
 }
 .user-avatar{
   width: 30px;
@@ -220,4 +267,146 @@
 #main-content {
   height: calc(100vh - 84px);
   overflow-y: auto;
+}
+
+/* Select2 forced custom styles :) */
+
+.selection, .select2-search__field {
+  width: 100% !important;
+}
+/* Base container */
+
+
+/* ==========================
+   Dashboard Tabs
+========================== */
+
+#dashboard-tabs{
+    margin: 1rem 1.5rem;
+}
+
+.dashboard-tabs{
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .4rem;
+    background: #f3f4f6;
+    border-radius: 14px;
+    border: 1px solid #e7e7e7;
+    width: 100%;
+}
+
+.dashboard-tabs .tab-btn{
+    appearance: none;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    width: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 12px 22px;
+
+    font-size: .92rem;
+    font-weight: 600;
+    color: #5d6575;
+
+    background: transparent;
+
+    border-radius: 10px;
+
+    transition: all .25s ease;
+}
+
+/* Hover */
+
+.dashboard-tabs .tab-btn:hover{
+    background: rgba(184,91,39,.08);
+    color: #8C3F1D;
+}
+
+/* Active */
+
+.dashboard-tabs .tab-btn.active{
+    background: linear-gradient(135deg,#4b2b20 0%,#8C3F1D 60%,#B85B27 100%);
+    color: #fff;
+
+    box-shadow:
+        0 8px 18px rgba(140,63,29,.28);
+}
+
+/* Counter */
+
+.dashboard-tabs .tab-btn span{
+    margin-left: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 22px;
+    height: 22px;
+    padding: 0 7px;
+
+    border-radius: 999px;
+
+    background: rgba(255,255,255,.2);
+    color: inherit;
+
+    font-size: .78rem;
+    font-weight: 700;
+}
+
+.dashboard-tabs .tab-btn:not(.active) span{
+    background: #e8edf4;
+    color: #8C3F1D;
+}
+
+/* Focus */
+
+.dashboard-tabs .tab-btn:focus-visible{
+    outline: 2px solid #B85B27;
+    outline-offset: 2px;
+}
+
+.btn-icon {
+  background: linear-gradient(135deg,#4b2b20 0%,#8C3F1D 60%,#B85B27 100%);
+}
+
+.pagination {
+  margin-bottom: 15px;
+}
+
+.AdrField > span, .tableLabel > span {
+    display: flex;
+    gap: 3px;
+}
+
+.top-space {
+  margin-top: 5px;
+}
+
+.hidden {
+  display: none;
+}
+
+.LfrPrimaryButton {
+    background: linear-gradient(135deg, #bd5425, #7d2d12);
+    box-shadow: 0 12px 28px rgba(65, 27, 11, .25);
+    color: #fff;
+}
+
+.LfrSecondaryButton {
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(16, 24, 40, .09);
+    color: #20242c;
+}
+
+.commentContainer{
+  padding: 25px;
+}
+
+.commentContainer label {
+  width: 100%;
 }

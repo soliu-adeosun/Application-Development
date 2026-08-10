@@ -1,11 +1,9 @@
 import * as React from "react";
-
 import { Outlet } from "react-router-dom";
+import { Helmet } from 'react-helmet-async';
 import GlobalSideNav from "../Navigation/GlobalSideNav";
 import GlobalTopNav from "../Navigation/GlobalTopNav";
 import '@fortawesome/fontawesome-free/css/all.min.css';
-
-// import { Helmet } from 'react-helmet-async';
 
 import "notyf/notyf.min.css";
 import Modal from "../Modals/Modal";
@@ -36,6 +34,9 @@ export const Layout = () => {
 
     return (
         <>
+             <Helmet>
+                <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+            </Helmet>
             <div className="AdrApp">
                 <GlobalSideNav isOpen={isSidebarOpen} onClose={closeSidebar} />
                 <div className="AdrMain">

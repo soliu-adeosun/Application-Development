@@ -8,6 +8,7 @@ import NewRequest from "./pages/NewRequest";
 import Report from './pages/Report';
 import ViewRequest from './pages/ViewRequest';
 import ApproveRequest from './pages/ApproveRequest';
+import { HelmetProvider } from "react-helmet-async";
 
 require('main');
 
@@ -28,6 +29,7 @@ export default class AppDev extends React.Component<IAppDevProps> {
 
     return (
       <>
+      <HelmetProvider>
           <HashRouter>
               <Routes>
                   <Route path="/" element={<Layout />}>
@@ -39,6 +41,7 @@ export default class AppDev extends React.Component<IAppDevProps> {
                   </Route>
               </Routes>
           </HashRouter>
+          </HelmetProvider>
       </>
     );
   }

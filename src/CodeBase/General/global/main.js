@@ -82,6 +82,43 @@ function MainStartPoint() {
   this.inspectionItems = [];
   this.processes = [];
   // this.procedures = [];
+  this.extraFeatures = [
+      {
+          id: "saveDraft",
+          title: "Save as Draft",
+          description: "Ability to save an incomplete form and return to it later."
+      },
+      {
+          id: "editAfterSubmission",
+          title: "Edit After Submission",
+          description: "Ability to edit a submitted record before approval."
+      },
+      {
+          id: "exportExcel",
+          title: "Export to Excel / CSV",
+          description: "Download records as a spreadsheet."
+      },
+      {
+          id: "printPdf",
+          title: "Print / Download as PDF",
+          description: "Print or save records as PDF documents."
+      },
+      {
+          id: "dashboardSummary",
+          title: "Dashboard / Summary View",
+          description: "A visual overview of process status and statistics."
+      },
+      {
+          id: "bulkActions",
+          title: "Bulk Actions",
+          description: "Approve, decline, or export multiple records at once."
+      },
+      {
+          id: "attachmentUpload",
+          title: "Attachment Upload",
+          description: "Ability to attach files to records."
+      }
+  ];
 
   this.auditNavigationClicks = function (clicklocation) {
     globalDefinitions.AuditLogManager_SaveLog({
@@ -103,7 +140,8 @@ function whenLayoutLoaded() {
     // speedctxRoot = new Speed();
     globalDefinitions = new GlobalDefinitionsManager();
 
-    globalDefinitions.callLoader();
+    // globalDefinitions.callLoader();
+    $("#reports").hide();
 
     window.globalProp
       .getClientIP()
@@ -172,7 +210,7 @@ function whenLayoutLoaded() {
         rsBAContext = new Speed(configPropertiesRoot.POPCONTEXT.setting);
         popContext = new Speed(configPropertiesRoot.REALPOPCONTEXT.setting);
 
-        speedctxRoot = new Speed(configPropertiesRoot.ROOTURL.setting);
+        speedctxRoot = new Speed(configPropertiesRoot.APPDEVURL.setting);
 
         // testContext = new Speed("/sites");
         speedctxRoot.errorHandler = globalDefinitions.errorHandler;
@@ -373,8 +411,9 @@ function whenLayoutLoaded() {
         }
 
         if (MainApplication.isUserAnActor) {
-          $("#adminView").show();
-          $(".adminPages").show();
+          $("#reports").show();
+          // $("#adminView").show();
+          // $(".adminPages").show();
           // $(".reviewNav").show();
           // $(".newNCNav").show();
           // $(".newNCNavMobile").show();
@@ -463,5 +502,123 @@ MainApplication.reportSyncSearch = function (keyquery, data) {
       item.RDC_Status?.toLowerCase().includes(keyquery),
   );
 };
+
+MainApplication.renderExtraFeaturesTable = function (tableId, features) {
+
+    const tbody = document.querySelector(`#${tableId} tbody`);
+
+    tbody.innerHTML = "";
+
+    features.forEach(feature => {
+
+        tbody.innerHTML += `
+            <tr data-id="${feature.id}">
+                <td>
+                    <input type="checkbox">
+                </td>
+
+                <td>
+                    <strong>${feature.title}</strong><br>
+                    <small>${feature.description}</small>
+                </td>
+
+                <td>
+                    <textarea placeholder="Enter note"></textarea>
+                </td>
+            </tr>
+        `;
+
+    });
+
+}
+
+MainApplication.getExtraFeatures = function (tableId) {
+
+    const rows = document.querySelectorAll(`#${tableId} tbody tr`);
+
+    return [...rows].map(row => ({
+
+        id: row.dataset.id,
+
+        enabled: row.querySelector("input").checked,
+
+        note: row.querySelector("textarea").value.trim()
+
+    }));
+
+}
+
+
+MainApplication.buildReadOnlyData = function (savedData) {
+    const extraFeatures = MainApplication.extraFeatures || [];
+    return extraFeatures.map(feature => {
+
+        const saved = savedData.find(x => x.id === feature.id) || {};
+
+        return {
+
+            title: feature.title,
+
+            description: feature.description,
+
+            enabled: saved.enabled || false,
+
+            note: saved.note || ""
+
+        };
+
+    });
+
+}
+
+MainApplication.renderReadOnlyTable = function (tableId, data) {
+
+    const tbody = document.querySelector(`#${tableId} tbody`);
+
+    tbody.innerHTML = "";
+
+    data.forEach(item=>{
+
+        tbody.innerHTML += `
+            <tr>
+
+                <td>
+                    ${item.enabled ? "✔" : "—"}
+                </td>
+
+                <td>
+                    <strong>${item.title}</strong><br>
+                    <small>${item.description}</small>
+                </td>
+
+                <td>
+                    ${item.note || "-"}
+                </td>
+
+            </tr>
+        `;
+
+    });
+
+}
+
+MainApplication.populateSelect2 = function (divisions) {
+  const $select = $("#divisionsInvolved");
+  $select.select2();
+  // Remove existing options
+  $select.empty();
+
+  // Add new options
+  $.each(divisions, function (_, division) {
+      $select.append(new Option(division, division));
+  });
+
+  // Refresh Select2
+  
+  $select
+    .prop("disabled", true)
+    .trigger("change.select2");
+  
+}
 
 whenLayoutLoaded();

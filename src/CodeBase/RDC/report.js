@@ -1,4 +1,5 @@
 loadReportComponent = function () {
+  console.log("Loading Report Component");
   if (MainApplication.cachedState.mode) {
     whenReportDependeciesLoaded();
   } else {
@@ -6,9 +7,36 @@ loadReportComponent = function () {
   }
 };
 
+// var AppRequest;
+
+// var customWorkflowEngine;
+
+// MainApplication.ReportComponent.ApplicationDetails = function () {
+//   this.url = window.location.href;
+//   this.itemId = null;
+//   this.mode = null;
+//   this.requestDetails = {};
+//   this.Attachments = [];
+//   this.FileUrls = {};
+//   this.FolderUrl = "";
+//   this.AttachmentLoader = {};
+//   this.messageTemplate = {};
+//   this.feedback = false;
+//   this.approverComments = "";
+//   this.transactionHistory = [];
+//   this.defaultStage = "AA0";
+//   this.returned = null;
+//   this.sectionArr = [];
+//   this.sections = {};
+//   this.finalrating = [];
+//   this.questionSetCounter = 0;
+//   this.groupProperties = {};
+//   this.nonConformanceCounter = 1;
+// };
 whenReportDependeciesLoaded = function () {
-  globalDefinitions.callLoader();
-  // globalDefinitions.extendStages();
+  // console.log("Report Dependencies Loaded");
+  // globalDefinitions.callLoader();
+  globalDefinitions.extendStages();
   globalDefinitions.sortResponse();
 
   // $("#requeststrDate").datepicker({ dateFormat: 'yy-mm-dd', beforeShow: function () { jQuery(this).datepicker('option', 'maxDate', $('#requestendDate').val()); } });
@@ -19,41 +47,22 @@ whenReportDependeciesLoaded = function () {
 
   customWorkflowEngine = new WorkflowManagerEngine(CurrentUserProperties);
 
-  vnContext.DataForTable.tablecontentId = "speed-data-table";
-  vnContext.DataForTable.pagesize = 20;
-  vnContext.DataForTable.paginateSize = 5;
-  vnContext.DataForTable.modifyTR = false;
-  vnContext.DataForTable.context = vnContext;
-  vnContext.DataForTable.paginationbId = "myrequestpagination";
-  vnContext.DataForTable.paginationuId = "toppagination";
+  speedctxRoot.DataForTable.tablecontentId = "speed-data-table";
+  speedctxRoot.DataForTable.pagesize = 20;
+  speedctxRoot.DataForTable.paginateSize = 5;
+  speedctxRoot.DataForTable.modifyTR = false;
+  speedctxRoot.DataForTable.context = speedctxRoot;
+  speedctxRoot.DataForTable.paginationbId = "myrequestpagination";
+  speedctxRoot.DataForTable.paginationuId = "toppagination";
 
-  vnContext.DataForTable.propertiesHandler = {
-    Employee: function (valueToEva) {
-      return valueToEva.Title;
-    },
-    DateOfViolation: function (valueToEva) {
-      return $spcontext.stringnifyDate({
-        value: valueToEva.DateOfViolation,
-        includeTime: false,
-        format: "dd/mm/yy",
-      });
-    },
+  speedctxRoot.DataForTable.propertiesHandler = {
     Modified: function (valueToEva) {
       var viewStr = `
                 <a href="#/viewrequest?itemId=${valueToEva.WorkflowRequestID}" class="btn btn-sm btn-primary btn-icon">
                     <i class="fa-solid fa-eye" style="font-size:11px"></i>
                 </a>`;
 
-      var editStr = `
-                <a href="#/approverequest?itemId=${valueToEva.WorkflowRequestID}" class="btn btn-sm btn-primary btn-icon">
-                    <i class="fa-solid fa-pen" style="font-size:11px"></i>
-                </a>`;
-
-      if (valueToEva.Status === "Save") {
-        return `<div>${editStr} ${viewStr}</div`;
-      } else {
-        return viewStr;
-      }
+      return viewStr;
     },
   };
 
@@ -62,41 +71,26 @@ whenReportDependeciesLoaded = function () {
   // });
 
   // let debounceTimer;
-  $("#division-filter")
-    .empty()
-    .append('<option value="" selected>All Divisions/Units</option>')
-    .append(
-      MainApplication.newDivisions
-        .map((dept) => `<option value="${dept}">${dept}</option>`)
-        .join(""),
-    );
 
-  $(
-    "#division-filter, #severity-filter, #warning-level-filter, #month-filter",
-  ).on("keyup change", function () {
-    // clearTimeout(debounceTimer);
-    // debounceTimer = setTimeout(() => {
+  $("#status-filter").on("keyup change", function () {
     MainApplication.ReportComponent.retrieveRequest();
-    // }, 500);
   });
 
-  $("#exportbtn").click(() => {
+  $("#exportToExcel").click(() => {
     MainApplication.ReportComponent.exportToExcel();
   });
 
-  $("#reportsearchfield").on("keyup", function () {
+  $("#searchInput").on("keyup", function () {
     var searchQuery = $(this).val();
     var data = AppRequest.fullTableData || [];
     var filteredItems = MainApplication.reportSyncSearch(searchQuery, data);
     MainApplication.ReportComponent.showTableData(filteredItems);
   });
 
-  $("#filter-btn, #closesearchfilter").click(() => {
-    $(".sort-box").toggleClass("hidden");
-  });
+
 
   // if (MainApplication.isUserAnActor) {
-  //   MainApplication.ReportComponent.retrieveRequest();
+    MainApplication.ReportComponent.retrieveRequest();
   // } else {
   //   globalDefinitions.HandlerError(
   //     "You are not authorized to access this page...",
@@ -113,98 +107,96 @@ whenReportDependeciesLoaded = function () {
 
 MainApplication.ReportComponent.retrieveRequest = function () {
   // globalDefinitions.callLoader();
-  var reportQuery = [
-    {
-      ascending: "FALSE",
-      orderby: "Modified",
-    },
-  ];
+  // var reportQuery = [
+  //   {
+  //     ascending: "FALSE",
+  //     orderby: "Modified",
+  //     viewScope: "RecursiveAll",
+  //   },
+  // ];
 
-  reportQuery = vnContext.formQueryArrayGenerator(reportQuery);
+  // reportQuery = speedctxRoot.formQueryArrayGenerator(reportQuery);
 
-  var query = vnContext.camlBuilder(reportQuery);
+  // var query = speedctxRoot.camlBuilder(reportQuery);
+  var query = `<View Scope="RecursiveAll">
+               <Query>
+                 <OrderBy>
+                   <FieldRef Name="Modified" Ascending="FALSE"/>
+                 </OrderBy>
+               </Query>
+             </View>`;
   var extraProperties = {
     merge: true,
     data: [
       "ID",
       "Title",
-      "Month",
-      "Year",
       "WorkflowRequestID",
-      "Employee",
-      "WarningNotice",
-      "DateOfWarning",
-      "DateOfViolation",
-      "TimeOfViolation",
-      "Location",
-      "ViolationExplained",
-      "Severity",
-      "Witness",
-      "ReportedBy",
-      "Comment",
-      "HODComment",
-      "HOD",
-      "HODEmail",
-      "Division",
+      "Current_Approver",
+      "Current_Approver_Code",
       "Approval_Status",
+
+      "RequestCreated",
+      "InitiatorEmailAddress",
+      "InitiatorLogin",
+      "Transaction_History",
+      "ReturnForCorrection",
+
       "Modified",
+      "PendingUserEmail",
+      "PendingUserLogin",
+      "Attachment_Folder",
+      "AttachmentURL",
+      "Comment",
+      "HOD",
+      "Division",
+      "ProcessName",
+      "Modified",
+      "IsApprovalsNeeded",
+      "ConditionalApproval",
+      "RetentionPeriod",
+      "ReasonForAutomation",
+      "Period",
+      "DivisionsInvolved",
+      "StepByStepProcess",
+      "ExistingLink",
+      "PainPoints",
+      "CriteriaForCompletion",
+      "IsProcessRelated",
+      "PullDataFromAnotherSystem",
+      "Approvers",
+      "MaxApprovalTime",
+      "RevokeUser",
+      "ProcessOwner",
+      "OtherFeatures",
+      "ExtraFeatures",
+      "Notifications",
+      "UserAccess",
+      "Reports",
     ],
   };
 
-  vnContext.getListToItems(
-    configProperties.VNLIST.setting,
+  speedctxRoot.getListToItems(
+    configProperties.APPDEVLIST.setting,
     query,
     extraProperties,
     true,
     null,
     function (tableData) {
+      console.log("Table Data: ", tableData);
       AppRequest.fullTableData = tableData;
 
-      // ===============================
-      // Total Notices
-      // ===============================
-      const totalNotice = tableData.length;
-
-      // ===============================
-      // This Month
-      // ===============================
-      const today = new Date();
-      const currentMonth = today.toLocaleString("default", { month: "long" });
-      const currentYear = today.getFullYear().toString();
-
-      const thisMonth = tableData.filter(
-        (item) => item.Month === currentMonth && item.Year === currentYear,
-      ).length;
-
-      // ===============================
-      // Employees Involved (Unique)
-      // ===============================
-      const employeesInvolved = new Set(
-        tableData.map((item) => item.Title).filter(Boolean),
-      ).size;
-
-      // ===============================
-      // Repeat Offenders (2 or more notices)
-      // ===============================
-      const employeeCount = {};
-
-      tableData.forEach((item) => {
-        if (!item.Title) return;
-
-        employeeCount[item.Title] = (employeeCount[item.Title] || 0) + 1;
+      var completedItems = tableData.filter(function (item) {
+        return item.Approval_Status === "Completed";
       });
 
-      const repeatOffenders = Object.values(employeeCount).filter(
-        (count) => count >= 2,
-      ).length;
+      var pendingItems = tableData.filter(function (item) {
+        return item.Approval_Status === "Pending";
+      });
+      
 
-      // ===============================
-      // Update Dashboard
-      // ===============================
-      $("#total-notice").text(totalNotice);
-      $("#this-month").text(thisMonth);
-      $("#employees-involved").text(employeesInvolved);
-      $("#repeat-offenders").text(repeatOffenders);
+      $("#totalRequest").text(tableData.length);
+      $("#pendingRequest").text(pendingItems.length);
+      $("#completedRequest").text(completedItems.length);
 
       MainApplication.ReportComponent.showTableData(tableData);
     },
@@ -222,39 +214,44 @@ MainApplication.ReportComponent.showTableData = function (tableData) {
     $("#tasktable").show();
     $(".threport").show();
     $(".norequest").hide();
-    vnContext.manualTable(tableData);
+    speedctxRoot.manualTable(tableData);
   }
-  $("#report-page").addClass("active");
+  $("#newLoader").hide();
+  $("#report-page").removeClass("hidden");
   globalDefinitions.closeLoader();
 };
 
 MainApplication.ReportComponent.exportToExcel = function () {
   var excelName =
-    "ViolationNoticeReport" + $spcontext.stringnifyDate() + ".csv";
+    "AppDeveklopmentReport" + $spcontext.stringnifyDate() + ".csv";
   var dataStringHeader = [
-    "Employee",
-    "Divison",
-    "Warning Notice",
-    "Date",
-    "Severity",
-    "Location",
+    "Ref ID",
+    "Process Name",
+    "Requestor",
+    "Division",
+    "Next Approver",
+    "Status",
   ];
 
   var excelData = dataStringHeader.toString() + "\n";
 
   $.each(AppRequest.dataForExport, function (index, itemProperties) {
     var dataString = [];
+    dataString.push(itemProperties.WorkflowRequestID);
+    dataString.push(itemProperties.ProcessName);
     dataString.push(itemProperties.Title);
-    dataString.push(itemProperties.Divison);
-    dataString.push(itemProperties.WarningNotice);
-    dataString.push(
-      $spcontext.stringnifyDate({
-        value: itemProperties.DateOfViolation,
-        includeTime: false,
-      }),
-    );
-    dataString.push(itemProperties.Severity);
-    dataString.push(itemProperties.Location);
+    dataString.push(itemProperties.Division);
+    dataString.push(itemProperties.Current_Approver);
+    dataString.push(itemProperties.Approval_Status);
+
+    // dataString.push(
+    //   $spcontext.stringnifyDate({
+    //     value: itemProperties.DateOfViolation,
+    //     includeTime: false,
+    //   }),
+    // );
+    // dataString.push(itemProperties.Severity);
+    // dataString.push(itemProperties.Location);
 
     /*
         dataString.push(delegateEmail);*/

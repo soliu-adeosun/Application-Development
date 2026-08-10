@@ -34,7 +34,7 @@ MainApplication.DashboardComponent.ApplicationDetails = function () {
 };
 
 whenDashboardDependeciesLoaded = function () {
-  globalDefinitions.callLoader();
+  // globalDefinitions.callLoader();
   globalDefinitions.extendStages();
   globalDefinitions.sortResponse();
   AppRequest = new MainApplication.DashboardComponent.ApplicationDetails();
@@ -42,21 +42,17 @@ whenDashboardDependeciesLoaded = function () {
   AppRequest.myItems = [];
   // MainApplication.getNCOnQueue();
   customWorkflowEngine = new WorkflowManagerEngine(CurrentUserProperties);
-  vnContext.DataForTable.tablecontentId = "speed-data-table";
-  vnContext.DataForTable.pagesize = 20;
-  vnContext.DataForTable.paginateSize = 5;
-  vnContext.DataForTable.modifyTR = false;
-  vnContext.DataForTable.context = vnContext;
-  vnContext.DataForTable.paginationbId = "myrequestpagination";
-  vnContext.DataForTable.paginationuId = "toppagination";
-  vnContext.DataForTable.propertiesHandler = {
-    Employee: function (valueToEva) {
-      return valueToEva.Title;
-    },
-
-    DateOfViolation: function (valueToEva) {
+  speedctxRoot.DataForTable.tablecontentId = "speed-data-table";
+  speedctxRoot.DataForTable.pagesize = 20;
+  speedctxRoot.DataForTable.paginateSize = 5;
+  speedctxRoot.DataForTable.modifyTR = false;
+  speedctxRoot.DataForTable.context = speedctxRoot;
+  speedctxRoot.DataForTable.paginationbId = "myrequestpagination";
+  speedctxRoot.DataForTable.paginationuId = "toppagination";
+  speedctxRoot.DataForTable.propertiesHandler = {
+    RequestCreated: function (valueToEva) {
       return $spcontext.stringnifyDate({
-        value: valueToEva.DateOfViolation,
+        value: valueToEva.RequestCreated,
         includeTime: false,
         format: "dd/mm/yy",
       });
@@ -97,16 +93,8 @@ whenDashboardDependeciesLoaded = function () {
                 </a>`;
 
       var editDraftStr = `
-                <a title="Modify" href="#/newrequest?itemId=${valueToEva.WorkflowRequestID}&mode=editdraft" 
-
-                                        class="p-1 sm:p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-
-                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414
-
-                                                a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
+                <a title="Modify" class="btn btn-sm btn-primary btn-icon" href="#/newrequest?itemId=${valueToEva.WorkflowRequestID}&mode=editdraft">
+                  <i class="fa-regular fa-floppy-disk" style="font-size:11px"></i>
                 </a>`;
 
       var viewStr = `
@@ -115,8 +103,7 @@ whenDashboardDependeciesLoaded = function () {
                 </a>`;
 
       if (
-        valueToEva.Approval_Status === "Pending" &&
-        valueToEva.Current_Approver === globalDefinitions.stageDefinitions.save
+        valueToEva.Approval_Status === globalDefinitions.stageDefinitions.save
       ) {
         return `<div class="flex space-x-1 sm:space-x-2">${viewStr} ${editDraftStr}</div>`;
       } else if (
@@ -145,8 +132,11 @@ whenDashboardDependeciesLoaded = function () {
             My Requests
         </button>
 
-        <button id="pendingTab" class="tab-btn" data-tab="pending">
-            Action Required (<span id="auditsAwaitingMyAction"></span>)
+        <button id="pendingTab"
+                class="tab-btn"
+                data-tab="pending">
+            Action Required
+            <span id="auditsAwaitingMyAction">0</span>
         </button>
     </div>
 `);
@@ -181,15 +171,17 @@ whenDashboardDependeciesLoaded = function () {
 
   MainApplication.DashboardComponent.currentTab = "MyAudits";
 
-  if (
-    MainApplication.configuredTaskMembers[
-      globalDefinitions.stageDefinitions.management
-    ].belongs
-  ) {
-    $(".issue-new-nc-btn").show();
-  }
+  // if (
+  //   MainApplication.configuredTaskMembers[
+  //     globalDefinitions.stageDefinitions.management
+  //   ].belongs
+  // ) {
+  //   $(".issue-new-nc-btn").show();
+  // }
 
   setTimeout(function () {
+    $("#newLoader").hide();
+    $("#dashboard-page").removeClass("hidden");
     globalDefinitions.closeLoader();
   }, 2000);
 };
@@ -270,7 +262,7 @@ MainApplication.DashboardComponent.pendingRequests = function () {
 
   queryCaml = customWorkflowEngine.setupTaskForGroups(queryCaml);
 
-  var query = vnContext.camlBuilder(queryCaml);
+  var query = speedctxRoot.camlBuilder(queryCaml);
 
   var extraProperties = {
     merge: true,
@@ -294,27 +286,40 @@ MainApplication.DashboardComponent.pendingRequests = function () {
       "PendingUserLogin",
       "Attachment_Folder",
       "AttachmentURL",
-      "Author",
-
-      "Title",
-      "Employee",
-      "WarningNotice",
-      "DateOfWarning",
-      "DateOfViolation",
-      "TimeOfViolation",
-      "Location",
-      "ViolationExplained",
-      "Severity",
-      "Witness",
-      "ReportedBy",
       "Comment",
-      "HODComment",
       "HOD",
+      "Division",
+      "ProcessName",
+      "Modified",
+      "IsApprovalsNeeded",
+      "ConditionalApproval",
+      "RetentionPeriod",
+      "ReasonForAutomation",
+      "Period",
+      "DivisionsInvolved",
+      "StepByStepProcess",
+      "ExistingLink",
+      "PainPoints",
+      "CriteriaForCompletion",
+      "IsProcessRelated",
+      "PullDataFromAnotherSystem",
+      "Approvers",
+      "MaxApprovalTime",
+      "RevokeUser",
+      "ProcessOwner",
+      "OtherFeatures",
+      "ExtraFeatures",
+      "Notifications",
+      "UserAccess",
+      "Reports",
+      "RequirementStatement",
+      "JustificationStatement",
+      "DateRequired"
     ],
   };
 
-  vnContext.getListToItems(
-    configProperties.VNLIST.setting,
+  speedctxRoot.getListToItems(
+    configProperties.APPDEVLIST.setting,
     query,
     extraProperties,
     true,
@@ -351,7 +356,7 @@ MainApplication.DashboardComponent.myRequests = function () {
     },
   ];
 
-  var query = vnContext.camlBuilder(queryToUse);
+  var query = speedctxRoot.camlBuilder(queryToUse);
 
   var extraProperties = {
     merge: true,
@@ -375,34 +380,47 @@ MainApplication.DashboardComponent.myRequests = function () {
       "PendingUserLogin",
       "Attachment_Folder",
       "AttachmentURL",
-      "Author",
-
-      "Title",
-      "Employee",
-      "WarningNotice",
-      "DateOfWarning",
-      "DateOfViolation",
-      "TimeOfViolation",
-      "Location",
-      "ViolationExplained",
-      "Severity",
-      "Witness",
-      "ReportedBy",
       "Comment",
-      "HODComment",
       "HOD",
+      "Division",
+      "ProcessName",
+      "Modified",
+      "IsApprovalsNeeded",
+      "ConditionalApproval",
+      "RetentionPeriod",
+      "ReasonForAutomation",
+      "Period",
+      "DivisionsInvolved",
+      "StepByStepProcess",
+      "ExistingLink",
+      "PainPoints",
+      "CriteriaForCompletion",
+      "IsProcessRelated",
+      "PullDataFromAnotherSystem",
+      "Approvers",
+      "MaxApprovalTime",
+      "RevokeUser",
+      "ProcessOwner",
+      "OtherFeatures",
+      "ExtraFeatures",
+      "Notifications",
+      "UserAccess",
+      "Reports",
+      "RequirementStatement",
+      "JustificationStatement",
+      "DateRequired"
     ],
   };
 
-  vnContext.getListToItems(
-    configProperties.VNLIST.setting,
+  speedctxRoot.getListToItems(
+    configProperties.APPDEVLIST.setting,
     query,
     extraProperties,
     true,
     null,
     function (tableData) {
       var completedItems = tableData.filter(function (item) {
-        return item.Approval_Status === "Completed";
+        return item.Approval_Status === "Completed" || item.Approval_Status === "Declined";
       });
 
       var pendingItems = tableData.filter(function (item) {
@@ -413,29 +431,9 @@ MainApplication.DashboardComponent.myRequests = function () {
 
       // AppRequest.ncData = MainApplication.AuditList;
 
-      $(".dashboard-stats-grid").empty();
-
-      $(".dashboard-stats-grid").append(
-        `
-
-          <div class="stat-card accent">
-            <div class="stat-label">Total Notice</div>
-            <div class="stat-value">${tableData.length}</div>
-
-          </div>
-          <div class="stat-card accent">
-            <div class="stat-label">Pending Notice</div>
-            <div class="stat-value">${pendingItems.length}</div>
-
-          </div>
-          <div class="stat-card accent">
-            <div class="stat-label">Closed Notice</div>
-            <div class="stat-value">${completedItems.length}</div>
-
-          </div>
-
-            `,
-      );
+      $("#totalRequest").text(tableData.length);
+      $("#pendingRequest").text(pendingItems.length);
+      $("#completedRequest").text(completedItems.length);
 
       if (MainApplication.DashboardComponent.currentTab === "MyAudits") {
         MainApplication.DashboardComponent.showTableData(tableData);
@@ -460,7 +458,7 @@ MainApplication.DashboardComponent.showTableData = function (tableData) {
 
     $(".norequest").hide();
 
-    vnContext.manualTable(tableData);
+    speedctxRoot.manualTable(tableData);
   }
   
   $("#dashboard-page").addClass("active");

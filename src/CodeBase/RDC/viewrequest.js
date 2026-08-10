@@ -29,7 +29,7 @@ MainApplication.ViewRequestComponent.ApplicationDetails = function () {
 };
 
 whenViewRequestDependeciesLoaded = function () {
-  globalDefinitions.callLoader();
+  // globalDefinitions.callLoader();
   // globalDefinitions.extendStages();
   $spcontext.assignAttributes();
 
@@ -45,6 +45,34 @@ whenViewRequestDependeciesLoaded = function () {
   );
 
 
+  $spcontext.filesDictionary = {};
+
+    $spcontext.appliedEvents.attachments = [];
+    $spcontext.applyAttachmentEvent({
+        o365: true,
+        appendFiles: true,
+        cancelClear: false,
+    }, function (elementName, listOfFiles, fileId) {
+        $("div[speed-file-bind='" + elementName + "']").empty();
+
+        if (listOfFiles.files.length !== 0) {
+            for (var y = 0; y < listOfFiles.files.length; y++) {
+                if (typeof listOfFiles.files[y] === "string") {
+                    var splitedLinks = listOfFiles.files[y].split("/");
+                    var pos = splitedLinks.length - 1;
+                    displayName = splitedLinks[pos];
+                    var attachmentBlock = "<p id='" + elementName + "display" + y + "' style='color : #002c4d'><a href='" + listOfFiles.files[y] + "'>" + displayName + "<span><a style='color: red; cursor: pointer; padding-left: 5px' class='attachment-inline-delete' onclick='MainApplication.WorkflowsComponent.BPMS.Onboarding.ApproveRequest.deleteRowAttachment(\"" + elementName + "\", " + y + ",\"" + fileId + "\")'>x</a></span></a></p>";
+                    $("div[speed-file-bind='" + elementName + "']").append(attachmentBlock);
+                } else {
+                    var attachmentBlock = "<p id='" + elementName + "display" + y + "' style='color : #002c4d'>" + listOfFiles.files[y].dataName +
+                        "<span><a class='attachment-inline-delete' style='color: red; cursor: pointer; padding-left: 5px' onclick='MainApplication.WorkflowsComponent.BPMS.ProcessInitiation.NewRequest.deleteRowAttachment(\"" + elementName + "\", " + y + ",\"" + fileId + "\")'>x</a></span></p>";
+                    $("div[speed-file-bind='" + elementName + "']").append(attachmentBlock);
+                }
+            }
+        }
+    }, function (errors) {
+        globalDefinitions.HandlerError(errors.msg, false);
+    });
   $spcontext.applyValidationEvents();
   MainApplication.ViewRequestComponent.recoverListData();
   // setTimeout(function () {
@@ -54,7 +82,7 @@ whenViewRequestDependeciesLoaded = function () {
 
 MainApplication.ViewRequestComponent.recoverListData = function () {
   if (AppRequest.itemId !== null && AppRequest.itemId !== "") {
-    var query = vnContext.camlBuilder([
+    var query = speedctxRoot.camlBuilder([
       {
         rowlimit: 1,
       },
@@ -86,27 +114,38 @@ MainApplication.ViewRequestComponent.recoverListData = function () {
       "PendingUserLogin",
       "Attachment_Folder",
       "AttachmentURL",
-      "Author",
-
-      "Title",
-      "Employee",
-      "WarningNotice",
-      "DateOfWarning",
-      "DateOfViolation",
-      "TimeOfViolation",
-      "Location",
-      "ViolationExplained",
-      "Severity",
-      "Witness",
-      "ReportedBy",
       "Comment",
-      "HODComment",
       "HOD",
-      "EmployeeComment",
-	    "Correction"
+      "Division",
+      "ProcessName",
+      "Modified",
+      "IsApprovalsNeeded",
+      "ConditionalApproval",
+      "RetentionPeriod",
+      "Period",
+      "DivisionsInvolved",
+      "StepByStepProcess",
+      "ExistingLink",
+      "PainPoints",
+      "CriteriaForCompletion",
+      "IsProcessRelated",
+      "PullDataFromAnotherSystem",
+      "Approvers",
+      "MaxApprovalTime",
+      "RevokeUser",
+      "ProcessOwner",
+      "OtherFeatures",
+      "ExtraFeatures",
+      "Notifications",
+      "UserAccess",
+      "Reports",
+      "Delegate",
+      "RequirementStatement",
+      "JustificationStatement",
+      "DateRequired"
     ];
 
-    vnContext.getListToControl(
+    speedctxRoot.getListToControl(
       globalDefinitions.stageDefinitions.listname,
       query,
       extraProperties,
@@ -116,31 +155,35 @@ MainApplication.ViewRequestComponent.recoverListData = function () {
           $spcontext.redirect("#/", false);
           globalDefinitions.closeLoader();
         } else {
-          customWorkflowEngine
-            .routeEngine(customWorkflowEngine)
-            .updateRoutesinFlow(listProperties, function (resolved) {
-              customWorkflowEngine
-                .routeEngine(customWorkflowEngine)
-                .PageSecurity(
-                  customWorkflowEngine.stages.securityModeView,
-                  listProperties.Current_Approver,
-                  listProperties.Approval_Status,
-                  function (error) {
+          // customWorkflowEngine.routeEngine(customWorkflowEngine).updateRoutesinFlow(listProperties, function (resolved) {
+          //     customWorkflowEngine.routeEngine(customWorkflowEngine).PageSecurity(
+          //         customWorkflowEngine.stages.securityModeView,
+          //         listProperties.Current_Approver,
+          //         listProperties.Approval_Status,
+          //         function (error) {
                     // if (MainApplication.configuredTaskMembers[listProperties.Current_Approver].belongs) {
 
                     if (typeof error === "undefined") {
-                      listProperties.DateOfWarning = $spcontext.stringnifyDate({
-                        value: listProperties.DateOfWarning,
+                      listProperties.RequestCreated = $spcontext.stringnifyDate({
+                        value: listProperties.RequestCreated,
                         includeTime: false,
                         format: "dd/mm/yy",
                       });
 
-                      listProperties.DateOfViolation =
-                        $spcontext.stringnifyDate({
-                          value: listProperties.DateOfViolation,
-                          includeTime: false,
-                          format: "dd/mm/yy",
-                        });
+                      listProperties.DateRequired = $spcontext.stringnifyDate({
+                        value: listProperties.DateRequired,
+                        includeTime: false,
+                        format: "dd/mm/yy",
+                      });
+
+                      listProperties.StepByStepProcess = $spcontext.JSONToObject(listProperties.StepByStepProcess);
+                      listProperties.Approvers = $spcontext.JSONToObject(listProperties.Approvers);
+                      listProperties.Notifications = $spcontext.JSONToObject(listProperties.Notifications);
+                      listProperties.UserAccess = $spcontext.JSONToObject(listProperties.UserAccess);
+                      listProperties.Reports = $spcontext.JSONToObject(listProperties.Reports);
+                      listProperties.DivisionsInvolved = $spcontext.JSONToObject(listProperties.DivisionsInvolved);
+                      listProperties.ExtraFeatures = $spcontext.JSONToObject(listProperties.ExtraFeatures);
+                      listProperties.ExtraFeatures = MainApplication.buildReadOnlyData(listProperties.ExtraFeatures);
 
                       listProperties.Transaction_History =
                         $spcontext.JSONToObject(
@@ -150,6 +193,8 @@ MainApplication.ViewRequestComponent.recoverListData = function () {
                         listProperties.AttachmentURL,
                         "object",
                       );
+
+                      listProperties.Delegate = listProperties.Delegate.value || "";
 
                       AppRequest.FolderUrl = listProperties.Attachment_Folder;
                       AppRequest.FileUrls = $spcontext.deferenceObject(
@@ -171,98 +216,12 @@ MainApplication.ViewRequestComponent.recoverListData = function () {
                         );
                       }
 
+                      MainApplication.populateSelect2(listProperties.DivisionsInvolved);
+                      MainApplication.renderReadOnlyTable("extraFeaturesTable", listProperties.ExtraFeatures);
                       // if (listProperties.Current_Approver !== "Employee" && listProperties.Current_Approver_Code !== "AA1") {
                       // 	listProperties.Comment = "";
                       // }
 
-                      if (listProperties.Current_Approver === "Employee") {
-                        $("#actor-section").append(`
-										<h1 class="form-card-title">
-											Employee SECTION
-										</h1>
-										
-											<div class="form-group">
-												<label class="form-label">
-													Employee Comment
-													<span class="req" aria-hidden="true">
-														*
-													</span>
-												</label>
-												<textarea speed-bind="EmployeeComment" speed-bind-class="ApprovalData" class="form-input" rows="4" placeholder="Enter text here..."></textarea>
-											</div>
-										
-									`);
-                        // display Employee Section
-                        // display HOD Section
-                      } else if (listProperties.Current_Approver === "HOD") {
-                        $("#actor-section").append(`
-										<h1 class="form-card-title">
-											Employee SECTION
-										</h1>
-										
-											<div class="form-group">
-												<label class="form-label">
-													Employee Comment
-												</label>
-												<textarea speed-bind="EmployeeComment" readOnly class="form-input" rows="4" placeholder="Enter text here..."></textarea>
-											</div>
-									
-
-										<h1 class="form-card-title">
-											HOD SECTION
-										</h1>
-
-
-											<div class="form-group">
-												<label class="form-label">
-													HOD Comment
-													<span class="req" aria-hidden="true">
-														*
-													</span>
-												</label>
-												<textarea speed-bind="HODComment" speed-bind-class="ApprovalData" class="form-input" rows="4" placeholder="Enter text here..."></textarea>
-											</div>
-									`);
-                      } else if (
-                        listProperties.Current_Approver === "Management Rep"
-                      ) {
-                        $("#actor-section").append(`
-										<h1 class="form-card-title">
-											Employee SECTION
-										</h1>
-											<div class="form-group">
-												<label class="form-label">
-													Employee Comment
-												</label>
-												<textarea speed-bind="EmployeeComment" readOnly class="form-input" rows="4" placeholder="Enter text here..."></textarea>
-											</div>
-
-										<h1 class="form-card-title">
-											HOD SECTION
-										</h1>
-
-											<div class="form-group">
-												<label class="form-label">
-													HOD Comment
-												</label>
-												<textarea readOnly speed-bind="HODComment" class="form-input" rows="4" placeholder="Enter text here..."></textarea>
-											</div>
-
-										<h1 class="form-card-title">
-											QHSE SECTION
-											<span class="req" aria-hidden="true">
-												*
-											</span>
-										</h1>
-
-											<div class="form-group">
-												<label class="form-label">
-													Correction Comment
-												</label>
-												<textarea speed-bind="Correction" speed-bind-class="ApprovalData" class="form-input" rows="4" placeholder="Enter text here..."></textarea>
-											</div>
-									`);
-                      }
 
                       AppRequest.requestDetails = listProperties;
 
@@ -275,7 +234,7 @@ MainApplication.ViewRequestComponent.recoverListData = function () {
                       // }
                       // $spcontext.assignAttributes();
                       // setTimeout(function () {
-                        
+                        $("#newLoader").hide();
                         $("#viewrequest-page").removeClass("hidden");
                         globalDefinitions.closeLoader();
                       // }, 2000);
@@ -285,7 +244,7 @@ MainApplication.ViewRequestComponent.recoverListData = function () {
                       );
                       globalDefinitions.AuditLogManager_SaveLog({
                         Action: `Unauthorized action on ${listProperties.WorkflowRequestID}`,
-                        Message: "User is not allowed to act on this request",
+                        Message: "User is not allowed to view this request",
                       });
                       // setTimeout(function () {
                         globalDefinitions.closeLoader();
@@ -294,9 +253,9 @@ MainApplication.ViewRequestComponent.recoverListData = function () {
                     }
 
                     // }
-                  },
-                ); //commented here
-            }); //commented here
+            //       },
+            //     ); //commented here
+            // }); //commented here
         }
       },
     );

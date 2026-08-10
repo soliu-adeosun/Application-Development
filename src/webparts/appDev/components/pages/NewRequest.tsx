@@ -1,5 +1,7 @@
 import * as React from "react";
 import ClientButton from "../../../../Global/ClientButton";
+import CustomPeoplePicker from "../../../../Global/CustomPeoplePicker";
+import { NewLoader } from "../../../../Global/NewLoader";
 // import CustomPeoplePicker from "../../../../Global/CustomPeoplePicker";
 // import { NewLoader } from "../../../../Global/NewLoader";
 
@@ -10,7 +12,8 @@ export default class NewRequest extends React.Component<{}, {}> {
     return (
       <>
         {/* <NewLoader /> */}
-        <section className="AdrPageContent">
+        <NewLoader />
+        <section className="hidden" id="newrequest-page">
           <div className="AdrPage">
             <section className="AdrCompactHero">
               <div>
@@ -47,13 +50,16 @@ export default class NewRequest extends React.Component<{}, {}> {
                 <label className="AdrField">
                   <span>
                     What is the name of the process you want to automate?
+                    <span className="required">*</span>
                   </span>
-                  <input placeholder="Enter text" speed-bind-validate="ProcessName" />
+                  <input placeholder="Enter text" speed-bind-validate="ProcessName" speed-bind-class="ProcessOverview" />
                 </label>
                 <label className="AdrField">
-                  <span>How often does this process happen?</span>
-                  <select name="period" id="period">
-                    <option>Select a value</option>
+                  <span>How often does this process happen?
+                    <span className="required">*</span>
+                  </span>
+                  <select name="period" id="period" speed-bind-validate="Period" speed-bind-class="ProcessOverview">
+                    <option value="">Select a value</option>
                     <option value="Daily">Daily</option>
                     <option value="Weekly">Weekly</option>
                     <option value="Monthly">Monthly</option>
@@ -63,17 +69,40 @@ export default class NewRequest extends React.Component<{}, {}> {
                   </select>
                   <div id="otherPeriodContainer" />
                 </label>
+
+                <label className="AdrField">
+                  <span>Requirement Statement
+                    <span className="required">*</span>
+                  </span>
+                  <textarea placeholder="Enter text" speed-bind-validate="RequirementStatement" speed-bind-class="ProcessOverview" />
+                </label>
+
+                <label className="AdrField">
+                  <span>Justification Statement
+                    <span className="required">*</span>
+                  </span>
+                  <textarea placeholder="Enter text" speed-bind-validate="JustificationStatement" speed-bind-class="ProcessOverview" />
+                </label>
+
+                <label className="AdrField">
+                  <span>Date Required
+                    <span className="required">*</span>
+                  </span>
+                  <input type="date"  speed-bind-validate="DateRequired" speed-bind-class="ProcessOverview" />
+                </label>
+
                 <label className="AdrField">
                   <span>
                     Which divisions/units/teams are involved in this process?
+                    <span className="required">*</span>
                   </span>
                   <select
                     id="divisionsInvolved"
                     className="js-select2"
                     multiple
                     speed-bind-validate="DivisionsInvolved"
-                    speed-bind-class="MainRequest"
-                    speed-list-repeat="DivisionsInvolved"
+                    speed-bind-class="ProcessOverview"
+                    speed-list-repeat="RSDivisions"
                     speed-no-default="true"
                   >
                     <option value="{{Title}}">
@@ -82,15 +111,14 @@ export default class NewRequest extends React.Component<{}, {}> {
                   </select>
                 </label>
 
-                <label className="AdrField">
-                  <span>Why do you need to automate this process?</span>
-                  <textarea placeholder="Enter text" speed-bind-validate="ProcessName" />
-                </label>
+                
               </div>
 
               <div className="table-wrapper">
                 <div className="tableLabel">
-                <span>Step-by-step description of the process</span>
+                <span>Step-by-step description of the process
+                  <span className="required">*</span>
+                </span>
                 <button className="AdrAddButton" id="stepByStepButton" type="button">+ Add New Row</button>
               </div>
               <div className="AdrTableShell">
@@ -113,7 +141,8 @@ export default class NewRequest extends React.Component<{}, {}> {
 
                 <label className="AdrField">
                   <span>
-                    Are there any existing automated systems already handling part of this process? 
+                    Are there any existing automated systems already handling part of this process?
+                    <span className="required">*</span>
                   </span>
                   <textarea placeholder="Enter text" speed-bind-validate="ExistingLink" />
                 </label>
@@ -121,6 +150,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                 <label className="AdrField">
                   <span>
                     What are the biggest pain points or challenges with the current process?
+                    <span className="required">*</span>
                   </span>
                   <textarea placeholder="Enter text" speed-bind-validate="PainPoints" />
                 </label>
@@ -128,6 +158,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                 <label className="AdrField">
                   <span>
                     What marks the process as complete?
+                    <span className="required">*</span>
                   </span>
                   <textarea placeholder="Enter text" speed-bind-validate="CriteriaForCompletion" />
                 </label>
@@ -135,9 +166,10 @@ export default class NewRequest extends React.Component<{}, {}> {
                 <label className="AdrField">
                   <span>
                     Are there any related processes that connect to this one?
+                    <span className="required">*</span>
                   </span>
                   <select id="isProcessRelated" speed-bind-validate="IsProcessRelated">
-                    <option>Select a value</option>
+                    <option value="">Select a value</option>
                     <option value="Yes">Yes</option>
                     <option value="No">No</option>
                   </select>
@@ -167,9 +199,10 @@ export default class NewRequest extends React.Component<{}, {}> {
                 <label className="AdrField">
                   <span>
                     Do you require any information to be automatically pulled from another system?
+                    <span className="required">*</span>
                   </span>
                   <select speed-bind-validate="PullDataFromAnotherSystem">
-                    <option>Select a value</option>
+                    <option value="">Select a value</option>
                     <option value="Yes">Yes</option>
                     <option value="No">No</option>
                   </select>
@@ -178,9 +211,10 @@ export default class NewRequest extends React.Component<{}, {}> {
                  <label className="AdrField">
                   <span>
                     How long should records be kept in the system?
+                    <span className="required">*</span>
                   </span>
                   <select id="retentionPeriod" speed-bind-validate="RetentionPeriod">
-                    <option>Select a value</option>
+                    <option value="">Select a value</option>
                     <option value="1 year">1 year</option>
                     <option value="3 years">3 years</option>
                     <option value="5 years">5 years</option>
@@ -206,19 +240,18 @@ export default class NewRequest extends React.Component<{}, {}> {
                 <label className="AdrField">
                   <span>
                     Does this process require any approvals or sign-offs?
+                    <span className="required">*</span>
                   </span>
-                  <select id="isApprovalsNeeded" speed-bind-validate="RetentionPeriod">
-                    <option>Select a value</option>
+                  <select id="isApprovalsNeeded" speed-bind-validate="IsApprovalsNeeded">
+                    <option value="">Select a value</option>
                     <option value="Yes">Yes</option>
                     <option value="No">No</option>
                   </select>
-
-                  <div id="approvalsContainer" />
                 </label>
                 
               </div>
 
-              <div className="table-wrapper">
+              <div className="table-wrapper hidden" id="approvalStagesContainer">
                 <div className="tableLabel">
                   <span>List all approval stages in order</span>
                   <button className="AdrAddButton" id="addApproverButton" type="button">+ Add New Row</button>
@@ -239,13 +272,14 @@ export default class NewRequest extends React.Component<{}, {}> {
                   </table>
                 </div>
               </div>
-              <div className="AdrFormGrid">
+              <div className="AdrFormGrid" id="conditionalApprovalContainer">
                 <label className="AdrField">
                   <span>
                     Are there any conditions that change the approval path?
+                    <span className="required">*</span>
                   </span>
-                  <select id="isApprovalsNeeded" speed-bind-validate="RetentionPeriod">
-                    <option>Select a value</option>
+                  <select id="conditionalApproval" speed-bind-validate="ConditionalApproval">
+                    <option value="">Select a value</option>
                     <option value="Yes">Yes</option>
                     <option value="No">No</option>
                   </select>
@@ -256,8 +290,9 @@ export default class NewRequest extends React.Component<{}, {}> {
                 <label className="AdrField">
                   <span>
                     What is the maximum time allowed at each approval stage
+                    <span className="required">*</span>
                   </span>
-                  <input placeholder="Enter number in hours" type="number"  speed-bind-validate="MaxApprovalTime"/>
+                  <input id="maxApprovalTime" placeholder="Enter number in hours" type="number"  speed-bind-validate="MaxApprovalTime"/>
 
                 </label>
 
@@ -265,7 +300,12 @@ export default class NewRequest extends React.Component<{}, {}> {
                   <span>
                     Who can delegate or act on behalf of an approver when they are unavailable?
                   </span>
-                  <input placeholder="Enter text" type="text"  speed-bind="Delegate"/>
+                  {/* <input placeholder="Enter text" type="text"  speed-bind="Delegate"/> */}
+                  <CustomPeoplePicker
+                    validate-control="false"
+                    custom-people="Delegate"
+                    validation-msg="Please select a delegate"
+                  />
 
                 </label>
                 
@@ -283,7 +323,9 @@ export default class NewRequest extends React.Component<{}, {}> {
 
               <div className="table-wrapper">
                 <div className="tableLabel">
-                  <span>Who should be notified and at what points in the process?</span>
+                  <span>Who should be notified and at what points in the process?
+                    <span className="required">*</span>
+                  </span>
                   <button className="AdrAddButton" id="addNotificationButton" type="button">+ Add New Row</button>
                 </div>
                 <div className="AdrTableShell">
@@ -314,7 +356,9 @@ export default class NewRequest extends React.Component<{}, {}> {
 
               <div className="table-wrapper">
                 <div className="tableLabel">
-                  <span>Who are the different types of users of this system?</span>
+                  <span>Who are the different types of users of this system?
+                    <span className="required">*</span>
+                  </span>
                   <button className="AdrAddButton" id="addUserAccessButton" type="button">+ Add New Row</button>
                 </div>
                 <div className="AdrTableShell">
@@ -337,6 +381,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                 <label className="AdrField">
                   <span>
                     Are there records that some users should NOT be able to see?
+                    <span className="required">*</span>
                   </span>
                   <textarea placeholder="Enter text" name="revokeUser" id="revokeUser" speed-bind-validate="RevokeUser"></textarea>
                 </label>
@@ -344,6 +389,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                 <label className="AdrField">
                   <span>
                     Who should be the Process Owner (main overseer) of this system?
+                    <span className="required">*</span>
                   </span>
                   <input placeholder="Enter text" type="text"  speed-bind-validate="ProcessOwner"/>
 
@@ -370,43 +416,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                       <th>Note</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    <tr>
-                      <td><input placeholder="Enter text" type="checkbox" name="" id="" /></td>
-                      <td>Save as Draft - Ability to save an incomplete form and return to it later</td>
-                      <td><textarea placeholder="Enter text" name="" id=""></textarea></td>
-                    </tr>
-                    <tr>
-                      <td><input placeholder="Enter text" type="checkbox" name="" id="" /></td>
-                      <td>Edit After Submission - Ability to edit a submitted record before approval</td>
-                      <td><textarea placeholder="Enter text" name="" id=""></textarea></td>
-                    </tr>
-                    <tr>
-                      <td><input placeholder="Enter text" type="checkbox" name="" id="" /></td>
-                      <td>Export to Excel / CSV - Download records as a spreadsheet</td>
-                      <td><textarea placeholder="Enter text" name="" id=""></textarea></td>
-                    </tr>
-                    <tr>
-                      <td><input placeholder="Enter text" type="checkbox" name="" id="" /></td>
-                      <td>Print / Download as PDF - Print or save records as PDF documents</td>
-                      <td><textarea placeholder="Enter text" name="" id=""></textarea></td>
-                    </tr>
-                    <tr>
-                      <td><input placeholder="Enter text" type="checkbox" name="" id="" /></td>
-                      <td>Dashboard / Summary View - A visual overview of process status and statistics</td>
-                      <td><textarea placeholder="Enter text" name="" id=""></textarea></td>
-                    </tr>
-                    <tr>
-                      <td><input placeholder="Enter text" type="checkbox" name="" id="" /></td>
-                      <td>Bulk Actions - Approve, decline, or export multiple records at once</td>
-                      <td><textarea placeholder="Enter text" name="" id=""></textarea></td>
-                    </tr>
-                    <tr>
-                      <td><input placeholder="Enter text" type="checkbox" name="" id="" /></td>
-                      <td>Attachment Upload - Ability to attach files (documents, images, etc.) to records</td>
-                      <td><textarea placeholder="Enter text" name="" id=""></textarea></td>
-                    </tr>
-                  </tbody>
+                  <tbody />
                 </table>
               </div>
 
@@ -422,7 +432,9 @@ export default class NewRequest extends React.Component<{}, {}> {
 
               <div className="table-wrapper">
                 <div className="tableLabel">
-                  <span>What reports/summaries/analytics do you need from this system?</span>
+                  <span>What reports/summaries/analytics do you need from this system?
+                    <span className="required">*</span>
+                  </span>
                   <button className="AdrAddButton" id="addReportButton" type="button">+ Add New Row</button>
                 </div>
                 <div className="AdrTableShell">
@@ -448,15 +460,17 @@ export default class NewRequest extends React.Component<{}, {}> {
               <ClientButton
                 func="NewRequestComponent.confirmSubmit"
                 clax="AdrSecondaryButton"
-                prop="save"
+                prop="Draft"
+                attr="id='draftbtn"
               >
-                Save Draft
+                Save for Later
               </ClientButton>
 
               <ClientButton
                 func="NewRequestComponent.confirmSubmit"
                 clax="AdrPrimaryButton"
                 prop="submit"
+                attr=""
               >
                 Submit
               </ClientButton>

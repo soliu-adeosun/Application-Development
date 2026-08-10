@@ -9,7 +9,7 @@ function GlobalDefinitionsManager() {
     pending: "Pending",
     decline: "Declined",
     approve: "Approved",
-    save: "Save For Later",
+    save: "Draft",
     correction: "MoreInfo",
     modified: "Returned For Approval",
     parrallelflow: "parallel",
@@ -559,15 +559,15 @@ GlobalDefinitionsManager.prototype.sendSPMail = function (
 ----------------------------------------------------- */
 GlobalDefinitionsManager.prototype.callLoader = function (msg) {
   //$("#erploader").show();
-  // $("#erploader").modal("show");
-  $("#newLoader").show();
+  $("#erploader").modal("show");
+  // $("#newLoader").show();
 };
 
 GlobalDefinitionsManager.prototype.closeLoader = function () {
   //$("#erploader").hide();
-  // $("#erploader").modal("hide");
+  $("#erploader").modal("hide");
   // $("#loadertext").text("");
-  $("#newLoader").hide();
+  // $("#newLoader").hide();
 };
 
 GlobalDefinitionsManager.prototype.changeLoaderText = function (msg) {
