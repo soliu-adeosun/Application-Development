@@ -73,7 +73,10 @@ whenReportDependeciesLoaded = function () {
   // let debounceTimer;
 
   $("#status-filter").on("keyup change", function () {
-    MainApplication.ReportComponent.retrieveRequest();
+    var searchQuery = $(this).val();
+    var data = AppRequest.fullTableData || [];
+    var filteredItems = MainApplication.reportSyncSearch(searchQuery, data);
+    MainApplication.ReportComponent.showTableData(filteredItems);
   });
 
   $("#exportToExcel").click(() => {
