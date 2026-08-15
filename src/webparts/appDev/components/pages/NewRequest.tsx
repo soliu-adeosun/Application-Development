@@ -18,22 +18,15 @@ export default class NewRequest extends React.Component<{}, {}> {
             <section className="AdrCompactHero">
               <div>
                 <span className="AdrEyebrow">New Request</span>
-                <h3>SUBMISSION GUIDANCE</h3>
                 <ul>
                   <li>
-                    Complete this form - Fill in all sections marked with * at
-                    minimum. The more detail you provide, the faster and more
-                    accurate the system build will be.
+                    Complete this form.
                   </li>
                   <li>
-                    Submit Application Development Request – Complete the Data
-                    Requirement Gathering section of the Application Development
-                    Request Form.
+                    Submit Application Development Request.
                   </li>
                   <li>
-                    Await confirmation- The Process Automation Team will
-                    acknowledge receipt and schedule requirements review meeting
-                    with you within 5 working days.
+                    Await confirmation.
                   </li>
                 </ul>
               </div>
@@ -77,12 +70,12 @@ export default class NewRequest extends React.Component<{}, {}> {
                   <textarea placeholder="Enter text" speed-bind-validate="RequirementStatement" speed-bind-class="ProcessOverview" />
                 </label>
 
-                <label className="AdrField">
+                {/* <label className="AdrField">
                   <span>Justification Statement
                     <span className="required">*</span>
                   </span>
                   <textarea placeholder="Enter text" speed-bind-validate="JustificationStatement" speed-bind-class="ProcessOverview" />
-                </label>
+                </label> */}
 
                 <label className="AdrField">
                   <span>Date Required
@@ -144,16 +137,16 @@ export default class NewRequest extends React.Component<{}, {}> {
                     Are there any existing automated systems already handling part of this process?
                     <span className="required">*</span>
                   </span>
-                  <textarea placeholder="Enter text" speed-bind-validate="ExistingLink" />
+                  <textarea placeholder="Paste link here" speed-bind-validate="ExistingLink" />
                 </label>
 
-                <label className="AdrField">
+                {/* <label className="AdrField">
                   <span>
                     What are the biggest pain points or challenges with the current process?
                     <span className="required">*</span>
                   </span>
                   <textarea placeholder="Enter text" speed-bind-validate="PainPoints" />
-                </label>
+                </label> */}
 
                 <label className="AdrField">
                   <span>
@@ -173,6 +166,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                     <option value="Yes">Yes</option>
                     <option value="No">No</option>
                   </select>
+                  <div id="relatedProcessContainer" />
                 </label>
                 <label className="AdrField">
                   <span>
@@ -201,11 +195,12 @@ export default class NewRequest extends React.Component<{}, {}> {
                     Do you require any information to be automatically pulled from another system?
                     <span className="required">*</span>
                   </span>
-                  <select speed-bind-validate="PullDataFromAnotherSystem">
+                  <select id="pullFromAnothersystem" speed-bind-validate="PullDataFromAnotherSystem">
                     <option value="">Select a value</option>
                     <option value="Yes">Yes</option>
                     <option value="No">No</option>
                   </select>
+                  <div id="pullDataContainer" />
                 </label>
 
                  <label className="AdrField">

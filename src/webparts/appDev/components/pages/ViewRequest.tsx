@@ -49,13 +49,13 @@ export default class NewRequest extends React.Component<{}, {}> {
                   />
                 </label>
 
-                <label className="AdrField">
+                {/* <label className="AdrField">
                   <span>Justification Statement</span>
                   <textarea readOnly
                     placeholder="Enter text"
                     speed-bind="JustificationStatement"
                   />
-                </label>
+                </label> */}
 
                 <label className="AdrField">
                   <span>Date Required</span>
@@ -89,13 +89,13 @@ export default class NewRequest extends React.Component<{}, {}> {
               <div className="table-wrapper">
                 <div className="tableLabel">
                   <span>Step-by-step description of the process</span>
-                  <button
+                  {/* <button
                     className="AdrAddButton"
                     id="stepByStepButton"
                     type="button"
                   >
                     + Add New Row
-                  </button>
+                  </button> */}
                 </div>
                 <div className="AdrTableShell">
                   <table
@@ -134,7 +134,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                   />
                 </label>
 
-                <label className="AdrField">
+                {/* <label className="AdrField">
                   <span>
                     What are the biggest pain points or challenges with the
                     current process?
@@ -143,7 +143,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                     placeholder="Enter text"
                     speed-bind="PainPoints"
                   />
-                </label>
+                </label> */}
 
                 <label className="AdrField">
                   <span>What marks the process as complete?</span>
@@ -161,6 +161,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                     id="isProcessRelated"
                     speed-bind="IsProcessRelated"
                   />
+                  <div id="relatedProcessContainer" />
                 </label>
                 <label className="AdrField">
                   <span>
@@ -169,8 +170,6 @@ export default class NewRequest extends React.Component<{}, {}> {
                   <div speed-file-bind="SupportingDocuments" data-view-only />
                 </label>
               </div>
-
-              <div id="relatedProcessContainer" />
             </section>
 
             <section className="AdrFormSection">
@@ -189,6 +188,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                     from another system?
                   </span>
                   <input readOnly type="text" speed-bind="PullDataFromAnotherSystem" />
+                  <div id="pullDataContainer" />
                 </label>
 
                 <label className="AdrField">
@@ -215,21 +215,19 @@ export default class NewRequest extends React.Component<{}, {}> {
                     Does this process require any approvals or sign-offs?
                   </span>
                   <input readOnly type="text" speed-bind="IsApprovalsNeeded" />
-
-                  <div id="approvalsContainer" />
                 </label>
               </div>
 
               <div className="table-wrapper">
                 <div className="tableLabel">
                   <span>List all approval stages in order</span>
-                  <button
+                  {/* <button
                     className="AdrAddButton"
                     id="addApproverButton"
                     type="button"
                   >
                     + Add New Row
-                  </button>
+                  </button> */}
                 </div>
                 <div className="AdrTableShell">
                   <table
@@ -313,13 +311,13 @@ export default class NewRequest extends React.Component<{}, {}> {
                   <span>
                     Who should be notified and at what points in the process?
                   </span>
-                  <button
+                  {/* <button
                     className="AdrAddButton"
                     id="addNotificationButton"
                     type="button"
                   >
                     + Add New Row
-                  </button>
+                  </button> */}
                 </div>
                 <div className="AdrTableShell">
                   <table
@@ -362,13 +360,13 @@ export default class NewRequest extends React.Component<{}, {}> {
                   <span>
                     Who are the different types of users of this system?
                   </span>
-                  <button
+                  {/* <button
                     className="AdrAddButton"
                     id="addUserAccessButton"
                     type="button"
                   >
                     + Add New Row
-                  </button>
+                  </button> */}
                 </div>
                 <div className="AdrTableShell">
                   <table
@@ -470,13 +468,13 @@ export default class NewRequest extends React.Component<{}, {}> {
                     What reports/summaries/analytics do you need from this
                     system?
                   </span>
-                  <button
+                  {/* <button
                     className="AdrAddButton"
                     id="addReportButton"
                     type="button"
                   >
                     + Add New Row
-                  </button>
+                  </button> */}
                 </div>
                 <div className="AdrTableShell">
                   <table

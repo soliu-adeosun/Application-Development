@@ -621,4 +621,61 @@ MainApplication.populateSelect2 = function (divisions) {
   
 }
 
+MainApplication.renderField = function (options) {
+    const {
+        containerId,
+        type = "input",
+        bindValidate = "",
+        placeholder = "",
+        inputType = "text",
+        required = false,
+        readonly = false,
+        value = "",
+        rows = 4,
+        className = ""
+    } = options;
+
+    const $container = $("#" + containerId);
+
+    if (!$container.length) {
+        console.warn(`Container #${containerId} not found.`);
+        return;
+    }
+
+    // Clear existing content
+    $container.empty();
+
+    let $field;
+
+    if (type === "textarea") {
+        $field = $("<textarea>", {
+            class: className,
+            placeholder: placeholder,
+            rows: rows
+        });
+
+        $field.val(value);
+
+    } else {
+        $field = $("<input>", {
+            type: inputType,
+            class: className,
+            placeholder: placeholder
+        });
+
+        $field.val(value);
+    }
+
+    // Set boolean properties
+    $field.prop("required", required);
+    $field.prop("readonly", readonly);
+
+    // Add speed validation binding if supplied
+    if (bindValidate) {
+        $field.attr("speed-bind-validate", bindValidate);
+    }
+
+    $container.append($field);
+};
+
 whenLayoutLoaded();

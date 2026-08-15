@@ -393,35 +393,47 @@ function Speed(cxt, bolval) {
             type: "checkbox",
             extend: {
                 multivalue: function (value, id) {
-                    var boolT = value;
-                    if (!value) {
-                        var elementProperties = document.getElementById(id);
-                        var attributeValue = elementProperties.getAttribute("speed-bind-validate");
-                        var element = document.querySelectorAll("[speed-bind-validate='" + attributeValue + "']");
-                        for (var i = 0; i <= (element.length - 1); i++) {
-                            if (element[i].type == "checkbox") {
-                                if (element[i].checked) {
-                                    boolT = true;
-                                    break
-                                }
-                            } else {
-                                $spcontext.debugHandler("1113", this.type, id, "multivalue");
-                                boolT = false;
-                                break;
-                            }
-                        }
+                    var elementProperties = document.getElementById(id);
+                    var attributeValue = elementProperties.getAttribute("speed-bind-validate");
 
+                    var elements = document.querySelectorAll("[speed-bind-validate='" + attributeValue + "']");
+
+                    var selectedValues = [];
+
+                    for (var i = 0; i < elements.length; i++) {
+
+                        if (elements[i].type === "checkbox" && elements[i].checked) {
+
+                            // Use value attribute (recommended)
+                            selectedValues.push(elements[i].value);
+
+                            // If you prefer label text instead:
+                            // selectedValues.push($("label[for='" + elements[i].id + "']").text());
+                        }
                     }
-                    return boolT;
+
+                    return selectedValues;
                 }
             },
+
             validate: function (value, extension, id) {
+
                 if (extension !== "") {
+
                     try {
-                        return this.extend[extension](value, id);
+                        var result = this.extend[extension](value, id);
+
+                        // Special handling for multivalue
+                        if (extension === "multivalue") {
+                            return Array.isArray(result) && result.length > 0;
+                        }
+
+                        return result;
+
                     } catch (e) {
                         $spcontext.debugHandler("1111", this.type, id, extension);
                     }
+
                 } else {
                     return value;
                 }
@@ -2960,7 +2972,7 @@ Speed.prototype.attachmentLinkBind = function (attachments) {
 
                         for (var x = 0; x < attachmentLinks.length; x++) {
 
-                            // 👇 Only build the delete button if NOT viewOnly
+                            // Only build the delete button if NOT viewOnly
                             var deleteBtn = elementProp.viewOnly ? "" :
                                 "<a href='#' " +
                                 "class='attachment-inline-delete' " +
@@ -3319,8 +3331,8 @@ Speed.prototype.applyValidationEvents = function () {
                             var msg = this.getAttribute("speed-validate-msg");
                             var inputtype = this.getAttribute("speed-validate-type");
                             var onValidation = (this.getAttribute("speed-validate-mode") === null) ? true : (this.getAttribute("speed-validate-mode") === "true");
-                            var multivalue = (this.getAttribute("sptype") === null) ? false : (this.getAttribute("sptype").toLowerCase() === "multivalue");
-                            var overideValidation = (this.getAttribute("sptype-overide-validation") === null) ? true : (this.getAttribute("sptype-overide-validation") === "true");
+                            var multivalue = (this.getAttribute("data-sptype") === null) ? false : (this.getAttribute("data-sptype").toLowerCase() === "multivalue");
+                            var overideValidation = (this.getAttribute("data-sptype-overide-validation") === null) ? true : (this.getAttribute("data-sptype-overide-validation") === "true");
                             if (overideValidation && multivalue) {
                                 inputtype = "multivalue";
                             }

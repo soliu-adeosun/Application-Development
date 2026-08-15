@@ -69,27 +69,39 @@ function whenNewRequestDependeciesLoaded() {
   $spcontext.appliedEvents.attachments = [];
 
   var basicQuery = [
-        {
-            ascending: "TRUE",
-            orderby: "Title",
-        },
-    ];
-	delete rsBAContext.htmlDictionary['RSDivisions'];
-    rsBAContext.bindListDirectives({
-        RSDivisions: {
-            query: $spcontext.camlBuilder(basicQuery),
-            customAfterLoadFunction: function (listElements) {
-				//let bind run first before binding
-				$("#divisionsInvolved").select2(
-					{
-						placeholder: "Select a Division/Unit",
-						allowClear: true
-					}
-				);
-                // globalDefinitions.closeLoader();
-			}
+    {
+        ascending: "TRUE",
+        orderby: "Title",
+    },
+];
+
+delete rsBAContext.htmlDictionary['RSDivisions'];
+
+rsBAContext.bindListDirectives({
+    RSDivisions: {
+        query: $spcontext.camlBuilder(basicQuery),
+
+        customAfterLoadFunction: function (listElements) {
+
+            const $select = $("#divisionsInvolved");
+
+            // Add "All Division" without adding it to SharePoint
+            $select.prepend(
+                $("<option>", {
+                    value: "All Divisions/Units",
+                    text: "All Division/Units"
+                })
+            );
+
+            // Initialize Select2
+            $select.select2({
+                placeholder: "Select a Division/Unit",
+                allowClear: true
+            });
+
         }
-    });
+    }
+});
 
     PeoplePicker.defaultValues = {};
     PeoplePicker.initializePeoplePickers(MainApplication.staffList);
@@ -135,7 +147,7 @@ function whenNewRequestDependeciesLoaded() {
 						var displayName = splitedLinks[pos];
 
 						var attachmentBlock =
-							"<p id='" + elementName + "display" + y + "' style='color:#002c4d'>" +
+							"<p id='" + elementName + "class='docstring' " + "display" + y + "' style='color:#002c4d'>" +
 							fileName +
 							"<span>" +
 							"<a href='#' " +
@@ -183,9 +195,9 @@ function whenNewRequestDependeciesLoaded() {
 
     bindExtensions: {
       description:
-        MainApplication.NewRequestComponent.textColumn("description"),
+        MainApplication.NewRequestComponent.textAreaColumn("description"),
 
-      actors: MainApplication.NewRequestComponent.textColumn("actors"),
+      actors: MainApplication.NewRequestComponent.textAreaColumn("actors"),
 
       action:
         MainApplication.NewRequestComponent.deleteColumn(AppRequest.stepByStepCTX, "StepByStepProcess"),
@@ -291,10 +303,58 @@ function whenNewRequestDependeciesLoaded() {
   });
 
 
+//New Implementation---------------------This is where I am
+  $("#pullFromAnothersystem").on("change", function () {
+      const value = $(this).val();
+      MainApplication.NewRequestComponent.togglePullFromOtherSystem(value);
+  });
+
+  $("#isProcessRelated").on("change", function () {
+      const value = $(this).val();
+      MainApplication.NewRequestComponent.toggleRelatedProcess(value);
+  });
+
+$("#conditionalApproval").on("change", function () {
+
+    const value = $(this).val();
+
+    if (value === "Yes") {
+
+        MainApplication.renderField({
+            containerId: "approvalsContainer",
+            className: "top-space",
+            type: "textarea",
+            bindValidate: "ConditionalApprovalInformation",
+            placeholder: "Describe the conditional approval information...",
+            rows: 4,
+            required: true
+        });
+
+    } else {
+        $("#approvalsContainer").empty();
+    }
+});
+
+  $(document).on("click", ".attachment-inline-delete", function (e) {
+		e.preventDefault();
+
+		const elementName = $(this).data("element");
+		const index = parseInt($(this).data("index"), 10);
+		const fileId = $(this).data("fileid");
+
+		MainApplication.NewRequestComponent.deleteRowAttachment(
+			elementName,
+			index,
+			fileId
+		);
+	});
+
   // Set the correct state on page load
   MainApplication.NewRequestComponent.toggleRetentionPeriod();
   MainApplication.NewRequestComponent.toggleOtherPeriod();
   MainApplication.NewRequestComponent.toggleApprovalStages();
+  MainApplication.NewRequestComponent.togglePullFromOtherSystem();
+  MainApplication.NewRequestComponent.toggleRelatedProcess();
   $spcontext.applyValidationEvents();
 
   setTimeout(function () {
@@ -306,6 +366,46 @@ function whenNewRequestDependeciesLoaded() {
         globalDefinitions.closeLoader();
     }, 1000);
   
+}
+
+MainApplication.NewRequestComponent.togglePullFromOtherSystem = function (value) {
+  
+
+    if (value === "Yes") {
+
+        MainApplication.renderField({
+            containerId: "pullDataContainer",
+            className: "top-space",
+            type: "textarea",
+            bindValidate: "SystemInformation",
+            placeholder: "Describe the information to be pulled...",
+            rows: 4,
+            required: true
+        });
+
+    } else {
+        $("#pullDataContainer").empty();
+    }
+}
+
+MainApplication.NewRequestComponent.toggleRelatedProcess = function (value) {
+  
+
+    if (value === "Yes") {
+
+        MainApplication.renderField({
+            containerId: "relatedProcessContainer",
+            className: "top-space",
+            type: "textarea",
+            bindValidate: "RelatedProcessInformation",
+            placeholder: "Describe the information to be pulled...",
+            rows: 4,
+            required: true
+        });
+
+    } else {
+        $("#relatedProcessContainer").empty();
+    }
 }
 
 // MainApplication.NewRequestComponent.tableCtxRegistry = {};
@@ -375,6 +475,22 @@ MainApplication.NewRequestComponent.textColumn = function (field) {
                 placeholder="Enter text"
                 speed-bind-validate="TempData"
                 speed-as-static="true"
+                class="form-control no-border-radius speed-table-include"
+                value="${valueToEva[field] || ""}"
+            />
+        `;
+  };
+};
+
+MainApplication.NewRequestComponent.textAreaColumn = function (field) {
+  return function (valueToEva) {
+    return `
+            <textarea
+                id="${$spcontext.uniqueIdGenerator()}"
+                placeholder="Enter text"
+                speed-bind-validate="TempData"
+                speed-as-static="true"
+                row=4
                 class="form-control no-border-radius speed-table-include"
                 value="${valueToEva[field] || ""}"
             />
@@ -557,7 +673,7 @@ MainApplication.NewRequestComponent.saveDataToListAsDraft = function () {
   globalDefinitions.onActionClicked();
   var formData = $spcontext.bind({}, "ProcessOverview") || {};
   if ($spcontext.checkPassedValidation()) {
-    
+    formData = $spcontext.bind({});
     var pickerValues = PeoplePicker.getValue() || {};
     var people = PeoplePicker.getConfiguredValue() || {};
     try {
@@ -568,15 +684,15 @@ MainApplication.NewRequestComponent.saveDataToListAsDraft = function () {
       formData.UserAccess = JSON.stringify(formData.UserAccess) || {};
       formData.Reports = JSON.stringify(formData.Reports) || {};
       formData.ExtraFeatures = JSON.stringify(formData.ExtraFeatures) || {};
-      if (formData.DateRequired) {
-      formData.DateRequired = $spcontext.stringnifyDate({
-          value: formData.DateRequired,
-          includeTime: false,
-          format: "dd/mm/yy",
-      });
-      } else {
-          formData.DateRequired = null;
-      }
+      // if (formData.DateRequired) {
+      // formData.DateRequired = $spcontext.stringnifyDate({
+      //     value: formData.DateRequired,
+      //     includeTime: false,
+      //     format: "dd-mm-yy",
+      // });
+      // } else {
+      //     formData.DateRequired = null;
+      // }
 
       var delegate = pickerValues?.Delegate;
 
@@ -604,7 +720,7 @@ MainApplication.NewRequestComponent.saveDataToListAsDraft = function () {
     formData.Approval_Status = globalDefinitions.stageDefinitions.save;
     formData.Current_Approver = globalDefinitions.stageDefinitions.employee;
     globalDefinitions.onActionCompleted();
-    console.log("Form Data to be submitted as draft:", formData);
+    console.log("Data at SaveAsDraft: ", formData);
     MainApplication.NewRequestComponent.proceedToList(formData, false);
 } else {
     globalDefinitions.HandlerError("Please fill the Process Overview part at least");
@@ -613,13 +729,14 @@ MainApplication.NewRequestComponent.saveDataToListAsDraft = function () {
   // console.log("Form Data to be submitted:", formData);
 }
 MainApplication.NewRequestComponent.proceedToList = function (formData) {
-
+  
 	var Attachments = $spcontext.grabAllAttachments();
 	//used to grab all string links so that it can be updated.
 	//mostly used when return for more information is part of the workflow process
 	AppRequest.FileUrls = $spcontext.grabAllAttachmentsLinks();
 	globalDefinitions.uploadAttachment(speedctxRoot, Attachments, globalDefinitions.stageDefinitions.foldername, globalDefinitions.stageDefinitions.documentlib, function () {
 		if (AppRequest.itemId == null) {
+      console.log("New data about to be created: ", formData);
 			speedctxRoot.createItems([formData], globalDefinitions.stageDefinitions.listname, function (createdItemsProperties) {
 				var itemID = createdItemsProperties[0].get_id();
 				var updateObj = {};
@@ -658,8 +775,14 @@ MainApplication.NewRequestComponent.proceedToList = function (formData) {
 				});
 			});
 		} else {
+      console.log("New data about to be updated: ", formData);
 			formData.ID = AppRequest.requestDetails.ID;
 			formData.AttachmentURL = JSON.stringify(AppRequest.FileUrls);
+      // formData.DateRequired = $spcontext.stringnifyDate({
+      //     value: formData.DateRequired,
+      //     includeTime: false,
+      //     format: "dd/mm/yy",
+      // });
 
 			speedctxRoot.updateItems([formData], globalDefinitions.stageDefinitions.listname, function () {
 				if (AppRequest.requestDetails.ReturnForCorrection !== "Yes") {
@@ -918,7 +1041,10 @@ MainApplication.NewRequestComponent.recoverListData = function () {
       "Delegate",
       "RequirementStatement",
       "JustificationStatement",
-      "DateRequired"
+      "DateRequired",
+      "RelatedProcessInformation",
+      "SystemInformation",
+      "ConditionalApprovalInformation"
     ];
 
     speedctxRoot.getListToControl(
@@ -1043,6 +1169,8 @@ MainApplication.NewRequestComponent.recoverListData = function () {
                       MainApplication.NewRequestComponent.toggleOtherPeriod(listProperties.Period);
                       MainApplication.NewRequestComponent.toggleRetentionPeriod(listProperties.RetentionPeriod);
                       MainApplication.NewRequestComponent.toggleApprovalStages();
+                      MainApplication.NewRequestComponent.togglePullFromOtherSystem(listProperties.PullDataFromAnotherSystem);
+                      MainApplication.NewRequestComponent.toggleRelatedProcess(listProperties.RelatedProcessInformation);
 
                       // if (AppRequest.requestDetails.Current_Approver !== 'Employee'){
                       $spcontext.attachmentLinkBind(
@@ -1059,6 +1187,8 @@ MainApplication.NewRequestComponent.recoverListData = function () {
                         
                         $("#conditionalApproval").val(listProperties.ConditionalApproval);
                         $("#maxApprovalTime").val(listProperties.MaxApprovalTime);
+                        $('[speed-bind-validate="SystemInformation"]').val(listProperties.SystemInformation);
+                        $('[speed-bind-validate="RelatedProcessInformation"]').val(listProperties.RelatedProcessInformation);
                         PeoplePicker.setDefault("Delegate", listProperties.Delegate);
                         PeoplePicker.initializePeoplePickers(MainApplication.staffList);
                         $("#newrequest-page").removeClass("hidden");
@@ -1092,3 +1222,159 @@ MainApplication.NewRequestComponent.recoverListData = function () {
     $spcontext.redirect("#/", false);
   }
 };
+
+MainApplication.NewRequestComponent.renderAttachments = function (elementBindProperty, property, elementId) {
+
+    const container = $("div[speed-file-bind='" + elementBindProperty + "']");
+    const files = $spcontext.filesDictionary[property]?.files || [];
+
+    container.empty();
+
+    files.forEach((file, index) => {
+
+        let fileName, fileUrl = null;
+
+        if (typeof file === "string") {
+            fileUrl = file;
+            fileName = file.split("/").pop();
+        } else {
+            fileName = file.dataName;
+        }
+
+        const $p = $("<p>", {
+            id: `${elementBindProperty}display${index}`,
+            css: { color: "#002c4d" }
+        });
+
+        if (fileUrl) {
+            $("<a>", {
+                href: fileUrl,
+                text: fileName,
+                target: "_blank"
+            }).appendTo($p);
+        } else {
+            $p.text(fileName);
+        }
+
+        const $deleteBtn = $("<a>", {
+            href: "#",
+            text: " x",
+            class: "attachment-inline-delete",
+            "data-element": elementBindProperty,
+            "data-index": index,
+            "data-fileid": elementId,
+            css: {
+                color: "red",
+                cursor: "pointer",
+                paddingLeft: "5px"
+            }
+        });
+
+        $p.append($deleteBtn);
+        container.append($p);
+    });
+};
+
+MainApplication.NewRequestComponent.deleteRowAttachment = function (elementBindProperty, index, elementId) {
+
+    const el = document.getElementById(elementId);
+
+    let property =
+        el.getAttribute("speed-file-validate") ||
+        el.getAttribute("speed-file-bind");
+
+    const fileStore = $spcontext.filesDictionary[property];
+
+    if (!fileStore || !Array.isArray(fileStore.files)) return;
+
+    // Remove file safely
+    fileStore.files.splice(index, 1);
+
+    // Clear input (important for re-uploading same file)
+    $spcontext.clearFileInput(elementId);
+
+    // Re-render UI
+    MainApplication.NewRequestComponent.renderAttachments(
+        elementBindProperty,
+        property,
+        elementId
+    );
+};
+
+MainApplication.NewRequestComponent.clearAllAttachments = function (elementBindProperty, elementId) {
+
+    const el = document.getElementById(elementId);
+
+    let property =
+        el.getAttribute("speed-file-validate") ||
+        el.getAttribute("speed-file-bind");
+
+    const fileStore = $spcontext.filesDictionary[property];
+
+    if (!fileStore || !Array.isArray(fileStore.files)) return;
+
+    // Drain the array the same way deleteRowAttachment does it (splice), 
+    // but all at once instead of one by one
+    fileStore.files.splice(0, fileStore.files.length);
+
+    // Clear the actual file input
+    $spcontext.clearFileInput(elementId);
+
+    // Re-render UI (will render empty since files array is now empty)
+    MainApplication.NewRequestComponent.renderAttachments(
+        elementBindProperty,
+        property,
+        elementId
+    );
+};
+// MainApplication.NewRequestComponent.renderField = function (options) {
+//     const {
+//         containerId,
+//         type = "input",
+//         bindValidate = "",
+//         placeholder = "",
+//         inputType = "text",
+//         required = false,
+//         value = "",
+//         rows = 4,
+//         className = ""
+//     } = options;
+
+//     const $container = $("#" + containerId);
+
+//     if (!$container.length) {
+//         console.warn(`Container #${containerId} not found.`);
+//         return;
+//     }
+
+//     // Clear existing content
+//     $container.empty();
+
+//     let $field;
+
+//     if (type === "textarea") {
+//         $field = $("<textarea>", {
+//             class: className,
+//             placeholder: placeholder,
+//             rows: rows,
+//             required: required
+//         });
+
+//         $field.val(value);
+//     } else {
+//         $field = $("<input>", {
+//             type: inputType,
+//             class: className,
+//             placeholder: placeholder,
+//             value: value,
+//             required: required
+//         });
+//     }
+
+//     // Add speed validation binding if supplied
+//     if (bindValidate) {
+//         $field.attr("speed-bind-validate", bindValidate);
+//     }
+
+//     $container.append($field);
+// };

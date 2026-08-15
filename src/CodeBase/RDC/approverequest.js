@@ -143,9 +143,13 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
       "Notifications",
       "UserAccess",
       "Reports",
+      "Delegate",
       "RequirementStatement",
       "JustificationStatement",
-      "DateRequired"
+      "DateRequired",
+      "RelatedProcessInformation",
+      "SystemInformation",
+      "ConditionalApprovalInformation"
     ];
 
     speedctxRoot.getListToControl(
@@ -238,11 +242,44 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                       $spcontext.attachmentLinkBind(
                         listProperties.AttachmentURL,
                       );
+
+                      if (listProperties.PullDataFromAnotherSystem === "Yes") {
+                        MainApplication.renderField({
+                            containerId: "pullDataContainer",
+                            className: "top-space",
+                            type: "textarea",
+                            value: listProperties.SystemInformation,
+                            rows: 6,
+                            readonly: true
+                        });
+                      }
+
+                      if (listProperties.IsProcessRelated === "Yes") {
+                        MainApplication.renderField({
+                            containerId: "relatedProcessContainer",
+                            className: "top-space",
+                            type: "textarea",
+                            value: listProperties.RelatedProcessInformation,
+                            rows: 6,
+                            readonly: true
+                        });
+                      }
+
+                      if (listProperties.ConditionalApproval === "Yes") {
+                        MainApplication.renderField({
+                            containerId: "approvalsContainer",
+                            className: "top-space",
+                            type: "textarea",
+                            value: listProperties.ConditionalApprovalInformation,
+                            rows: 6,
+                            readonly: true
+                        });
+                      }
                       // }
                       // $spcontext.assignAttributes();
                       setTimeout(function () {
                         $("#newLoader").hide();
-						            $("#approverequest-page").removeClass("hidden");
+						            $("#approval-page").removeClass("hidden");
                         globalDefinitions.closeLoader();
                       }, 2000);
                     } else {
@@ -275,6 +312,18 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
 
 MainApplication.ApproveRequestComponent.confirmSubmit = function (actionTaken) {
   $("#confirmModal").modal("show");
+  if (actionTaken === "Revise" || actionTaken === "Declined") {
+		if (actionTaken === "Revise") {
+			$("#approvercomment").removeAttr("speed-validate-msg");
+			$("#approvercomment").attr("speed-validate-msg", "Please tell us what information you require");
+		}
+
+		if (actionTaken === "Declined") {
+			$("#approvercomment").removeAttr("speed-validate-msg");
+			$("#approvercomment").attr("speed-validate-msg", "Please tell us why you want to decline this request!");
+		}
+		// $("#targetCompletion, #implementationOwner").removeAttr("speed-bind-validate");
+	}
   AppRequest.actionTaken = actionTaken;
   MainApplication.confirmAction =
     MainApplication.ApproveRequestComponent.actionConfirmed;
@@ -306,7 +355,7 @@ MainApplication.ApproveRequestComponent.saveDataToList = function (actionTaken) 
     // Build custom message for history action	
     let historyActionMessage = "";
 
-    // if (actionTaken === "Approved") {
+    if (actionTaken === "Approved") {
       if (
         AppRequest.requestDetails.Current_Approver === "Employee" &&
         AppRequest.requestDetails.PendingUserEmail ===
@@ -328,33 +377,33 @@ MainApplication.ApproveRequestComponent.saveDataToList = function (actionTaken) 
         $spcontext.redirect("#/", false);
 		return;
       }
-    // } else if (actionTaken === "Declined") {
-    //   if (
-    //     AppRequest.requestDetails.Current_Approver === "HOD" &&
-    //     AppRequest.requestDetails.PendingUserEmail ===
-    //       CurrentUserProperties.email
-    //   ) {
-    //     historyActionMessage = "HOD declined";
-    //   } else if (
-    //     AppRequest.requestDetails.Current_Approver === "Management Rep" &&
-    //     MainApplication.configuredTaskMembers[
-    //       globalDefinitions.stageDefinitions.management
-    //     ].belongs
-    //   ) {
-    //     historyActionMessage = "Management Rep declined";
-    //   } else if (
-    //     AppRequest.requestDetails.Current_Approver === "CEO" &&
-    //     MainApplication.configuredTaskMembers[
-    //       globalDefinitions.stageDefinitions.ceo
-    //     ].belongs
-    //   ) {
-    //     historyActionMessage = "Executive management has Declined";
-    //   } else {
-    //     // historyActionMessage = "RDC Submitted";
-    //     MainApplication.notyf.error("You can't act on this process...");
-    //     $spcontext.redirect("#/", false);
-    //   }
-    // }
+    } else if (actionTaken === "Declined") {
+      if (
+        AppRequest.requestDetails.Current_Approver === "HOD" &&
+        AppRequest.requestDetails.PendingUserEmail ===
+          CurrentUserProperties.email
+      ) {
+        historyActionMessage = "HOD declined";
+      } else if (
+        AppRequest.requestDetails.Current_Approver === "Management Rep" &&
+        MainApplication.configuredTaskMembers[
+          globalDefinitions.stageDefinitions.management
+        ].belongs
+      ) {
+        historyActionMessage = "Management Rep declined";
+      } else if (
+        AppRequest.requestDetails.Current_Approver === "CEO" &&
+        MainApplication.configuredTaskMembers[
+          globalDefinitions.stageDefinitions.ceo
+        ].belongs
+      ) {
+        historyActionMessage = "Executive management has Declined";
+      } else {
+        // historyActionMessage = "RDC Submitted";
+        MainApplication.notyf.error("You can't act on this process...");
+        $spcontext.redirect("#/", false);
+      }
+    }
 
     var historyProp = {
       stage: AppRequest.requestDetails.Current_Approver,
@@ -362,10 +411,19 @@ MainApplication.ApproveRequestComponent.saveDataToList = function (actionTaken) 
       action: historyActionMessage,
     };
 
-    formData = customWorkflowEngine.routeEngine(customWorkflowEngine).requestHistoryHandler(formData, AppRequest.requestDetails.Transaction_History, historyProp,
-      );
-	formData = customWorkflowEngine.routeEngine(customWorkflowEngine).runRouting(formData, AppRequest.requestDetails.Current_Approver_Code, actionTaken);
+    formData = customWorkflowEngine.routeEngine(customWorkflowEngine).requestHistoryHandler(formData, AppRequest.requestDetails.Transaction_History, historyProp);
+	// formData = customWorkflowEngine.routeEngine(customWorkflowEngine).runRouting(formData, AppRequest.requestDetails.Current_Approver_Code, actionTaken);
 
+  if (actionTaken === "Approved" || actionTaken === "Declined") {
+			formData = customWorkflowEngine.routeEngine(customWorkflowEngine).runRouting(formData, AppRequest.requestDetails.Current_Approver_Code, actionTaken);
+		} else if (actionTaken === "Revise") {
+			formData.Current_Approver = AppRequest.requestDetails.EmployeeName;
+			formData.Current_Approver_Code = AppRequest.defaultStage;
+			formData.PendingUserLogin = AppRequest.requestDetails.InitiatorEmailAddress;
+			formData.PendingUserEmail = AppRequest.requestDetails.InitiatorEmailAddress;
+			formData.Approval_Status = "Revise";
+			formData.ReturnForCorrection = "Yes";
+		}
     // console.log("Form Data to be submitted:", formData);
     globalDefinitions.onActionCompleted();
     MainApplication.ApproveRequestComponent.proceedToList(formData);

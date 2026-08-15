@@ -8,7 +8,7 @@ interface GlobalTopNavProps {
 // Maps each route to the title shown in the topbar.
 const PAGE_TITLES: Record<string, string> = {
     "/": "Dashboard",
-    "/newrequest": "New Application Development Request",
+    "/newrequest": "",
     "/approverequest": "My Approvals",
     "/viewrequest": "Data Requirement Gathering Form",
     "/report": "Report",
@@ -16,7 +16,7 @@ const PAGE_TITLES: Record<string, string> = {
 
 const GlobalTopNav: React.FC<GlobalTopNavProps> = ({onToggleSidebar}) => {
     const location = useLocation();
-    const title = PAGE_TITLES[location.pathname] ?? "App Dev Request";
+    const title = PAGE_TITLES[location.pathname] ?? "";
 
     return (
         <div className="AdrTopbar">

@@ -175,6 +175,13 @@ MainApplication.ReportComponent.retrieveRequest = function () {
       "Notifications",
       "UserAccess",
       "Reports",
+      "Delegate",
+      "RequirementStatement",
+      "JustificationStatement",
+      "DateRequired",
+      "RelatedProcessInformation",
+      "SystemInformation",
+      "ConditionalApprovalInformation"
     ],
   };
 

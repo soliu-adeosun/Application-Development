@@ -314,7 +314,10 @@ MainApplication.DashboardComponent.pendingRequests = function () {
       "Reports",
       "RequirementStatement",
       "JustificationStatement",
-      "DateRequired"
+      "DateRequired",
+      "RelatedProcessInformation",
+      "SystemInformation",
+      "ConditionalApprovalInformation"
     ],
   };
 
@@ -406,9 +409,13 @@ MainApplication.DashboardComponent.myRequests = function () {
       "Notifications",
       "UserAccess",
       "Reports",
+      "Delegate",
       "RequirementStatement",
       "JustificationStatement",
-      "DateRequired"
+      "DateRequired",
+      "RelatedProcessInformation",
+      "SystemInformation",
+      "ConditionalApprovalInformation"
     ],
   };
 

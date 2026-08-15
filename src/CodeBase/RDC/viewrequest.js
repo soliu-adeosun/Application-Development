@@ -142,7 +142,10 @@ MainApplication.ViewRequestComponent.recoverListData = function () {
       "Delegate",
       "RequirementStatement",
       "JustificationStatement",
-      "DateRequired"
+      "DateRequired",
+      "RelatedProcessInformation",
+      "SystemInformation",
+      "ConditionalApprovalInformation"
     ];
 
     speedctxRoot.getListToControl(
@@ -216,6 +219,39 @@ MainApplication.ViewRequestComponent.recoverListData = function () {
                         );
                       }
 
+                      if (listProperties.PullDataFromAnotherSystem === "Yes") {
+                        MainApplication.renderField({
+                            containerId: "pullDataContainer",
+                            className: "top-space",
+                            type: "textarea",
+                            value: listProperties.SystemInformation,
+                            rows: 6,
+                            readonly: true
+                        });
+                      }
+
+                      if (listProperties.IsProcessRelated === "Yes") {
+                        MainApplication.renderField({
+                            containerId: "relatedProcessContainer",
+                            className: "top-space",
+                            type: "textarea",
+                            value: listProperties.RelatedProcessInformation,
+                            rows: 6,
+                            readonly: true
+                        });
+                      }
+
+                      if (listProperties.ConditionalApproval === "Yes") {
+                        MainApplication.renderField({
+                            containerId: "approvalsContainer",
+                            className: "top-space",
+                            type: "textarea",
+                            value: listProperties.ConditionalApprovalInformation,
+                            rows: 6,
+                            readonly: true
+                        });
+                      }
+
                       MainApplication.populateSelect2(listProperties.DivisionsInvolved);
                       MainApplication.renderReadOnlyTable("extraFeaturesTable", listProperties.ExtraFeatures);
                       // if (listProperties.Current_Approver !== "Employee" && listProperties.Current_Approver_Code !== "AA1") {
@@ -226,6 +262,8 @@ MainApplication.ViewRequestComponent.recoverListData = function () {
                       AppRequest.requestDetails = listProperties;
 
                       $spcontext.htmlBind(listProperties);
+
+                      
 
                       // if (AppRequest.requestDetails.Current_Approver !== 'Employee'){
                       $spcontext.attachmentLinkBind(
