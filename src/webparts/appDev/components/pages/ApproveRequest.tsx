@@ -503,7 +503,7 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                   </table>
                 </div>
               </div>
-            </section>.
+            </section>
 
             <section className="AdrFormSection">
 
@@ -535,6 +535,14 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                 attr="id='declineBtn'"
               >
                 Decline
+              </ClientButton>
+
+              <ClientButton
+                func="ApproveRequestComponent.confirmSubmit"
+                clax="AdrSecondaryButton"
+                prop="Revise"
+              >
+                More Info
               </ClientButton>
 
               <ClientButton

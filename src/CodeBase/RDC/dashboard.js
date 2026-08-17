@@ -80,16 +80,8 @@ whenDashboardDependeciesLoaded = function () {
                 </a>` : ""}`;
 
       var editStr = `
-                <a title="Modify" href="#/newrequest?itemId=${valueToEva.WorkflowRequestID}&mode=${valueToEva.Title}" 
-
-                                        class="p-1 sm:p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-
-                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414
-
-                                                a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
+                <a title="Modify" class="btn btn-sm btn-primary btn-icon" href="#/newrequest?itemId=${valueToEva.WorkflowRequestID}&mode=correction">
+                  <i class="fa-solid fa-pen" style="font-size:11px"></i>
                 </a>`;
 
       var editDraftStr = `
@@ -107,7 +99,7 @@ whenDashboardDependeciesLoaded = function () {
       ) {
         return `<div class="flex space-x-1 sm:space-x-2">${viewStr} ${editDraftStr}</div>`;
       } else if (
-        valueToEva.Approval_Status === "Declined" &&
+        valueToEva.Approval_Status === "Pending" &&
         valueToEva.ReturnForCorrection === "Yes"
       ) {
         return `<div class="flex space-x-1 sm:space-x-2">${viewStr} ${editStr}</div>`;

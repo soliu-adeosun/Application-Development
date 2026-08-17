@@ -172,7 +172,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                   <span>
                     What forms or documents are used in this process currently? 
                   </span>
-                  <input placeholder="Enter text" type="file" speed-file-bind="SupportingDocuments" />
+                  <input type="file" speed-file-bind="SupportingDocuments" id="fileUploader" />
                   <div speed-file-bind="SupportingDocuments"></div>
                 </label>
               </div>
@@ -446,6 +446,20 @@ export default class NewRequest extends React.Component<{}, {}> {
                     <tbody id="reportsBody" />
                   </table>
                 </div>
+              </div>
+            </section>
+            <section className="AdrFormSection">
+
+              <div className="commentContainer hidden">
+                <label className="AdrField">
+                  <span>
+                    Comment
+                  </span>
+                  <textarea
+                    id="approvercomment"
+                    readOnly
+                   />
+                </label>
               </div>
             </section>
             <div className="AdrFormActions">

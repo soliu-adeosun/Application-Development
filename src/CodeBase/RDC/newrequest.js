@@ -65,6 +65,10 @@ function whenNewRequestDependeciesLoaded() {
   customWorkflowEngine
     .routeEngine(customWorkflowEngine)
     .setCurrentUserAsInitiator();
+    if (AppRequest.mode === "correction") {
+      $(".commentContainer").show();
+      $("#approvercomment").attr("speed-bind", "Comment");
+    }
 
   $spcontext.appliedEvents.attachments = [];
 
@@ -149,14 +153,13 @@ rsBAContext.bindListDirectives({
 						var attachmentBlock =
 							"<p id='" + elementName + "class='docstring' " + "display" + y + "' style='color:#002c4d'>" +
 							fileName +
-							"<span>" +
 							"<a href='#' " +
 							"class='attachment-inline-delete' " +
 							"data-element='" + elementName + "' " +
 							"data-index='" + y + "' " +
 							"data-fileid='" + fileId + "' " +
 							"style='color:red; cursor:pointer; padding-left:5px'>" +
-							"x</a></span></p>";
+							"x</a></p>";
 
 						$("div[speed-file-bind='" + elementName + "']").append(attachmentBlock);
 
@@ -165,14 +168,13 @@ rsBAContext.bindListDirectives({
 						var attachmentBlock =
 							"<p id='" + elementName + "display" + y + "' style='color:#002c4d'>" +
 							fileName +
-							"<span>" +
 							"<a href='#' " +
 							"class='attachment-inline-delete' " +
 							"data-element='" + elementName + "' " +
 							"data-index='" + y + "' " +
 							"data-fileid='" + fileId + "' " +
 							"style='color:red; cursor:pointer; padding-left:5px'>" +
-							"x</a></span></p>";
+							"x</a></p>";
 
 						$("div[speed-file-bind='" + elementName + "']").append(attachmentBlock);
 					}
@@ -302,8 +304,6 @@ rsBAContext.bindListDirectives({
       MainApplication.NewRequestComponent.toggleRetentionPeriod();
   });
 
-
-//New Implementation---------------------This is where I am
   $("#pullFromAnothersystem").on("change", function () {
       const value = $(this).val();
       MainApplication.NewRequestComponent.togglePullFromOtherSystem(value);
@@ -357,6 +357,7 @@ $("#conditionalApproval").on("change", function () {
   MainApplication.NewRequestComponent.toggleRelatedProcess();
   $spcontext.applyValidationEvents();
 
+  MainApplication.NewRequestComponent.clearAllAttachments("SupportingDocuments", "fileUploader");
   setTimeout(function () {
         if (AppRequest.itemId !== null && AppRequest.itemId !== "") {
             MainApplication.NewRequestComponent.recoverListData();
@@ -530,22 +531,6 @@ MainApplication.NewRequestComponent.toISODateInput = function (rawValue) {
 MainApplication.NewRequestComponent.deleteTableRow = function (ctx, pos, tableName) {
     ctx.dynamicTableSettings[tableName].deleteRow(pos);
 };
-
-// Repopulates dynamic tables from a saved draft. Each key is a tableName
-// ("StepByStepProcess", "Approvers", etc.) and each value is the parsed
-// array for that table (may be undefined/empty if the user never got to
-// that section before saving as Draft).
-//
-// addRow(rowData) does NOT pre-fill the row (confirmed: rows came back
-// blank) - it only builds the row shell through the bindExtensions column
-// renderers, ignoring whatever's passed in. So instead: add a normal blank
-// row, then set each cell's input value directly, matching saved fields to
-// inputs by column position (same left-to-right order the columns were
-// declared in bindExtensions, tracked in tableFieldOrderRegistry). This
-// relies on textColumn()'s generated inputs all carrying the
-// "speed-table-include" class and deleteColumn()'s icon not carrying it,
-// which is true as of the current textColumn/deleteColumn implementations -
-// worth a quick recheck if those renderers ever change.
 MainApplication.NewRequestComponent.hydrateDynamicTables = function (savedData) {
   Object.keys(savedData).forEach(function (tableName) {
     var ctx = AppRequest.tableCtxRegistry[tableName];
@@ -562,10 +547,6 @@ MainApplication.NewRequestComponent.hydrateDynamicTables = function (savedData) 
 
     var settings = ctx.dynamicTableSettings[tableName];
 
-    // Clear the blank row(s) added at page-init time. Repeatedly deleting
-    // index 0 rather than counting up, since each delete should shift the
-    // remaining rows up - verify that assumption holds if a table ever
-    // starts with more than one default row.
     while ($("#" + root).children("tr").length > 0) {
       MainApplication.NewRequestComponent.deleteTableRow(ctx, 0, tableName);
     }
@@ -610,7 +591,6 @@ MainApplication.NewRequestComponent.saveConfirmed = function () {
     MainApplication.NewRequestComponent.saveDataToListAsDraft();
 }
 MainApplication.NewRequestComponent.saveDataToList = function () {
-  console.log("Submitting data to list...");
   globalDefinitions.onActionClicked();
 
   var formData = $spcontext.bind({});
@@ -626,18 +606,26 @@ MainApplication.NewRequestComponent.saveDataToList = function () {
   formData.ExtraFeatures = JSON.stringify(formData.ExtraFeatures);
   if ($spcontext.checkPassedValidation()) {
 
-    formData.Delegate = pickerValues.Delegate;
-    formData.DivisionsInvolved = $("#divisionsInvolved").val() || [];
-    formData.DivisionsInvolved = JSON.stringify(formData.DivisionsInvolved);
-    formData.EmployeeEmail = CurrentUserProperties.email;
+    try {
+      var delegate = pickerValues?.Delegate;
+
+      formData.Delegate =
+          delegate && delegate.$GI_1
+              ? delegate
+              : null;
+      formData.DivisionsInvolved = $("#divisionsInvolved").val() || [];
+      formData.DivisionsInvolved = JSON.stringify(formData.DivisionsInvolved);
+      formData.EmployeeEmail = CurrentUserProperties.email;
+      
+      formData.HOD = SP.FieldUserValue.fromUser(
+        MainApplication.staffDetails[formData.EmployeeEmail].HodEmail,
+      );
+      formData.HODEmail =
+        MainApplication.staffDetails[formData.EmployeeEmail].HodEmail;
+      formData.Division =
+        MainApplication.staffDetails[formData.EmployeeEmail].Department;
+    } catch (error){};
     
-    formData.HOD = SP.FieldUserValue.fromUser(
-      MainApplication.staffDetails[formData.EmployeeEmail].HodEmail,
-    );
-    formData.HODEmail =
-      MainApplication.staffDetails[formData.EmployeeEmail].HodEmail;
-    formData.Division =
-      MainApplication.staffDetails[formData.EmployeeEmail].Department;
 
     formData.Title = CurrentUserProperties.title;
     globalDefinitions.callLoader();
@@ -650,12 +638,22 @@ MainApplication.NewRequestComponent.saveDataToList = function () {
       emails: [formData.HODEmail],
     });
 
-    formData = customWorkflowEngine
+    if (AppRequest.mode === "correction"){
+      formData.ReturnForCorrection = "No";
+      formData = customWorkflowEngine
+      .routeEngine(customWorkflowEngine)
+      .requestHistoryHandler(formData, AppRequest.transactionHistory, {
+        stage: globalDefinitions.stageDefinitions.employee,
+        action: "Application Re-submitted",
+      });
+    } else {
+      formData = customWorkflowEngine
       .routeEngine(customWorkflowEngine)
       .requestHistoryHandler(formData, AppRequest.transactionHistory, {
         stage: globalDefinitions.stageDefinitions.employee,
         action: "Application Submitted",
       });
+    }
     formData = customWorkflowEngine
       .routeEngine(customWorkflowEngine)
       .runRouting(formData);
@@ -767,7 +765,7 @@ MainApplication.NewRequestComponent.proceedToList = function (formData) {
 					globalDefinitions.closeLoader();
 
 					globalDefinitions.AuditLogManager_SaveLog({
-						Action: `Submitted Request for document  ${AppRequest.requestDetails.WorkflowRequestID}`,
+						Action: `Submitted Request  ${AppRequest.requestDetails.WorkflowRequestID}`,
 					});
 					// });
 
@@ -863,21 +861,11 @@ MainApplication.NewRequestComponent.toggleApprovalStages = function () {
     }
 };
 
-// Editable version of MainApplication.populateSelect2. That function empties
-// the <select>, rebuilds it with ONLY the saved divisions, then disables it -
-// correct for a read-only view, wrong here: the full RSDivisions list is
-// already bound in via speed-list-repeat, so this just needs to mark the
-// saved ones as selected and leave the field usable.
 MainApplication.NewRequestComponent.populateSelect2Editable = function (savedDivisions) {
     const $select = $("#divisionsInvolved");
     $select.val(savedDivisions || []).trigger("change.select2");
 };
 
-// Editable version of MainApplication.renderReadOnlyTable for the Extra
-// Features table - reuses renderExtraFeaturesTable's row shape (checkbox +
-// textarea) but pre-fills each row from the saved draft instead of showing
-// static ✔/— marks. MainApplication.getExtraFeatures() already reads these
-// same checkbox/textarea values generically, so submit doesn't need to change.
 MainApplication.NewRequestComponent.renderEditableExtraFeaturesTable = function (tableId, savedFeatures) {
     const allFeatures = MainApplication.extraFeatures || [];
     const savedList = Array.isArray(savedFeatures) ? savedFeatures : [];
@@ -903,12 +891,6 @@ MainApplication.NewRequestComponent.renderEditableExtraFeaturesTable = function 
     });
 };
 
-// savedPeriodValue is optional - passed in when re-running this after a
-// draft loads. If the saved Period doesn't match one of the dropdown's
-// known options, it must have come from someone typing a custom value into
-// the "Other" box, so we flip the select back to "Other" and refill the box.
-// This is an inferred rule, not something the schema states explicitly -
-// worth confirming it matches what saveDataToListAsDraft actually writes.
 MainApplication.NewRequestComponent.toggleOtherPeriod = function (savedPeriodValue) {
     const $periodSelect = $("#period");
     const knownOptions = ["", "Daily", "Weekly", "Monthly", "Annually", "On Demand/Ad Hoc", "Other"];
@@ -1327,54 +1309,3 @@ MainApplication.NewRequestComponent.clearAllAttachments = function (elementBindP
         elementId
     );
 };
-// MainApplication.NewRequestComponent.renderField = function (options) {
-//     const {
-//         containerId,
-//         type = "input",
-//         bindValidate = "",
-//         placeholder = "",
-//         inputType = "text",
-//         required = false,
-//         value = "",
-//         rows = 4,
-//         className = ""
-//     } = options;
-
-//     const $container = $("#" + containerId);
-
-//     if (!$container.length) {
-//         console.warn(`Container #${containerId} not found.`);
-//         return;
-//     }
-
-//     // Clear existing content
-//     $container.empty();
-
-//     let $field;
-
-//     if (type === "textarea") {
-//         $field = $("<textarea>", {
-//             class: className,
-//             placeholder: placeholder,
-//             rows: rows,
-//             required: required
-//         });
-
-//         $field.val(value);
-//     } else {
-//         $field = $("<input>", {
-//             type: inputType,
-//             class: className,
-//             placeholder: placeholder,
-//             value: value,
-//             required: required
-//         });
-//     }
-
-//     // Add speed validation binding if supplied
-//     if (bindValidate) {
-//         $field.attr("speed-bind-validate", bindValidate);
-//     }
-
-//     $container.append($field);
-// };
