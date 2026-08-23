@@ -491,10 +491,10 @@ MainApplication.NewRequestComponent.textAreaColumn = function (field) {
                 placeholder="Enter text"
                 speed-bind-validate="TempData"
                 speed-as-static="true"
-                row=4
+                row="4"
                 class="form-control no-border-radius speed-table-include"
-                value="${valueToEva[field] || ""}"
-            />
+                
+            >${valueToEva[field] || ""}</textArea>
         `;
   };
 };

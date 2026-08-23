@@ -10,7 +10,7 @@
 }
 
 * { box-sizing: border-box; }
-.AdrApp { min-height: 100vh; display: grid; grid-template-columns: 270px minmax(0, 1fr); background: var(--adr-surface); color: var(--adr-ink); font-family: "Segoe UI", Arial, sans-serif; }
+.AdrApp { min-height: 100vh; display: grid; grid-template-columns: 270px minmax(0, 1fr); background: var(--adr-surface); color: var(--adr-ink); font-family: "Segoe UI", Arial, sans-serif; font-size: 1.1rem; }
 
 /* ---- Sidebar ---- */
 .AdrSidebar { min-height: 100vh; padding: 24px 16px; background: var(--adr-dark); color: #fff; }
@@ -79,7 +79,7 @@
 
 .AdrFormGrid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; padding: 22px 24px; }
 .AdrFormGrid.AdrFormGridFull { grid-template-columns: 1fr; }
-.AdrField span, .AdrDsdGrid span { display: block; margin-bottom: 7px; color: #667085; font-size: 10px; font-weight: 900; text-transform: uppercase; }
+.AdrField span, .AdrDsdGrid span { display: block; margin-bottom: 7px; color: #667085; font-weight: 500; }
 .AdrField input, .AdrField select, .AdrField textarea { width: 100%; min-height: 43px; padding: 10px 12px; border: 1px solid #e0e3e8; border-radius: 10px; background: #fff; color: var(--adr-ink); outline: 0; font-family: inherit; font-size: 13px; }
 .AdrField textarea { min-height: 96px; resize: vertical; }
 .AdrField input:focus, .AdrField select:focus, .AdrField textarea:focus { border-color: var(--adr-accent); box-shadow: 0 0 0 3px rgba(52,84,209,.12); }
@@ -107,15 +107,13 @@
 }
 .tableLabel span { 
   /* display: flex;  */
-  color: #667085; 
-  font-size: 10px; 
-  font-weight: 900; 
-  text-transform: uppercase;
+  color: #667085;
+  font-weight: 500;
 }
 .AdrTableShell, .AdrDynamicTableShell { overflow-x: auto; }
 .AdrTable { width: 100%; min-width: 680px; border-collapse: collapse; }
 .AdrTable th, .AdrTable td { padding: 15px 20px; border-bottom: 1px solid #eceef1; text-align: left; font-size: 13px; }
-.AdrTable th { background: #fafafa; color: #667085; font-size: 10px; letter-spacing: .04em; text-transform: uppercase; }
+.AdrTable th { background: #fafafa; color: #667085; letter-spacing: .04em; }
 .AdrRequestId { color: var(--adr-accent-dark); font-weight: 700; }
 .AdrEmpty { padding: 30px !important; color: var(--adr-muted); text-align: center !important; }
 

@@ -119,7 +119,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                   <thead>
                     <tr>
                       <th>Stage</th>
-                      <th speed-array-prop="description">What Happens (describe clearly)</th>
+                      <th speed-array-prop="description">What Happens<span style={{ fontStyle: "italic" }}> (describe clearly)</span></th>
                       <th speed-array-prop="actors">Who Does It / Who Is Involved</th>
                       <th speed-array-prop="action" speed-exclude-result="true">Action</th>
                     </tr>
@@ -170,9 +170,9 @@ export default class NewRequest extends React.Component<{}, {}> {
                 </label>
                 <label className="AdrField">
                   <span>
-                    What forms or documents are used in this process currently? 
+                    Attach relevant forms and flowchart for	this process 
                   </span>
-                  <input type="file" speed-file-bind="SupportingDocuments" id="fileUploader" />
+                  <input type="file" speed-file-validate="SupportingDocuments" id="fileUploader" />
                   <div speed-file-bind="SupportingDocuments"></div>
                 </label>
               </div>
@@ -203,7 +203,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                   <div id="pullDataContainer" />
                 </label>
 
-                 <label className="AdrField">
+                 {/* <label className="AdrField">
                   <span>
                     How long should records be kept in the system?
                     <span className="required">*</span>
@@ -218,7 +218,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                   </select>
 
                   <div id="retentionContainer" />
-                </label>
+                </label> */}
               </div>
             </section>
 
@@ -256,7 +256,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                     <thead>
                       <tr>
                         <th>Stage</th>
-                        <th speed-array-prop="approver">Approver (Job Title)</th>
+                        <th speed-array-prop="approver">Approver <span style={{ fontStyle: "italic" }}>(Job Title)</span></th>
                         <th speed-array-prop="reason">What Triggers This Approval?</th>
                         <th speed-array-prop="approved">What Happens If Approved?</th>
                         <th speed-array-prop="declined">What Happens If Declined?</th>
@@ -282,14 +282,14 @@ export default class NewRequest extends React.Component<{}, {}> {
                   <div id="approvalsContainer" />
                 </label>
 
-                <label className="AdrField">
+                {/* <label className="AdrField">
                   <span>
                     What is the maximum time allowed at each approval stage
                     <span className="required">*</span>
                   </span>
                   <input id="maxApprovalTime" placeholder="Enter number in hours" type="number"  speed-bind-validate="MaxApprovalTime"/>
 
-                </label>
+                </label> */}
 
                 <label className="AdrField">
                   <span>
@@ -328,8 +328,8 @@ export default class NewRequest extends React.Component<{}, {}> {
                     <thead>
                       <tr>
                         <th>S/N</th>
-                        <th speed-array-prop="event">Event/Trigger (e.g Request is submitted)</th>
-                        <th speed-array-prop="users">Who Should Be Notified? (Requestor, Line Manager)</th>
+                        <th speed-array-prop="event">Event/Trigger <span style={{ fontStyle: "italic" }}>(e.g Request is submitted)</span></th>
+                        <th speed-array-prop="users">Who Should Be Notified? <span style={{ fontStyle: "italic" }}>(Requestor, Line Manager)</span></th>
                         <th speed-array-prop="template">Email Template</th>
                         <th speed-array-prop="action" speed-exclude-result="true">Action</th>
                       </tr>
@@ -361,9 +361,9 @@ export default class NewRequest extends React.Component<{}, {}> {
                     <thead>
                       <tr>
                         <th>S/N</th>
-                        <th speed-array-prop="role">User Type / Role (e.g Requestor)</th>
-                        <th speed-array-prop="feature">What Can They Do in the System? (e.g. Submit new requests, view own submissions, edit before submission)</th>
-                        <th speed-array-prop="user">Who Belongs to This Group? (e.g. All Staff)</th>
+                        <th speed-array-prop="role">User Type / Role <span style={{ fontStyle: "italic" }}>(e.g Requestor)</span></th>
+                        <th speed-array-prop="feature">What Can They Do in the System? <span style={{ fontStyle: "italic" }}>(e.g. Submit new requests, view own submissions, edit before submission)</span></th>
+                        <th speed-array-prop="user">Who Belongs to This Group? <span style={{ fontStyle: "italic" }}>(e.g. All Staff)</span></th>
                         <th speed-array-prop="action" speed-exclude-result="true">Action</th>
                       </tr>
                     </thead>
@@ -420,7 +420,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                   <span>
                     Are there any features not listed above that you think the system should have?
                   </span>
-                  <textarea placeholder="Enter text" name="otherFeatures" id="otherFeatures" speed-bind-validate="OtherFeatures"></textarea>
+                  <textarea placeholder="Enter text" name="otherFeatures" id="otherFeatures" speed-bind="OtherFeatures"></textarea>
                 </label>
                 
               </div>
@@ -439,7 +439,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                         <th>S/N</th>
                         <th speed-array-prop="name">Report Name / Description</th>
                         <th speed-array-prop="users">Who needs it?</th>
-                        <th speed-array-prop="interval">How often? (Daily/Weekly/Monthly/On Demand)</th>
+                        <th speed-array-prop="interval">How often? <span style={{ fontStyle: "italic" }}>(Daily/Weekly/Monthly/On Demand)</span></th>
                         <th speed-array-prop="action" speed-exclude-result="true">Action</th>
                       </tr>
                     </thead>

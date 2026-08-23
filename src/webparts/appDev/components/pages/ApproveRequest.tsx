@@ -165,7 +165,7 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                 </label>
                 <label className="AdrField">
                   <span>
-                    What forms or documents are used in this process currently?
+                    Attach relevant forms and flowchart for	this process
                   </span>
                   <div speed-file-bind="SupportingDocuments" data-view-only />
                 </label>
@@ -193,12 +193,12 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                   <div id="pullDataContainer" />
                 </label>
 
-                <label className="AdrField">
+                {/* <label className="AdrField">
                   <span>How long should records be kept in the system?</span>
                   <input readOnly type="text" speed-bind="RetentionPeriod" />
 
                   <div id="retentionContainer" />
-                </label>
+                </label> */}
               </div>
             </section>
 
@@ -274,7 +274,7 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                   <div id="approvalsContainer" />
                 </label>
 
-                <label className="AdrField">
+                {/* <label className="AdrField">
                   <span>
                     What is the maximum time allowed at each approval stage
                   </span>
@@ -283,7 +283,7 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                     type="number"
                     speed-bind="MaxApprovalTime"
                   />
-                </label>
+                </label> */}
 
                 <label className="AdrField">
                   <span>

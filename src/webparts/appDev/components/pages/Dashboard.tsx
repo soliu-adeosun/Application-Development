@@ -15,9 +15,7 @@ export default class Dashboard extends React.Component<{}, {}> {
                 <div className="AdrPage">
                     <section className="AdrHero">
                         <div>
-                            <span className="AdrEyebrow">Request workspace</span>
                             <h2>Application Development Requests</h2>
-                            <p>Submit new automation requests and follow them through approval, requirement gathering, development, and sign-off.</p>
                         </div>
                         {/* <button className="AdrPrimaryButton" type="button">+ New Request</button> */}
                     </section>
@@ -26,7 +24,7 @@ export default class Dashboard extends React.Component<{}, {}> {
                         <article>
                             <span>Total Requests</span>
                             <strong id="totalRequest"></strong>
-                            <p>All saved and submitted requests</p>
+                            <p>All submitted requests</p>
                         </article>
                         <article>
                             <span>Pending Approval</span>

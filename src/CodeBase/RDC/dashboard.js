@@ -75,7 +75,7 @@ whenDashboardDependeciesLoaded = function () {
                                     ${
                                       isActor
                                         ? `
-                <a href="#/approverequest?itemId=${valueToEva.WorkflowRequestID}" class="btn btn-sm btn-primary btn-icon">
+                <a title="Approve" href="#/approverequest?itemId=${valueToEva.WorkflowRequestID}" class="btn btn-sm btn-primary btn-icon">
                     <i class="fa-solid fa-pen" style="font-size:11px"></i>
                 </a>` : ""}`;
 
@@ -86,30 +86,30 @@ whenDashboardDependeciesLoaded = function () {
 
       var editDraftStr = `
                 <a title="Modify" class="btn btn-sm btn-primary btn-icon" href="#/newrequest?itemId=${valueToEva.WorkflowRequestID}&mode=editdraft">
-                  <i class="fa-regular fa-floppy-disk" style="font-size:11px"></i>
+                  <i class="fa-solid fa-pen" style="font-size:11px"></i>
                 </a>`;
 
       var viewStr = `
-                <a href="#/viewrequest?itemId=${valueToEva.WorkflowRequestID}" class="btn btn-sm btn-primary btn-icon">
+                <a title="View" href="#/viewrequest?itemId=${valueToEva.WorkflowRequestID}" class="btn btn-sm btn-primary btn-icon">
                     <i class="fa-solid fa-eye" style="font-size:11px"></i>
                 </a>`;
 
       if (
         valueToEva.Approval_Status === globalDefinitions.stageDefinitions.save
       ) {
-        return `<div class="flex space-x-1 sm:space-x-2">${viewStr} ${editDraftStr}</div>`;
+        return `<div class="flex space-x-1 sm:space-x-2">${editDraftStr}</div>`;
       } else if (
         valueToEva.Approval_Status === "Pending" &&
         valueToEva.ReturnForCorrection === "Yes"
       ) {
-        return `<div class="flex space-x-1 sm:space-x-2">${viewStr} ${editStr}</div>`;
+        return `<div class="flex space-x-1 sm:space-x-2">${editStr}</div>`;
       } else if (
         valueToEva.Approval_Status === "Completed" ||
         valueToEva.Approval_Status === "Declined"
       ) {
         return `<div class="flex space-x-1 sm:space-x-2">${viewStr}</div>`;
       } else {
-        return `<div class="flex space-x-1 sm:space-x-2">${viewStr} ${approvalStr}</div>`;
+        return `<div class="flex space-x-1 sm:space-x-2">${approvalStr}</div>`;
       }
     },
   };
@@ -120,15 +120,12 @@ whenDashboardDependeciesLoaded = function () {
 
   $("#dashboard-tabs").append(`
     <div class="dashboard-tabs">
-        <button id="myAuditsTab" class="tab-btn active" data-tab="myAudits">
-            My Requests
-        </button>
-
-        <button id="pendingTab"
-                class="tab-btn"
-                data-tab="pending">
+        <button id="pendingTab" class="tab-btn active" data-tab="pending">
             Action Required
             <span id="auditsAwaitingMyAction">0</span>
+        </button>
+        <button id="myAuditsTab" class="tab-btn" data-tab="myAudits">
+            My Requests
         </button>
     </div>
 `);
@@ -161,7 +158,7 @@ whenDashboardDependeciesLoaded = function () {
 
   MainApplication.DashboardComponent.myRequests();
 
-  MainApplication.DashboardComponent.currentTab = "MyAudits";
+  MainApplication.DashboardComponent.currentTab = "Pending";
 
   // if (
   //   MainApplication.configuredTaskMembers[
@@ -426,11 +423,16 @@ MainApplication.DashboardComponent.myRequests = function () {
         return item.Approval_Status === "Pending";
       });
 
+      var draftItems = tableData.filter(function (item) {
+        return item.Approval_Status === "Draft";
+      });
+
       AppRequest.myItems = tableData;
 
       // AppRequest.ncData = MainApplication.AuditList;
+      var submittedItems = tableData.length - draftItems.length;
 
-      $("#totalRequest").text(tableData.length);
+      $("#totalRequest").text(submittedItems);
       $("#pendingRequest").text(pendingItems.length);
       $("#completedRequest").text(completedItems.length);
 
