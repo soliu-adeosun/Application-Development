@@ -314,6 +314,19 @@ rsBAContext.bindListDirectives({
       MainApplication.NewRequestComponent.toggleRelatedProcess(value);
   });
 
+  $("#requestType").on("change", function () {
+      const value = $(this).val();
+      MainApplication.NewRequestComponent.toggleRequestType(value);
+  });
+
+  // #modificationType is created/destroyed dynamically inside
+  // #modificationTypeContainer, so it's bound via delegation rather
+  // than a direct handler.
+  $(document).on("change", "#modificationType", function () {
+      const value = $(this).val();
+      MainApplication.NewRequestComponent.toggleModificationType(value);
+  });
+
 $("#conditionalApproval").on("change", function () {
 
     const value = $(this).val();
@@ -355,6 +368,7 @@ $("#conditionalApproval").on("change", function () {
   MainApplication.NewRequestComponent.toggleApprovalStages();
   MainApplication.NewRequestComponent.togglePullFromOtherSystem();
   MainApplication.NewRequestComponent.toggleRelatedProcess();
+  MainApplication.NewRequestComponent.toggleRequestType();
   $spcontext.applyValidationEvents();
 
   MainApplication.NewRequestComponent.clearAllAttachments("SupportingDocuments", "fileUploader");
@@ -408,6 +422,129 @@ MainApplication.NewRequestComponent.toggleRelatedProcess = function (value) {
         $("#relatedProcessContainer").empty();
     }
 }
+
+// Request Type ("New" / "Modification") gates the whole form below it.
+// - "New" -> show the full form.
+// - "Modification" -> reveal the "Modification" (Minor/Major) selector.
+//     - "Minor" -> show only a description text area.
+//     - "Major" -> show the full form, same as "New".
+//
+// toggleMainForm() is what actually shows/hides the big form and, just as
+// importantly, strips speed-bind-validate / speed-validate-mode from
+// everything inside it while it's hidden so $spcontext.checkPassedValidation()
+// doesn't block submission on fields the user can't see. Nothing inside the
+// wrapper is touched otherwise, so whatever the user already filled in is
+// still there if they flip back to "New"/"Major".
+MainApplication.NewRequestComponent.toggleRequestType = function (value) {
+    const $modTypeContainer = $("#modificationTypeContainer");
+
+    if (value === "Modification") {
+
+        $modTypeContainer.html(`
+            <span>
+                Modification
+                <span class="required">*</span>
+            </span>
+            <select id="modificationType" speed-bind-validate="ModificationType" speed-bind-class="ProcessOverview">
+                <option value="">Select a value</option>
+                <option value="Minor">Minor</option>
+                <option value="Major">Major</option>
+            </select>
+        `);
+
+        $("#modificationDescriptionContainer").empty();
+        MainApplication.NewRequestComponent.toggleMainForm(false);
+
+    } else if (value === "New") {
+
+        $modTypeContainer.empty();
+        $("#modificationDescriptionContainer").empty();
+        MainApplication.NewRequestComponent.toggleMainForm(true);
+
+    } else {
+
+        $modTypeContainer.empty();
+        $("#modificationDescriptionContainer").empty();
+        MainApplication.NewRequestComponent.toggleMainForm(false);
+    }
+};
+
+MainApplication.NewRequestComponent.toggleModificationType = function (value) {
+
+    if (value === "Minor") {
+
+        MainApplication.renderField({
+            containerId: "modificationDescriptionContainer",
+            className: "top-space",
+            type: "textarea",
+            bindValidate: "ModificationDescription",
+            placeholder: "Describe the changes you would like to make...",
+            rows: 4,
+            required: true
+        });
+
+        MainApplication.NewRequestComponent.toggleMainForm(false);
+
+    } else if (value === "Major") {
+
+        $("#modificationDescriptionContainer").empty();
+        MainApplication.NewRequestComponent.toggleMainForm(true);
+
+    } else {
+
+        $("#modificationDescriptionContainer").empty();
+        MainApplication.NewRequestComponent.toggleMainForm(false);
+    }
+};
+
+MainApplication.NewRequestComponent.toggleMainForm = function (show) {
+    const $wrapper = $("#mainRequestFormWrapper");
+
+    $wrapper.toggleClass("hidden", !show);
+
+    if (!show) {
+
+        // Stash every currently-active validate marker inside the wrapper
+        // and remove it, so hidden fields are never required.
+        $wrapper.find("[speed-bind-validate]").each(function () {
+            $(this).attr("data-speed-bind-validate-backup", $(this).attr("speed-bind-validate"));
+            $(this).removeAttr("speed-bind-validate");
+        });
+
+        $wrapper.find("[speed-file-validate]").each(function () {
+            $(this).attr("data-speed-file-validate-backup", $(this).attr("speed-file-validate"));
+            $(this).removeAttr("speed-file-validate");
+        });
+
+        $wrapper.find("[speed-validate-mode='true']").each(function () {
+            $(this).attr("data-speed-validate-mode-backup", "true");
+            $(this).attr("speed-validate-mode", "false");
+        });
+
+    } else {
+
+        // Restore exactly what was active before the wrapper was hidden.
+        // Everything else in the wrapper was left untouched while hidden,
+        // so this brings the form back exactly as the user left it.
+        $wrapper.find("[data-speed-bind-validate-backup]").each(function () {
+            $(this)
+                .attr("speed-bind-validate", $(this).attr("data-speed-bind-validate-backup"))
+                .removeAttr("data-speed-bind-validate-backup");
+        });
+
+        $wrapper.find("[data-speed-file-validate-backup]").each(function () {
+            $(this)
+                .attr("speed-file-validate", $(this).attr("data-speed-file-validate-backup"))
+                .removeAttr("data-speed-file-validate-backup");
+        });
+
+        $wrapper.find("[data-speed-validate-mode-backup]").each(function () {
+            $(this)
+                .attr("speed-validate-mode", "true")
+                .removeAttr("data-speed-validate-mode-backup");
+        });
+    }
+};
 
 // MainApplication.NewRequestComponent.tableCtxRegistry = {};
 
@@ -1026,7 +1163,10 @@ MainApplication.NewRequestComponent.recoverListData = function () {
       "DateRequired",
       "RelatedProcessInformation",
       "SystemInformation",
-      "ConditionalApprovalInformation"
+      "ConditionalApprovalInformation",
+      "RequestType",
+      "ModificationType",
+      "ModificationDescription"
     ];
 
     speedctxRoot.getListToControl(
@@ -1126,6 +1266,23 @@ MainApplication.NewRequestComponent.recoverListData = function () {
 
                       AppRequest.requestDetails = listProperties;
 
+                      // htmlBind only fills in elements that currently carry a
+                      // speed-bind-validate attribute. #mainRequestFormWrapper
+                      // starts hidden by default (see the page-load toggle call),
+                      // which strips that attribute from EVERY field inside it -
+                      // Period, ProcessName, RequirementStatement, all of it, not
+                      // just the handful of conditional ones below. Left alone,
+                      // htmlBind would run against a wrapper with no bindable
+                      // fields and only the handful of fields we set manually
+                      // further down would end up populated. Un-hiding (and so
+                      // restoring those attributes) has to happen before htmlBind,
+                      // not after.
+                      const savedRequestType = listProperties.RequestType || "New";
+                      MainApplication.NewRequestComponent.toggleRequestType(savedRequestType);
+                      if (savedRequestType === "Modification") {
+                        MainApplication.NewRequestComponent.toggleModificationType(listProperties.ModificationType);
+                      }
+
                       $spcontext.htmlBind(listProperties);
 
                       // Dynamic tables (StepByStepProcess, Approvers, Notifications,
@@ -1154,6 +1311,11 @@ MainApplication.NewRequestComponent.recoverListData = function () {
                       MainApplication.NewRequestComponent.togglePullFromOtherSystem(listProperties.PullDataFromAnotherSystem);
                       MainApplication.NewRequestComponent.toggleRelatedProcess(listProperties.RelatedProcessInformation);
 
+                      // Request Type / Modification Type were already resolved
+                      // above, before htmlBind ran (that's what un-hides the
+                      // wrapper in time for htmlBind to actually find its
+                      // fields). No need to re-run it here.
+
                       // if (AppRequest.requestDetails.Current_Approver !== 'Employee'){
                       $spcontext.attachmentLinkBind(
                         listProperties.AttachmentURL,
@@ -1171,6 +1333,13 @@ MainApplication.NewRequestComponent.recoverListData = function () {
                         $("#maxApprovalTime").val(listProperties.MaxApprovalTime);
                         $('[speed-bind-validate="SystemInformation"]').val(listProperties.SystemInformation);
                         $('[speed-bind-validate="RelatedProcessInformation"]').val(listProperties.RelatedProcessInformation);
+                        $("#requestType").val(listProperties.RequestType || "New");
+                        if (listProperties.RequestType === "Modification") {
+                          $("#modificationType").val(listProperties.ModificationType);
+                          if (listProperties.ModificationType === "Minor") {
+                            $('[speed-bind-validate="ModificationDescription"]').val(listProperties.ModificationDescription);
+                          }
+                        }
                         PeoplePicker.setDefault("Delegate", listProperties.Delegate);
                         PeoplePicker.initializePeoplePickers(MainApplication.staffList);
                         $("#newrequest-page").removeClass("hidden");

@@ -421,7 +421,7 @@ MainApplication.ApproveRequestComponent.saveDataToList = function (actionTaken) 
 			formData.Current_Approver_Code = AppRequest.defaultStage;
 			formData.PendingUserLogin = AppRequest.requestDetails.InitiatorEmailAddress;
 			formData.PendingUserEmail = AppRequest.requestDetails.InitiatorEmailAddress;
-			formData.Approval_Status = "Revise";
+			formData.Approval_Status = "Pending";
 			formData.ReturnForCorrection = "Yes";
 		}
     // console.log("Form Data to be submitted:", formData);

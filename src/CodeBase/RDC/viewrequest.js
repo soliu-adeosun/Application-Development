@@ -145,7 +145,10 @@ MainApplication.ViewRequestComponent.recoverListData = function () {
       "DateRequired",
       "RelatedProcessInformation",
       "SystemInformation",
-      "ConditionalApprovalInformation"
+      "ConditionalApprovalInformation",
+      "RequestType",
+      "ModificationType",
+      "ModificationDescription"
     ];
 
     speedctxRoot.getListToControl(
@@ -250,6 +253,46 @@ MainApplication.ViewRequestComponent.recoverListData = function () {
                             rows: 6,
                             readonly: true
                         });
+                      }
+
+                      // Request Type / Modification: for a Minor modification
+                      // request only the description matters, so the rest of
+                      // the read-only form stays hidden - same distinction the
+                      // editable NewRequest form makes. Records saved before
+                      // this field existed have no RequestType value - treat
+                      // those as "New" so they still display the full form.
+                      var savedRequestType = listProperties.RequestType || "New";
+
+                      if (savedRequestType === "Modification") {
+
+                        MainApplication.renderField({
+                            containerId: "modificationTypeContainer",
+                            className: "top-space",
+                            type: "textarea",
+                            value: listProperties.ModificationType,
+                            rows: 1,
+                            readonly: true
+                        });
+
+                        if (listProperties.ModificationType === "Minor") {
+
+                          MainApplication.renderField({
+                              containerId: "modificationDescriptionContainer",
+                              className: "top-space",
+                              type: "textarea",
+                              value: listProperties.ModificationDescription,
+                              rows: 6,
+                              readonly: true
+                          });
+
+                          $("#mainRequestFormWrapper").addClass("hidden");
+
+                        } else {
+                          $("#mainRequestFormWrapper").removeClass("hidden");
+                        }
+
+                      } else {
+                        $("#mainRequestFormWrapper").removeClass("hidden");
                       }
 
                       MainApplication.populateSelect2(listProperties.DivisionsInvolved);

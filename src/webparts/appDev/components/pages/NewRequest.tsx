@@ -32,6 +32,29 @@ export default class NewRequest extends React.Component<{}, {}> {
               </div>
             </section>
             <section className="AdrFormSection">
+              <div className="AdrFormGrid">
+                <label className="AdrField">
+                  <span>
+                    Request Type
+                    <span className="required">*</span>
+                  </span>
+                  <select id="requestType" speed-bind-validate="RequestType" speed-bind-class="ProcessOverview">
+                    <option value="">Select a value</option>
+                    <option value="New">New</option>
+                    <option value="Modification">Modification</option>
+                  </select>
+                </label>
+
+                <label className="AdrField" id="modificationTypeContainer" />
+              </div>
+
+              <div className="commentContainer">
+                <label className="AdrField" id="modificationDescriptionContainer" />
+              </div>
+            </section>
+
+            <div id="mainRequestFormWrapper" className="hidden">
+            <section className="AdrFormSection">
               <div className="AdrSectionHeader">
                 <span>1</span>
                 <div>
@@ -462,8 +485,11 @@ export default class NewRequest extends React.Component<{}, {}> {
                 </label>
               </div>
             </section>
+            
+            </div>
+
             <div className="AdrFormActions">
-              <a href="#/" className="AdrSecondaryButton" type="button">
+              <a href="#/" className="AdrSecondaryButton center-text" type="button">
                 Cancel
               </a>
               <ClientButton

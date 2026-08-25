@@ -525,7 +525,7 @@ export default class ApproveRequest extends React.Component<{}, {}> {
               </div>
             </section>
             <div className="AdrFormActions">
-              <a href="#/" className="AdrSecondaryButton" type="button">
+              <a href="#/" className="AdrSecondaryButton center-text" type="button">
                 Cancel
               </a>
               <ClientButton
