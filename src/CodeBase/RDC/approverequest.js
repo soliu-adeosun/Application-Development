@@ -36,12 +36,19 @@ whenApproveRequestDependeciesLoaded = function () {
   $spcontext.filesDictionary = {};
 
   $spcontext.validationProperties.text.extend["Comments"] = function (field) {
-      var passed = false;
-      if ((field.trim() !== "" && (AppRequest.actionTaken === globalDefinitions.stageDefinitions.decline ||
-          AppRequest.actionTaken === globalDefinitions.stageDefinitions.correction || AppRequest.actionTaken === "Revise")) ||
-          AppRequest.actionTaken === globalDefinitions.stageDefinitions.approve) passed = true;
-      return passed;
-  }
+    var passed = false;
+    if (
+      (field.trim() !== "" &&
+        (AppRequest.actionTaken ===
+          globalDefinitions.stageDefinitions.decline ||
+          AppRequest.actionTaken ===
+            globalDefinitions.stageDefinitions.correction ||
+          AppRequest.actionTaken === "Revise")) ||
+      AppRequest.actionTaken === globalDefinitions.stageDefinitions.approve
+    )
+      passed = true;
+    return passed;
+  };
 
   AppRequest = new MainApplication.ApproveRequestComponent.ApplicationDetails();
   globalDefinitions.extendStages();
@@ -125,7 +132,6 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
       "IsApprovalsNeeded",
       "ConditionalApproval",
       "RetentionPeriod",
-      "ReasonForAutomation",
       "Period",
       "DivisionsInvolved",
       "StepByStepProcess",
@@ -149,7 +155,13 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
       "DateRequired",
       "RelatedProcessInformation",
       "SystemInformation",
-      "ConditionalApprovalInformation"
+      "ConditionalApprovalInformation",
+      "RequestType",
+      "ModificationType",
+      "CurrentFunctionality",
+      "WhatShouldChange",
+      "ModificationReason",
+      "SystemsAffected",
     ];
 
     speedctxRoot.getListToControl(
@@ -176,13 +188,14 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                   function (error) {
                     // if (MainApplication.configuredTaskMembers[listProperties.Current_Approver].belongs) {
 
-
                     if (typeof error === "undefined") {
-                      listProperties.RequestCreated = $spcontext.stringnifyDate({
-                        value: listProperties.RequestCreated,
-                        includeTime: false,
-                        format: "dd/mm/yy",
-                      });
+                      listProperties.RequestCreated = $spcontext.stringnifyDate(
+                        {
+                          value: listProperties.RequestCreated,
+                          includeTime: false,
+                          format: "dd/mm/yy",
+                        },
+                      );
 
                       listProperties.DateRequired = $spcontext.stringnifyDate({
                         value: listProperties.DateRequired,
@@ -190,14 +203,33 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                         format: "dd/mm/yy",
                       });
 
-                      listProperties.StepByStepProcess = $spcontext.JSONToObject(listProperties.StepByStepProcess);
-                      listProperties.Approvers = $spcontext.JSONToObject(listProperties.Approvers);
-                      listProperties.Notifications = $spcontext.JSONToObject(listProperties.Notifications);
-                      listProperties.UserAccess = $spcontext.JSONToObject(listProperties.UserAccess);
-                      listProperties.Reports = $spcontext.JSONToObject(listProperties.Reports);
-                      listProperties.DivisionsInvolved = $spcontext.JSONToObject(listProperties.DivisionsInvolved);
-                      listProperties.ExtraFeatures = $spcontext.JSONToObject(listProperties.ExtraFeatures);
-                      listProperties.ExtraFeatures = MainApplication.buildReadOnlyData(listProperties.ExtraFeatures);
+                      listProperties.StepByStepProcess =
+                        $spcontext.JSONToObject(
+                          listProperties.StepByStepProcess,
+                        );
+                      listProperties.Approvers = $spcontext.JSONToObject(
+                        listProperties.Approvers,
+                      );
+                      listProperties.Notifications = $spcontext.JSONToObject(
+                        listProperties.Notifications,
+                      );
+                      listProperties.UserAccess = $spcontext.JSONToObject(
+                        listProperties.UserAccess,
+                      );
+                      listProperties.Reports = $spcontext.JSONToObject(
+                        listProperties.Reports,
+                      );
+                      listProperties.DivisionsInvolved =
+                        $spcontext.JSONToObject(
+                          listProperties.DivisionsInvolved,
+                        );
+                      listProperties.ExtraFeatures = $spcontext.JSONToObject(
+                        listProperties.ExtraFeatures,
+                      );
+                      listProperties.ExtraFeatures =
+                        MainApplication.buildReadOnlyData(
+                          listProperties.ExtraFeatures,
+                        );
 
                       listProperties.Transaction_History =
                         $spcontext.JSONToObject(
@@ -208,13 +240,13 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                         "object",
                       );
 
-                      listProperties.Delegate = listProperties.Delegate.value;
+                      listProperties.Delegate =
+                        listProperties.Delegate.value || "";
 
                       AppRequest.FolderUrl = listProperties.Attachment_Folder;
                       AppRequest.FileUrls = $spcontext.deferenceObject(
                         listProperties.AttachmentURL,
                       );
-
 
                       for (var file in AppRequest.FileUrls) {
                         $spcontext.filesDictionary[file] = {
@@ -230,9 +262,143 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                           listProperties.Transaction_History,
                         );
                       }
-                      console.log("List Properties: ", listProperties);
-                      MainApplication.populateSelect2(listProperties.DivisionsInvolved);
-                      MainApplication.renderReadOnlyTable("extraFeaturesTable", listProperties.ExtraFeatures);
+
+                      if (listProperties.PullDataFromAnotherSystem === "Yes") {
+                        MainApplication.renderField({
+                          containerId: "pullDataContainer",
+                          className: "top-space",
+                          type: "textarea",
+                          value: listProperties.SystemInformation,
+                          rows: 6,
+                          readonly: true,
+                        });
+                      }
+
+                      if (listProperties.IsProcessRelated === "Yes") {
+                        MainApplication.renderField({
+                          containerId: "relatedProcessContainer",
+                          className: "top-space",
+                          type: "textarea",
+                          value: listProperties.RelatedProcessInformation,
+                          rows: 6,
+                          readonly: true,
+                        });
+                      }
+
+                      if (listProperties.ConditionalApproval === "Yes") {
+                        MainApplication.renderField({
+                          containerId: "approvalsContainer",
+                          className: "top-space",
+                          type: "textarea",
+                          value: listProperties.ConditionalApprovalInformation,
+                          rows: 6,
+                          readonly: true,
+                        });
+                      }
+
+                      // Request Type / Modification: for a Minor modification
+                      // request only the description matters, so the rest of
+                      // the read-only form stays hidden - same distinction the
+                      // editable NewRequest form makes. Records saved before
+                      // this field existed have no RequestType value - treat
+                      // those as "New" so they still display the full form.
+                      var savedRequestType =
+                        listProperties.RequestType || "New";
+
+                      if (savedRequestType === "Modification") {
+                        MainApplication.renderField({
+                          containerId: "modificationTypeContainer",
+                          className: "top-space",
+                          type: "textarea",
+                          value: listProperties.ModificationType,
+                          rows: 1,
+                          readonly: true,
+                        });
+
+                        if (listProperties.ModificationType === "Minor") {
+                          MainApplication.renderField({
+                            containerId: "modificationProcessNameContainer",
+                            className: "top-space",
+                            type: "textarea",
+                            value: listProperties.ProcessName,
+                            rows: 1,
+                            readonly: true,
+                          });
+
+                          MainApplication.renderField({
+                            containerId: "modificationApplicationLinkContainer",
+                            className: "top-space",
+                            type: "textarea",
+                            value: listProperties.ExistingLink,
+                            rows: 1,
+                            readonly: true,
+                          });
+
+                          MainApplication.renderField({
+                            containerId:
+                              "modificationCurrentFunctionalityContainer",
+                            className: "top-space",
+                            type: "textarea",
+                            value: listProperties.CurrentFunctionality,
+                            rows: 4,
+                            readonly: true,
+                          });
+
+                          MainApplication.renderField({
+                            containerId:
+                              "modificationWhatShouldChangeContainer",
+                            className: "top-space",
+                            type: "textarea",
+                            value: listProperties.WhatShouldChange,
+                            rows: 4,
+                            readonly: true,
+                          });
+
+                          MainApplication.renderField({
+                            containerId: "modificationReasonContainer",
+                            className: "top-space",
+                            type: "textarea",
+                            value: listProperties.ModificationReason,
+                            rows: 4,
+                            readonly: true,
+                          });
+
+                          MainApplication.renderField({
+                            containerId: "modificationSystemsAffectedContainer",
+                            className: "top-space",
+                            type: "textarea",
+                            value: listProperties.SystemsAffected,
+                            rows: 4,
+                            readonly: true,
+                          });
+
+                          MainApplication.renderField({
+                            containerId: "modificationDateNeededContainer",
+                            className: "top-space",
+                            type: "textarea",
+                            value: listProperties.DateRequired,
+                            rows: 1,
+                            readonly: true,
+                          });
+
+                          $("#mainRequestFormWrapper").addClass("hidden");
+                        } else {
+                          $("#mainRequestFormWrapper").removeClass("hidden");
+                        }
+                      } else {
+                        $("#mainRequestFormWrapper").removeClass("hidden");
+                      }
+
+                      MainApplication.populateSelect2(
+                        listProperties.DivisionsInvolved,
+                      );
+                      MainApplication.renderReadOnlyTable(
+                        "extraFeaturesTable",
+                        listProperties.ExtraFeatures,
+                      );
+                      // if (listProperties.Current_Approver !== "Employee" && listProperties.Current_Approver_Code !== "AA1") {
+                      // 	listProperties.Comment = "";
+                      // }
 
                       AppRequest.requestDetails = listProperties;
 
@@ -242,46 +408,13 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                       $spcontext.attachmentLinkBind(
                         listProperties.AttachmentURL,
                       );
-
-                      if (listProperties.PullDataFromAnotherSystem === "Yes") {
-                        MainApplication.renderField({
-                            containerId: "pullDataContainer",
-                            className: "top-space",
-                            type: "textarea",
-                            value: listProperties.SystemInformation,
-                            rows: 6,
-                            readonly: true
-                        });
-                      }
-
-                      if (listProperties.IsProcessRelated === "Yes") {
-                        MainApplication.renderField({
-                            containerId: "relatedProcessContainer",
-                            className: "top-space",
-                            type: "textarea",
-                            value: listProperties.RelatedProcessInformation,
-                            rows: 6,
-                            readonly: true
-                        });
-                      }
-
-                      if (listProperties.ConditionalApproval === "Yes") {
-                        MainApplication.renderField({
-                            containerId: "approvalsContainer",
-                            className: "top-space",
-                            type: "textarea",
-                            value: listProperties.ConditionalApprovalInformation,
-                            rows: 6,
-                            readonly: true
-                        });
-                      }
                       // }
                       // $spcontext.assignAttributes();
-                      setTimeout(function () {
-                        $("#newLoader").hide();
-						            $("#approval-page").removeClass("hidden");
-                        globalDefinitions.closeLoader();
-                      }, 2000);
+                      // setTimeout(function () {
+                      $("#newLoader").hide();
+                      $("#approval-page").removeClass("hidden");
+                      globalDefinitions.closeLoader();
+                      // }, 2000);
                     } else {
                       globalDefinitions.HandlerError(
                         "You are not allowed to access this request",
@@ -313,17 +446,23 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
 MainApplication.ApproveRequestComponent.confirmSubmit = function (actionTaken) {
   $("#confirmModal").modal("show");
   if (actionTaken === "Revise" || actionTaken === "Declined") {
-		if (actionTaken === "Revise") {
-			$("#approvercomment").removeAttr("speed-validate-msg");
-			$("#approvercomment").attr("speed-validate-msg", "Please tell us what information you require");
-		}
+    if (actionTaken === "Revise") {
+      $("#approvercomment").removeAttr("speed-validate-msg");
+      $("#approvercomment").attr(
+        "speed-validate-msg",
+        "Please tell us what information you require",
+      );
+    }
 
-		if (actionTaken === "Declined") {
-			$("#approvercomment").removeAttr("speed-validate-msg");
-			$("#approvercomment").attr("speed-validate-msg", "Please tell us why you want to decline this request!");
-		}
-		// $("#targetCompletion, #implementationOwner").removeAttr("speed-bind-validate");
-	}
+    if (actionTaken === "Declined") {
+      $("#approvercomment").removeAttr("speed-validate-msg");
+      $("#approvercomment").attr(
+        "speed-validate-msg",
+        "Please tell us why you want to decline this request!",
+      );
+    }
+    // $("#targetCompletion, #implementationOwner").removeAttr("speed-bind-validate");
+  }
   AppRequest.actionTaken = actionTaken;
   MainApplication.confirmAction =
     MainApplication.ApproveRequestComponent.actionConfirmed;
@@ -336,7 +475,9 @@ MainApplication.ApproveRequestComponent.actionConfirmed = function () {
   );
 };
 
-MainApplication.ApproveRequestComponent.saveDataToList = function (actionTaken) {
+MainApplication.ApproveRequestComponent.saveDataToList = function (
+  actionTaken,
+) {
   globalDefinitions.onActionClicked();
 
   // var formData = $spcontext.bind({}, "ApprovalData");
@@ -352,7 +493,7 @@ MainApplication.ApproveRequestComponent.saveDataToList = function (actionTaken) 
     AppRequest.comment = $("#approvercomment").val();
 
     formData.Comment = AppRequest.comment;
-    // Build custom message for history action	
+    // Build custom message for history action
     let historyActionMessage = "";
 
     if (actionTaken === "Approved") {
@@ -375,7 +516,7 @@ MainApplication.ApproveRequestComponent.saveDataToList = function (actionTaken) 
         // historyActionMessage = "RDC Submitted";
         MainApplication.notyf.error("You can't act on this request :(...");
         $spcontext.redirect("#/", false);
-		return;
+        return;
       }
     } else if (actionTaken === "Declined") {
       if (
@@ -411,19 +552,33 @@ MainApplication.ApproveRequestComponent.saveDataToList = function (actionTaken) 
       action: historyActionMessage,
     };
 
-    formData = customWorkflowEngine.routeEngine(customWorkflowEngine).requestHistoryHandler(formData, AppRequest.requestDetails.Transaction_History, historyProp);
-	// formData = customWorkflowEngine.routeEngine(customWorkflowEngine).runRouting(formData, AppRequest.requestDetails.Current_Approver_Code, actionTaken);
+    formData = customWorkflowEngine
+      .routeEngine(customWorkflowEngine)
+      .requestHistoryHandler(
+        formData,
+        AppRequest.requestDetails.Transaction_History,
+        historyProp,
+      );
+    // formData = customWorkflowEngine.routeEngine(customWorkflowEngine).runRouting(formData, AppRequest.requestDetails.Current_Approver_Code, actionTaken);
 
-  if (actionTaken === "Approved" || actionTaken === "Declined") {
-			formData = customWorkflowEngine.routeEngine(customWorkflowEngine).runRouting(formData, AppRequest.requestDetails.Current_Approver_Code, actionTaken);
-		} else if (actionTaken === "Revise") {
-			formData.Current_Approver = AppRequest.requestDetails.EmployeeName;
-			formData.Current_Approver_Code = AppRequest.defaultStage;
-			formData.PendingUserLogin = AppRequest.requestDetails.InitiatorEmailAddress;
-			formData.PendingUserEmail = AppRequest.requestDetails.InitiatorEmailAddress;
-			formData.Approval_Status = "Pending";
-			formData.ReturnForCorrection = "Yes";
-		}
+    if (actionTaken === "Approved" || actionTaken === "Declined") {
+      formData = customWorkflowEngine
+        .routeEngine(customWorkflowEngine)
+        .runRouting(
+          formData,
+          AppRequest.requestDetails.Current_Approver_Code,
+          actionTaken,
+        );
+    } else if (actionTaken === "Revise") {
+      formData.Current_Approver = AppRequest.requestDetails.EmployeeName;
+      formData.Current_Approver_Code = AppRequest.defaultStage;
+      formData.PendingUserLogin =
+        AppRequest.requestDetails.InitiatorEmailAddress;
+      formData.PendingUserEmail =
+        AppRequest.requestDetails.InitiatorEmailAddress;
+      formData.Approval_Status = "Pending";
+      formData.ReturnForCorrection = "Yes";
+    }
     // console.log("Form Data to be submitted:", formData);
     globalDefinitions.onActionCompleted();
     MainApplication.ApproveRequestComponent.proceedToList(formData);

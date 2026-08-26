@@ -186,113 +186,7 @@ rsBAContext.bindListDirectives({
 		}
 	);
 
-  MainApplication.NewRequestComponent.initializeDynamicTable({
-    ctx: AppRequest.stepByStepCTX,
-
-    tableName: "StepByStepProcess",
-
-    root: "stepByStepDescription",
-
-    addButton: "#stepByStepButton",
-
-    bindExtensions: {
-      description:
-        MainApplication.NewRequestComponent.textAreaColumn("description"),
-
-      actors: MainApplication.NewRequestComponent.textAreaColumn("actors"),
-
-      action:
-        MainApplication.NewRequestComponent.deleteColumn(AppRequest.stepByStepCTX, "StepByStepProcess"),
-    },
-  });
-
-  MainApplication.NewRequestComponent.initializeDynamicTable({
-    ctx: AppRequest.approvalTableCTX,
-
-    tableName: "Approvers",
-
-    root: "approvalStages",
-
-    addButton: "#addApproverButton",
-
-    bindExtensions: {
-      approver: MainApplication.NewRequestComponent.textColumn("approver"),
-
-      reason: MainApplication.NewRequestComponent.textColumn("reason"),
-
-      approved: MainApplication.NewRequestComponent.textColumn("approved"),
-
-      declined: MainApplication.NewRequestComponent.textColumn("declined"),
-
-      action:
-        MainApplication.NewRequestComponent.deleteColumn(AppRequest.approvalTableCTX, "Approvers"),
-    },
-  });
-
-  MainApplication.NewRequestComponent.initializeDynamicTable({
-    ctx: AppRequest.notificationTableCTX,
-
-    tableName: "Notifications",
-
-    root: "notificationsBody",
-
-    addButton: "#addNotificationButton",
-
-    bindExtensions: {
-      event: MainApplication.NewRequestComponent.textColumn("event"),
-
-      users: MainApplication.NewRequestComponent.textColumn("users"),
-
-      template: MainApplication.NewRequestComponent.textColumn("template"),
-
-      action:
-        MainApplication.NewRequestComponent.deleteColumn(AppRequest.notificationTableCTX, "Notifications"),
-    },
-  });
-
-  MainApplication.NewRequestComponent.initializeDynamicTable({
-    ctx: AppRequest.userAccessCTX,
-
-    tableName: "UserAccess",
-
-    root: "userAccessBody",
-
-    addButton: "#addUserAccessButton",
-
-    bindExtensions: {
-      role: MainApplication.NewRequestComponent.textColumn("role"),
-
-      feature: MainApplication.NewRequestComponent.textColumn("feature"),
-
-      user: MainApplication.NewRequestComponent.textColumn("user"),
-
-      action:
-        MainApplication.NewRequestComponent.deleteColumn(AppRequest.userAccessCTX, "UserAccess"),
-    },
-  });
-
-  MainApplication.NewRequestComponent.initializeDynamicTable({
-    ctx: AppRequest.reportTableCTX,
-
-    tableName: "Reports",
-
-    root: "reportsBody",
-
-    addButton: "#addReportButton",
-
-    bindExtensions: {
-      name: MainApplication.NewRequestComponent.textColumn("name"),
-
-      users: MainApplication.NewRequestComponent.textColumn("users"),
-
-      interval: MainApplication.NewRequestComponent.textColumn("interval"),
-
-      action:
-        MainApplication.NewRequestComponent.deleteColumn(AppRequest.reportTableCTX, "Reports"),
-    },
-  });
-
-  MainApplication.renderExtraFeaturesTable("extraFeaturesTable", MainApplication.extraFeatures);
+  MainApplication.NewRequestComponent.prepareAllTables();
 
   $("#isApprovalsNeeded").on("change", function () {
       MainApplication.NewRequestComponent.toggleApprovalStages();
@@ -452,19 +346,20 @@ MainApplication.NewRequestComponent.toggleRequestType = function (value) {
             </select>
         `);
 
-        $("#modificationDescriptionContainer").empty();
+        $("#modificationDetailsContainer").empty();
         MainApplication.NewRequestComponent.toggleMainForm(false);
 
     } else if (value === "New") {
 
+        // MainApplication.NewRequestComponent.prepareAllTables();
         $modTypeContainer.empty();
-        $("#modificationDescriptionContainer").empty();
+        $("#modificationDetailsContainer").empty();
         MainApplication.NewRequestComponent.toggleMainForm(true);
 
     } else {
 
         $modTypeContainer.empty();
-        $("#modificationDescriptionContainer").empty();
+        $("#modificationDetailsContainer").empty();
         MainApplication.NewRequestComponent.toggleMainForm(false);
     }
 };
@@ -473,37 +368,89 @@ MainApplication.NewRequestComponent.toggleModificationType = function (value) {
 
     if (value === "Minor") {
 
-        MainApplication.renderField({
-            containerId: "modificationDescriptionContainer",
-            className: "top-space",
-            type: "textarea",
-            bindValidate: "ModificationDescription",
-            placeholder: "Describe the changes you would like to make...",
-            rows: 4,
-            required: true
-        });
+        $("#modificationDetailsContainer").html(`
+            <div class="AdrFormGrid top-space">
+                <label class="AdrField">
+                    <span>
+                        Process Name
+                        <span class="required">*</span>
+                    </span>
+                    <input type="text" placeholder="Enter text" speed-bind-validate="ProcessName" speed-bind-class="Minor" />
+                </label>
+
+                <label class="AdrField">
+                    <span>
+                        Link to Application
+                        <span class="required">*</span>
+                    </span>
+                    <input type="text" placeholder="Enter text" speed-bind-validate="ExistingLink" speed-bind-class="Minor" />
+                </label>
+
+                <label class="AdrField">
+                    <span>
+                        Current functionality (What does the system do today?)
+                        <span class="required">*</span>
+                    </span>
+                    <textarea placeholder="Enter text" speed-bind-validate="CurrentFunctionality" speed-bind-class="Minor"></textarea>
+                </label>
+
+                <label class="AdrField">
+                    <span>
+                        What should change?
+                        <span class="required">*</span>
+                    </span>
+                    <textarea placeholder="Enter text" speed-bind-validate="WhatShouldChange" speed-bind-class="Minor"></textarea>
+                </label>
+
+                <label class="AdrField">
+                    <span>
+                        Reason / justification (Why is this change needed?)
+                        <span class="required">*</span>
+                    </span>
+                    <textarea placeholder="Enter text" speed-bind-validate="ModificationReason" speed-bind-class="Minor"></textarea>
+                </label>
+
+                <label class="AdrField">
+                    <span>
+                        Systems / users affected
+                        <span class="required">*</span>
+                    </span>
+                    <textarea placeholder="Enter text" speed-bind-validate="SystemsAffected" speed-bind-class="Minor"></textarea>
+                </label>
+
+                <label class="AdrField">
+                    <span>
+                        Date needed
+                        <span class="required">*</span>
+                    </span>
+                    <input type="date" speed-bind-validate="DateRequired" speed-bind-class="Minor" />
+                </label>
+            </div>
+        `);
 
         MainApplication.NewRequestComponent.toggleMainForm(false);
 
     } else if (value === "Major") {
+        // MainApplication.NewRequestComponent.prepareAllTables();
 
-        $("#modificationDescriptionContainer").empty();
+        $("#modificationDetailsContainer").empty();
         MainApplication.NewRequestComponent.toggleMainForm(true);
 
     } else {
 
-        $("#modificationDescriptionContainer").empty();
+        $("#modificationDetailsContainer").empty();
         MainApplication.NewRequestComponent.toggleMainForm(false);
     }
 };
 
 MainApplication.NewRequestComponent.toggleMainForm = function (show) {
     const $wrapper = $("#mainRequestFormWrapper");
+    const $draftBtn = $(".draftbtn");
 
     $wrapper.toggleClass("hidden", !show);
+    $draftBtn.toggleClass("hidden", !show);
 
     if (!show) {
-
         // Stash every currently-active validate marker inside the wrapper
         // and remove it, so hidden fields are never required.
         $wrapper.find("[speed-bind-validate]").each(function () {
@@ -522,10 +469,7 @@ MainApplication.NewRequestComponent.toggleMainForm = function (show) {
         });
 
     } else {
-
         // Restore exactly what was active before the wrapper was hidden.
-        // Everything else in the wrapper was left untouched while hidden,
-        // so this brings the form back exactly as the user left it.
         $wrapper.find("[data-speed-bind-validate-backup]").each(function () {
             $(this)
                 .attr("speed-bind-validate", $(this).attr("data-speed-bind-validate-backup"))
@@ -1166,7 +1110,10 @@ MainApplication.NewRequestComponent.recoverListData = function () {
       "ConditionalApprovalInformation",
       "RequestType",
       "ModificationType",
-      "ModificationDescription"
+      "CurrentFunctionality",
+      "WhatShouldChange",
+      "ModificationReason",
+      "SystemsAffected",
     ];
 
     speedctxRoot.getListToControl(
@@ -1174,6 +1121,10 @@ MainApplication.NewRequestComponent.recoverListData = function () {
       query,
       extraProperties,
       function (listProperties) {
+        if (listProperties.RequestType === "New" || listProperties.ModificationType === "Major") {
+          // MainApplication.NewRequestComponent.prepareAllTables();
+          MainApplication.NewRequestComponent.toggleMainForm(true);
+        }
         if ($.isEmptyObject(listProperties)) {
           MainApplication.notyf.error("Process does not exist...");
           $spcontext.redirect("#/", false);
@@ -1211,6 +1162,17 @@ MainApplication.NewRequestComponent.recoverListData = function () {
                         format: "dd/mm/yy",
                       });
                       listProperties.DateRequired = MainApplication.NewRequestComponent.toISODateInput(listProperties.DateRequired);
+
+                      // Same reasoning as DateRequired above - DateRequired
+                      // is also a native <input type="date"> and needs ISO yyyy-mm-dd.
+                      // if (listProperties.DateRequired) {
+                      //   listProperties.DateRequired = $spcontext.stringnifyDate({
+                      //     value: listProperties.DateRequired,
+                      //     includeTime: false,
+                      //     format: "dd/mm/yy",
+                      //   });
+                      //   listProperties.DateRequired = MainApplication.NewRequestComponent.toISODateInput(listProperties.DateRequired);
+                      // }
 
                       listProperties.StepByStepProcess = $spcontext.JSONToObject(listProperties.StepByStepProcess);
                       listProperties.Approvers = $spcontext.JSONToObject(listProperties.Approvers);
@@ -1291,13 +1253,15 @@ MainApplication.NewRequestComponent.recoverListData = function () {
                       // this, a returning Draft always shows the single blank row
                       // initializeDynamicTable() added on page load, regardless of
                       // what was actually saved.
-                      MainApplication.NewRequestComponent.hydrateDynamicTables({
-                        StepByStepProcess: listProperties.StepByStepProcess,
-                        Approvers: listProperties.Approvers,
-                        Notifications: listProperties.Notifications,
-                        UserAccess: listProperties.UserAccess,
-                        Reports: listProperties.Reports,
-                      });
+                      try{
+                        MainApplication.NewRequestComponent.hydrateDynamicTables({
+                          StepByStepProcess: listProperties.StepByStepProcess,
+                          Approvers: listProperties.Approvers,
+                          Notifications: listProperties.Notifications,
+                          UserAccess: listProperties.UserAccess,
+                          Reports: listProperties.Reports,
+                        });
+                      } catch(error){};
 
                       // toggleApprovalStages/toggleOtherPeriod/toggleRetentionPeriod
                       // already ran once at page load, before any draft value existed,
@@ -1337,7 +1301,13 @@ MainApplication.NewRequestComponent.recoverListData = function () {
                         if (listProperties.RequestType === "Modification") {
                           $("#modificationType").val(listProperties.ModificationType);
                           if (listProperties.ModificationType === "Minor") {
-                            $('[speed-bind-validate="ModificationDescription"]').val(listProperties.ModificationDescription);
+                            $('[speed-bind-validate="ProcessName"]').val(listProperties.ProcessName);
+                            $('[speed-bind-validate="ExistingLink"]').val(listProperties.ExistingLink);
+                            $('[speed-bind-validate="CurrentFunctionality"]').val(listProperties.CurrentFunctionality);
+                            $('[speed-bind-validate="WhatShouldChange"]').val(listProperties.WhatShouldChange);
+                            $('[speed-bind-validate="ModificationReason"]').val(listProperties.ModificationReason);
+                            $('[speed-bind-validate="SystemsAffected"]').val(listProperties.SystemsAffected);
+                            $('[speed-bind-validate="DateRequired"]').val(listProperties.DateRequired);
                           }
                         }
                         PeoplePicker.setDefault("Delegate", listProperties.Delegate);
@@ -1478,3 +1448,113 @@ MainApplication.NewRequestComponent.clearAllAttachments = function (elementBindP
         elementId
     );
 };
+
+MainApplication.NewRequestComponent.prepareAllTables = function () {
+  MainApplication.NewRequestComponent.initializeDynamicTable({
+    ctx: AppRequest.stepByStepCTX,
+
+    tableName: "StepByStepProcess",
+
+    root: "stepByStepDescription",
+
+    addButton: "#stepByStepButton",
+
+    bindExtensions: {
+      description:
+        MainApplication.NewRequestComponent.textAreaColumn("description"),
+
+      actors: MainApplication.NewRequestComponent.textAreaColumn("actors"),
+
+      action:
+        MainApplication.NewRequestComponent.deleteColumn(AppRequest.stepByStepCTX, "StepByStepProcess"),
+    },
+  });
+
+  MainApplication.NewRequestComponent.initializeDynamicTable({
+    ctx: AppRequest.approvalTableCTX,
+
+    tableName: "Approvers",
+
+    root: "approvalStages",
+
+    addButton: "#addApproverButton",
+
+    bindExtensions: {
+      approver: MainApplication.NewRequestComponent.textColumn("approver"),
+
+      reason: MainApplication.NewRequestComponent.textColumn("reason"),
+
+      approved: MainApplication.NewRequestComponent.textColumn("approved"),
+
+      declined: MainApplication.NewRequestComponent.textColumn("declined"),
+
+      action:
+        MainApplication.NewRequestComponent.deleteColumn(AppRequest.approvalTableCTX, "Approvers"),
+    },
+  });
+
+  MainApplication.NewRequestComponent.initializeDynamicTable({
+    ctx: AppRequest.notificationTableCTX,
+
+    tableName: "Notifications",
+
+    root: "notificationsBody",
+
+    addButton: "#addNotificationButton",
+
+    bindExtensions: {
+      event: MainApplication.NewRequestComponent.textColumn("event"),
+
+      users: MainApplication.NewRequestComponent.textColumn("users"),
+
+      template: MainApplication.NewRequestComponent.textColumn("template"),
+
+      action:
+        MainApplication.NewRequestComponent.deleteColumn(AppRequest.notificationTableCTX, "Notifications"),
+    },
+  });
+
+  MainApplication.NewRequestComponent.initializeDynamicTable({
+    ctx: AppRequest.userAccessCTX,
+
+    tableName: "UserAccess",
+
+    root: "userAccessBody",
+
+    addButton: "#addUserAccessButton",
+
+    bindExtensions: {
+      role: MainApplication.NewRequestComponent.textColumn("role"),
+
+      feature: MainApplication.NewRequestComponent.textColumn("feature"),
+
+      user: MainApplication.NewRequestComponent.textColumn("user"),
+
+      action:
+        MainApplication.NewRequestComponent.deleteColumn(AppRequest.userAccessCTX, "UserAccess"),
+    },
+  });
+
+  MainApplication.NewRequestComponent.initializeDynamicTable({
+    ctx: AppRequest.reportTableCTX,
+
+    tableName: "Reports",
+
+    root: "reportsBody",
+
+    addButton: "#addReportButton",
+
+    bindExtensions: {
+      name: MainApplication.NewRequestComponent.textColumn("name"),
+
+      users: MainApplication.NewRequestComponent.textColumn("users"),
+
+      interval: MainApplication.NewRequestComponent.textColumn("interval"),
+
+      action:
+        MainApplication.NewRequestComponent.deleteColumn(AppRequest.reportTableCTX, "Reports"),
+    },
+  });
+
+  MainApplication.renderExtraFeaturesTable("extraFeaturesTable", MainApplication.extraFeatures);
+}

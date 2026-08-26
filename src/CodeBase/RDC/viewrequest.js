@@ -148,7 +148,10 @@ MainApplication.ViewRequestComponent.recoverListData = function () {
       "ConditionalApprovalInformation",
       "RequestType",
       "ModificationType",
-      "ModificationDescription"
+      "CurrentFunctionality",
+      "WhatShouldChange",
+      "ModificationReason",
+      "SystemsAffected"
     ];
 
     speedctxRoot.getListToControl(
@@ -277,11 +280,65 @@ MainApplication.ViewRequestComponent.recoverListData = function () {
                         if (listProperties.ModificationType === "Minor") {
 
                           MainApplication.renderField({
-                              containerId: "modificationDescriptionContainer",
+                              containerId: "modificationProcessNameContainer",
                               className: "top-space",
                               type: "textarea",
-                              value: listProperties.ModificationDescription,
-                              rows: 6,
+                              value: listProperties.ProcessName,
+                              rows: 1,
+                              readonly: true
+                          });
+
+                          MainApplication.renderField({
+                              containerId: "modificationApplicationLinkContainer",
+                              className: "top-space",
+                              type: "textarea",
+                              value: listProperties.ExistingLink,
+                              rows: 1,
+                              readonly: true
+                          });
+
+                          MainApplication.renderField({
+                              containerId: "modificationCurrentFunctionalityContainer",
+                              className: "top-space",
+                              type: "textarea",
+                              value: listProperties.CurrentFunctionality,
+                              rows: 4,
+                              readonly: true
+                          });
+
+                          MainApplication.renderField({
+                              containerId: "modificationWhatShouldChangeContainer",
+                              className: "top-space",
+                              type: "textarea",
+                              value: listProperties.WhatShouldChange,
+                              rows: 4,
+                              readonly: true
+                          });
+
+                          MainApplication.renderField({
+                              containerId: "modificationReasonContainer",
+                              className: "top-space",
+                              type: "textarea",
+                              value: listProperties.ModificationReason,
+                              rows: 4,
+                              readonly: true
+                          });
+
+                          MainApplication.renderField({
+                              containerId: "modificationSystemsAffectedContainer",
+                              className: "top-space",
+                              type: "textarea",
+                              value: listProperties.SystemsAffected,
+                              rows: 4,
+                              readonly: true
+                          });
+
+                          MainApplication.renderField({
+                              containerId: "modificationDateNeededContainer",
+                              className: "top-space",
+                              type: "textarea",
+                              value: listProperties.DateRequired,
+                              rows: 1,
                               readonly: true
                           });
 
