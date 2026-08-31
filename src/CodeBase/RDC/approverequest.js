@@ -219,7 +219,7 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                                         Proposed Start Date
                                         <span class="required">*</span>
                                     </span>
-                                    <input type="date" speed-bind-validate="ProposedStartDate" speed-bind-class="Dev" />
+                                    <input type="date" speed-validate-msg="Please select a proposed start date" speed-bind-validate="ProposedStartDate" speed-bind-class="Dev" />
                                 </label>
 
                                 <label class="AdrField">
@@ -227,7 +227,7 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                                         End Date
                                         <span class="required">*</span>
                                     </span>
-                                    <input type="date" speed-bind-validate="EndDate" speed-bind-class="Dev" />
+                                    <input type="date" speed-validate-msg="Please select a proposed end date" speed-bind-validate="EndDate" speed-bind-class="Dev" />
                                 </label>
 
                             </div>
@@ -265,7 +265,7 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                                         Status
                                         <span class="required">*</span>
                                     </span>
-                                    <select id="projectStatus" speed-bind-validate="Status" speed-bind-class="DevStatus">
+                                    <select id="projectStatus" speed-validate-msg="Please select a status" speed-bind-validate="Status" speed-bind-class="DevStatus">
                                       <option value="" selected >Select a status</option>
                                       <option value="Not Started">Not Started</option>
                                       <option value="In Progress">In Progress</option>
@@ -312,7 +312,7 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                                         Proposed UAT Date
                                         <span class="required">*</span>
                                     </span>
-                                    <input type="date" speed-bind-validate="UATDate" speed-bind-class="UatData" />
+                                    <input type="date" speed-validate-msg="Please select a date for the UAT"  speed-bind-validate="UATDate" speed-bind-class="UatData" />
                                 </label>
 
                             </div>
@@ -355,7 +355,7 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                                 </label>
                                 <label class="AdrField">
                                     <span>
-                                        Proposed UAT Date
+                                        UAT Date
                                     </span>
                                     <input type="text" readonly speed-bind="UATDate" speed-bind-class="Dev" />
                                 </label>
