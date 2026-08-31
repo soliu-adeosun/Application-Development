@@ -162,6 +162,11 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
       "WhatShouldChange",
       "ModificationReason",
       "SystemsAffected",
+      "ProposedStartDate",
+      "EndDate",
+      "UATDate",
+      "Status",
+      "Developer"
     ];
 
     speedctxRoot.getListToControl(
@@ -189,6 +194,188 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                     // if (MainApplication.configuredTaskMembers[listProperties.Current_Approver].belongs) {
 
                     if (typeof error === "undefined") {
+                      if (listProperties.Current_Approver_Code === "AA2") {
+                        MainApplication.ApproveRequestComponent.renderModificationPeoplePicker(
+                          {
+                            pickerId: "Developer",
+                            label: "Developer",
+                            placeholder: "Select a Developer",
+                          },
+                        );
+                      }
+                      if (listProperties.Current_Approver_Code === "AA3") {
+                        MainApplication.ApproveRequestComponent.renderModificationPeoplePickerReadonly(
+                          {
+                            pickerId: "Developer",
+                            label: "Developer",
+                            placeholder: "Select a Developer",
+                            defaultValue: listProperties.PendingUserLogin
+                          },
+                        );
+                        $("#devApproverSection").html(`
+                            <div class="AdrFormGrid top-space">
+                                <label class="AdrField">
+                                    <span>
+                                        Proposed Start Date
+                                        <span class="required">*</span>
+                                    </span>
+                                    <input type="date" speed-bind-validate="ProposedStartDate" speed-bind-class="Dev" />
+                                </label>
+
+                                <label class="AdrField">
+                                    <span>
+                                        End Date
+                                        <span class="required">*</span>
+                                    </span>
+                                    <input type="date" speed-bind-validate="EndDate" speed-bind-class="Dev" />
+                                </label>
+
+                            </div>
+                        `);
+                        const startEl = document.querySelector('[speed-bind-validate="ProposedStartDate"]');
+                        const endEl   = document.querySelector('[speed-bind-validate="EndDate"]');
+                        MainApplication.DateConstraints.linkStartAndEnd(startEl, endEl);
+                      }
+                      if (listProperties.Current_Approver_Code === "AA4") {
+                        MainApplication.ApproveRequestComponent.renderModificationPeoplePickerReadonly(
+                          {
+                            pickerId: "Developer",
+                            label: "Developer",
+                            placeholder: "Select a Developer",
+                            defaultValue: listProperties.PendingUserLogin
+                          },
+                        );
+                        $("#devApproverSection").html(`
+                            <div class="AdrFormGrid top-space">
+                                <label class="AdrField">
+                                    <span>
+                                        Proposed Start Date
+                                    </span>
+                                    <input type="text" readonly speed-bind="ProposedStartDate" speed-bind-class="Dev" />
+                                </label>
+
+                                <label class="AdrField">
+                                    <span>
+                                        End Date
+                                    </span>
+                                    <input type="text" readonly speed-bind="EndDate" speed-bind-class="Dev" />
+                                </label>
+                                <label class="AdrField">
+                                    <span>
+                                        Status
+                                        <span class="required">*</span>
+                                    </span>
+                                    <select id="projectStatus" speed-bind-validate="Status" speed-bind-class="DevStatus">
+                                      <option value="Not Started">Not Started</option>
+                                      <option value="In Progress">In Progress</option>
+                                      <option value="Completed">Completed</option>
+                                    </select>
+                                </label>
+
+                            </div>
+                        `);
+                      }
+                      if (listProperties.Current_Approver_Code === "AA5") {
+                        MainApplication.ApproveRequestComponent.renderModificationPeoplePickerReadonly(
+                          {
+                            pickerId: "Developer",
+                            label: "Developer",
+                            placeholder: "Select a Developer",
+                            defaultValue: listProperties.PendingUserLogin
+                          },
+                        );
+                        $("#devApproverSection").html(`
+                            <div class="AdrFormGrid top-space">
+                                <label class="AdrField">
+                                    <span>
+                                        Proposed Start Date
+                                    </span>
+                                    <input type="text" readonly speed-bind="ProposedStartDate" speed-bind-class="Dev" />
+                                </label>
+
+                                <label class="AdrField">
+                                    <span>
+                                        End Date
+                                    </span>
+                                    <input type="text" readonly speed-bind="EndDate" speed-bind-class="Dev" />
+                                </label>
+                                <label class="AdrField">
+                                    <span>
+                                        Status
+                                    </span>
+                                    <input type="text" readonly speed-bind="Status" speed-bind-class="Dev" />
+                                </label>
+
+                                <label class="AdrField">
+                                    <span>
+                                        Proposed UAT Date
+                                        <span class="required">*</span>
+                                    </span>
+                                    <input type="date" speed-bind-validate="UATDate" speed-bind-class="UatData" />
+                                </label>
+
+                            </div>
+                        `);
+
+                        MainApplication.DateConstraints.applyBasicRules(
+                          document.querySelector('[speed-bind-validate="UATDate"]')
+                        );
+                      }
+                      if (listProperties.Current_Approver_Code === "AA6") {
+                        MainApplication.ApproveRequestComponent.renderModificationPeoplePickerReadonly(
+                          {
+                            pickerId: "Developer",
+                            label: "Developer",
+                            placeholder: "Select a Developer",
+                            defaultValue: listProperties.PendingUserLogin
+                          },
+                        );
+                        $("#devApproverSection").html(`
+                            <div class="AdrFormGrid top-space">
+                                <label class="AdrField">
+                                    <span>
+                                        Proposed Start Date
+                                    </span>
+                                    <input type="text" readonly speed-bind="ProposedStartDate" speed-bind-class="Dev" />
+                                </label>
+
+                                <label class="AdrField">
+                                    <span>
+                                        End Date
+                                    </span>
+                                    <input type="text" readonly speed-bind="EndDate" speed-bind-class="Dev" />
+                                </label>
+
+                                <label class="AdrField">
+                                    <span>
+                                        Status
+                                    </span>
+                                    <input type="text" readonly speed-bind="Status" speed-bind-class="Dev" />
+                                </label>
+                                <label class="AdrField">
+                                    <span>
+                                        Proposed UAT Date
+                                    </span>
+                                    <input type="text" readonly speed-bind="UATDate" speed-bind-class="Dev" />
+                                </label>
+                   -         </div>
+                        `);
+                      }
+                      listProperties.ProposedStartDate = $spcontext.stringnifyDate({
+                        value: listProperties.ProposedStartDate,
+                        includeTime: false,
+                        format: "dd/mm/yy",
+                      });
+                      listProperties.EndDate = $spcontext.stringnifyDate({
+                        value: listProperties.EndDate,
+                        includeTime: false,
+                        format: "dd/mm/yy",
+                      });
+                      listProperties.UATDate = $spcontext.stringnifyDate({
+                        value: listProperties.UATDate,
+                        includeTime: false,
+                        format: "dd/mm/yy",
+                      });
                       listProperties.RequestCreated = $spcontext.stringnifyDate(
                         {
                           value: listProperties.RequestCreated,
@@ -196,17 +383,15 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                           format: "dd/mm/yy",
                         },
                       );
-
                       listProperties.DateRequired = $spcontext.stringnifyDate({
                         value: listProperties.DateRequired,
                         includeTime: false,
                         format: "dd/mm/yy",
                       });
 
-                      listProperties.StepByStepProcess =
-                        $spcontext.JSONToObject(
-                          listProperties.StepByStepProcess,
-                        );
+                      listProperties.StepByStepProcess = $spcontext.JSONToObject(
+                        listProperties.StepByStepProcess,
+                      );
                       listProperties.Approvers = $spcontext.JSONToObject(
                         listProperties.Approvers,
                       );
@@ -219,20 +404,17 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                       listProperties.Reports = $spcontext.JSONToObject(
                         listProperties.Reports,
                       );
-                      listProperties.DivisionsInvolved =
-                        $spcontext.JSONToObject(
+                      listProperties.DivisionsInvolved = $spcontext.JSONToObject(
                           listProperties.DivisionsInvolved,
                         );
                       listProperties.ExtraFeatures = $spcontext.JSONToObject(
                         listProperties.ExtraFeatures,
                       );
-                      listProperties.ExtraFeatures =
-                        MainApplication.buildReadOnlyData(
+                      listProperties.ExtraFeatures = MainApplication.buildReadOnlyData(
                           listProperties.ExtraFeatures,
                         );
 
-                      listProperties.Transaction_History =
-                        $spcontext.JSONToObject(
+                      listProperties.Transaction_History = $spcontext.JSONToObject(
                           listProperties.Transaction_History,
                         );
                       listProperties.AttachmentURL = $spcontext.JSONToObject(
@@ -479,16 +661,38 @@ MainApplication.ApproveRequestComponent.saveDataToList = function (
   actionTaken,
 ) {
   globalDefinitions.onActionClicked();
+  var formData;
+  if (AppRequest.requestDetails.Current_Approver_Code === "AA2" ||
+    AppRequest.requestDetails.Current_Approver_Code === "AA3" ||
+    AppRequest.requestDetails.Current_Approver_Code === "AA4" ||
+    AppRequest.requestDetails.Current_Approver_Code === "AA5"
+  ) {
+    formData = $spcontext.bind({});
+    var pickerValues = PeoplePicker.getValue() || {};
+    var people = PeoplePicker.getConfiguredValue() || {};
+  // } else if (AppRequest.requestDetails.Current_Approver_Code === "AA3") {
+  //   formData = $spcontext.bind({}, "Dev");
+  // } else if (AppRequest.requestDetails.Current_Approver_Code === "AA4") {
+  //   formData = $spcontext.bind({}, "DevStatus");
+  // } else if (AppRequest.requestDetails.Current_Approver_Code === "AA5") {
+  //   formData = $spcontext.bind({}, "UATData");
+  } else {
+    formData = {};
+  }
 
-  // var formData = $spcontext.bind({}, "ApprovalData");
-  var tempData = $spcontext.bind({});
   if ($spcontext.checkPassedValidation()) {
     // if (CurrentUserProperties.title === AppRequest.requestDetails.EmployeeName) {
     // var formData = $spcontext.bind({});
     // } else {
     // var formData = {};
     // }
-    var formData = {};
+    // var formData = {};
+    console.log("AppRequest", AppRequest.requestDetails);
+    if (AppRequest.requestDetails.Current_Approver_Code === "AA2") {
+      var developer = pickerValues.Developer;
+      formData.Developer = developer || null;
+      var developerEmail = people.Developer;
+    }
 
     AppRequest.comment = $("#approvercomment").val();
 
@@ -497,21 +701,18 @@ MainApplication.ApproveRequestComponent.saveDataToList = function (
     let historyActionMessage = "";
 
     if (actionTaken === "Approved") {
-      if (
-        AppRequest.requestDetails.Current_Approver === "Employee" &&
-        AppRequest.requestDetails.PendingUserEmail ===
-          CurrentUserProperties.email
-      ) {
-        historyActionMessage = "Employee acknowledged";
-      } else if (AppRequest.requestDetails.Current_Approver === "HOD") {
-        historyActionMessage = "HOD Reviewed";
-      } else if (
-        AppRequest.requestDetails.Current_Approver === "Management Rep" &&
-        MainApplication.configuredTaskMembers[
-          globalDefinitions.stageDefinitions.management
-        ].belongs
-      ) {
-        historyActionMessage = "Management Rep has Reviewed";
+      if (AppRequest.requestDetails.Current_Approver_Code === "AA1") {
+        historyActionMessage = "HOD Acknowledged";
+      } else if (AppRequest.requestDetails.Current_Approver_Code === "AA2") {
+        historyActionMessage = "Management Reviewed";
+      } else if (AppRequest.requestDetails.Current_Approver_Code === "AA3") {
+        historyActionMessage = "Developer proposed a timeline";
+      } else if (AppRequest.requestDetails.Current_Approver_Code === "AA4") {
+        historyActionMessage = "Developer updated the status";
+      } else if (AppRequest.requestDetails.Current_Approver_Code === "AA5") {
+        historyActionMessage = "Management proposed UAT";
+      } else if (AppRequest.requestDetails.Current_Approver_Code === "AA6") {
+        historyActionMessage = "HOD acknowledged process completion";
       } else {
         // historyActionMessage = "RDC Submitted";
         MainApplication.notyf.error("You can't act on this request :(...");
@@ -519,26 +720,18 @@ MainApplication.ApproveRequestComponent.saveDataToList = function (
         return;
       }
     } else if (actionTaken === "Declined") {
-      if (
-        AppRequest.requestDetails.Current_Approver === "HOD" &&
-        AppRequest.requestDetails.PendingUserEmail ===
-          CurrentUserProperties.email
-      ) {
-        historyActionMessage = "HOD declined";
-      } else if (
-        AppRequest.requestDetails.Current_Approver === "Management Rep" &&
-        MainApplication.configuredTaskMembers[
-          globalDefinitions.stageDefinitions.management
-        ].belongs
-      ) {
-        historyActionMessage = "Management Rep declined";
-      } else if (
-        AppRequest.requestDetails.Current_Approver === "CEO" &&
-        MainApplication.configuredTaskMembers[
-          globalDefinitions.stageDefinitions.ceo
-        ].belongs
-      ) {
-        historyActionMessage = "Executive management has Declined";
+      if (AppRequest.requestDetails.Current_Approver_Code === "AA1") {
+        historyActionMessage = "HOD rejected the request";
+      } else if (AppRequest.requestDetails.Current_Approver_Code === "AA2") {
+        historyActionMessage = "Management rejected the request";
+      } else if (AppRequest.requestDetails.Current_Approver_Code === "AA3") {
+        historyActionMessage = "Developer rejected the request";
+      } else if (AppRequest.requestDetails.Current_Approver_Code === "AA4") {
+        historyActionMessage = "Developer rejected the request";
+      } else if (AppRequest.requestDetails.Current_Approver_Code === "AA5") {
+        historyActionMessage = "Management rejected the request";
+      } else if (AppRequest.requestDetails.Current_Approver_Code === "AA6") {
+        historyActionMessage = "HOD rejected the request";
       } else {
         // historyActionMessage = "RDC Submitted";
         MainApplication.notyf.error("You can't act on this process...");
@@ -560,26 +753,69 @@ MainApplication.ApproveRequestComponent.saveDataToList = function (
         historyProp,
       );
     // formData = customWorkflowEngine.routeEngine(customWorkflowEngine).runRouting(formData, AppRequest.requestDetails.Current_Approver_Code, actionTaken);
-
+    console.log("Action taken", actionTaken);
     if (actionTaken === "Approved" || actionTaken === "Declined") {
-      formData = customWorkflowEngine
-        .routeEngine(customWorkflowEngine)
-        .runRouting(
-          formData,
-          AppRequest.requestDetails.Current_Approver_Code,
-          actionTaken,
-        );
-    } else if (actionTaken === "Revise") {
-      formData.Current_Approver = AppRequest.requestDetails.EmployeeName;
-      formData.Current_Approver_Code = AppRequest.defaultStage;
-      formData.PendingUserLogin =
-        AppRequest.requestDetails.InitiatorEmailAddress;
-      formData.PendingUserEmail =
-        AppRequest.requestDetails.InitiatorEmailAddress;
-      formData.Approval_Status = "Pending";
-      formData.ReturnForCorrection = "Yes";
+      if (AppRequest.requestDetails.Current_Approver_Code === "AA2") {
+        // 1. Resolve a reliable email / login
+        var developerEmail = (people && people.Developer) || null;
+        if (!developerEmail) {
+          MainApplication.notyf.error("Please select a Developer");
+          globalDefinitions.onActionFailed();
+          return;
+        }
+
+        // 2. Guard the staff lookup
+        var staff = MainApplication.staffDetails[developerEmail];
+        if (!staff) {
+          console.error("No staffDetails entry for", developerEmail);
+          MainApplication.notyf.error(
+            "Selected developer not found in staff list",
+          );
+          globalDefinitions.onActionFailed();
+          return;
+        }
+
+        // 3. Update the stage with the real person
+        customWorkflowEngine.updateStageByName({
+          name: globalDefinitions.stageDefinitions.assigneddev,
+          username: staff.Title,
+          authenticationValue: developerEmail,
+          emails: [developerEmail],
+        });
+
+        // 4. Call runRouting the same way as the other stages
+        //    (pass the current stage code + action so the engine knows which transition to take)
+        formData = customWorkflowEngine
+          .routeEngine(customWorkflowEngine)
+          .runRouting(
+            formData,
+            AppRequest.requestDetails.Current_Approver_Code, // "AA2"
+            actionTaken, // "Approved"
+          );
+      } else if (AppRequest.requestDetails.Current_Approver_Code === "AA4") {
+        if (formData.Status === "Completed") {
+          formData = customWorkflowEngine
+            .routeEngine(customWorkflowEngine)
+            .runRouting(
+              formData,
+              AppRequest.requestDetails.Current_Approver_Code,
+              actionTaken,
+            );
+        } else {
+          console.log(formData);
+        }
+      } else {
+        // existing non-AA2 path
+        formData = customWorkflowEngine
+          .routeEngine(customWorkflowEngine)
+          .runRouting(
+            formData,
+            AppRequest.requestDetails.Current_Approver_Code,
+            actionTaken,
+          );
+      }
     }
-    // console.log("Form Data to be submitted:", formData);
+    console.log("Form Data to be submitted:", formData);
     globalDefinitions.onActionCompleted();
     MainApplication.ApproveRequestComponent.proceedToList(formData);
   } else {
@@ -609,4 +845,165 @@ MainApplication.ApproveRequestComponent.proceedToList = function (formData) {
     },
   );
   globalDefinitions.closeLoader();
+};
+
+MainApplication.ApproveRequestComponent.renderModificationPeoplePicker = function ({
+  pickerId = "Developer",
+  label = "Developer",
+  placeholder = "Select a Developer",
+  multiple = false,
+  defaultValue = null,
+} = {}) {
+  const container = document.getElementById("approverSection");
+
+  if (!container) {
+    console.error("#approverSection was not found.");
+    return;
+  }
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "AdrFormGrid";
+
+  wrapper.innerHTML = `
+      <label
+          for="${pickerId.toLowerCase()}"
+          class="AdrField"
+      >
+      <span>
+          ${label}
+          <span class="required">*</span>
+      </span>
+
+      <select
+          id="${pickerId.toLowerCase()}"
+          class="js-select2 w-full px-3 sm:px-4 py-2 sm:py-3
+                  placeholder-slate-400 focus:outline-none
+                  focus:ring-2 focus:ring-primary-500
+                  focus:border-transparent transition-all
+                  text-sm sm:text-base"
+          custom-people="${pickerId}"
+          speed-bind="${pickerId}"
+          speed-validate-mode="false"
+          speed-include-control="true"
+          speed-as-static="true"
+          speed-validate-msg="Please select a Developer"
+          control-value-type="people"
+          disable-selection-order="false"
+          placeholder="${placeholder}"
+          ${multiple ? "multiple" : ""}
+      ></select>
+      </label>
+  `;
+
+  container.appendChild(wrapper);
+
+  const picker = wrapper.querySelector(`[custom-people="${pickerId}"]`);
+
+  // Set default value BEFORE initialization
+  if (defaultValue) {
+    PeoplePicker.setDefault(pickerId, defaultValue);
+  }
+
+  // Initialize only this picker
+  // PeoplePicker.defaultValues = {};
+    PeoplePicker.initializePeoplePickers(MainApplication.staffList);
+
+  // PeoplePicker.initializePeoplePickers(
+  //     MainApplication.staffList,
+  //     null,
+  //     "custom-people",
+  //     picker
+  // );
+};
+
+MainApplication.ApproveRequestComponent.renderModificationPeoplePickerReadonly = function ({
+  pickerId = "Developer",
+  label = "Developer",
+  placeholder = "Select a Developer",
+  multiple = false,
+  defaultValue = null,
+} = {}) {
+  const container = document.getElementById("approverSection");
+
+  if (!container) {
+    console.error("#approverSection was not found.");
+    return;
+  }
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "AdrFormGrid";
+
+  wrapper.innerHTML = `
+      <label
+          for="${pickerId.toLowerCase()}"
+          class="AdrField"
+      >
+      <span>
+          ${label}
+      </span>
+
+      <select
+          id="${pickerId.toLowerCase()}"
+          class="js-select2 w-full px-3 sm:px-4 py-2 sm:py-3
+                  placeholder-slate-400 focus:outline-none
+                  focus:ring-2 focus:ring-primary-500
+                  focus:border-transparent transition-all
+                  text-sm sm:text-base"
+          custom-people="${pickerId}"
+          speed-bind="${pickerId}"
+          speed-validate-mode="false"
+          speed-include-control="true"
+          speed-as-static="true"
+          control-value-type="people"
+          disable-selection-order="false"
+          placeholder="${placeholder}"
+          ${multiple ? "multiple" : ""}
+      ></select>
+      </label>
+  `;
+
+  container.appendChild(wrapper);
+
+  const picker = wrapper.querySelector(`[custom-people="${pickerId}"]`);
+
+  // 1. Initialize first
+  PeoplePicker.initializePeoplePickers(MainApplication.staffList);
+
+  // 2. Set default AFTER initialization (so getValue / bind actually see it)
+  if (defaultValue) {
+    if (typeof PeoplePicker.setValue === "function") {
+      PeoplePicker.setValue(pickerId, defaultValue);
+    } else if (typeof PeoplePicker.setDefault === "function") {
+      PeoplePicker.setDefault(pickerId, defaultValue);
+    }
+
+    // Force the underlying <select> so $spcontext.bind picks it up
+    if (picker) {
+      $(picker).val(defaultValue).trigger("change");
+    }
+  }
+
+  // 3. Make it readonly / non-editable
+  if (picker) {
+    // Native disable
+    picker.disabled = true;
+    picker.setAttribute("readonly", "readonly");
+
+    // If Select2 is in use (js-select2 class), also disable via Select2 API
+    if (typeof $(picker).select2 === "function") {
+      try {
+        $(picker).select2("enable", false);
+      } catch (e) {
+        // Select2 may not be fully ready; fall back to CSS
+        $(picker).next(".select2-container").css("pointer-events", "none");
+        $(picker).next(".select2-container").addClass("select2-container--disabled");
+      }
+    }
+
+    // Extra safety: block pointer events on the whole control
+    $(picker).closest(".AdrField").css({
+      "pointer-events": "none",
+      opacity: "0.85",
+    });
+  }
 };

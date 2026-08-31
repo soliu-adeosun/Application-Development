@@ -83,42 +83,49 @@ function MainStartPoint() {
   this.processes = [];
   // this.procedures = [];
   this.extraFeatures = [
-      {
-          id: "saveDraft",
-          title: "Save as Draft",
-          description: "Ability to save an incomplete form and return to it later."
-      },
-      {
-          id: "editAfterSubmission",
-          title: "Edit After Submission",
-          description: "Ability to edit a submitted record before approval."
-      },
-      {
-          id: "exportExcel",
-          title: "Export to Excel / CSV",
-          description: "Download records as a spreadsheet."
-      },
-      {
-          id: "printPdf",
-          title: "Print / Download as PDF",
-          description: "Print or save records as PDF documents."
-      },
-      {
-          id: "dashboardSummary",
-          title: "Dashboard / Summary View",
-          description: "A visual overview of process status and statistics."
-      },
-      {
-          id: "bulkActions",
-          title: "Bulk Actions",
-          description: "Approve, decline, or export multiple records at once."
-      },
-      {
-          id: "attachmentUpload",
-          title: "Attachment Upload",
-          description: "Ability to attach files to records."
-      }
-  ];
+    {
+        id: "saveDraft",
+        title: "Save as Draft",
+        description: "Ability to save an incomplete form and return to it later.",
+        defaultChecked: true
+    },
+    {
+        id: "editAfterSubmission",
+        title: "Edit After Submission",
+        description: "Ability to edit a submitted record before approval.",
+        defaultChecked: true
+    },
+    {
+        id: "exportExcel",
+        title: "Export to Excel / CSV",
+        description: "Download records as a spreadsheet.",
+        defaultChecked: false
+    },
+    {
+        id: "printPdf",
+        title: "Print / Download as PDF",
+        description: "Print or save records as PDF documents.",
+        defaultChecked: false
+    },
+    {
+        id: "dashboardSummary",
+        title: "Dashboard / Summary View",
+        description: "A visual overview of process status and statistics.",
+        defaultChecked: true
+    },
+    {
+        id: "bulkActions",
+        title: "Bulk Actions",
+        description: "Approve, decline, or export multiple records at once.",
+        defaultChecked: false
+    },
+    {
+        id: "attachmentUpload",
+        title: "Attachment Upload",
+        description: "Ability to attach files to records.",
+        defaultChecked: false
+    }
+];
 
   this.auditNavigationClicks = function (clicklocation) {
     globalDefinitions.AuditLogManager_SaveLog({
@@ -514,7 +521,10 @@ MainApplication.renderExtraFeaturesTable = function (tableId, features) {
         tbody.innerHTML += `
             <tr data-id="${feature.id}">
                 <td>
-                    <input type="checkbox">
+                    <input
+                      type="checkbox"
+                      ${feature.defaultChecked ? "checked disabled" : ""}
+                    >
                 </td>
 
                 <td>
@@ -676,6 +686,108 @@ MainApplication.renderField = function (options) {
     }
 
     $container.append($field);
+};
+
+MainApplication.DateConstraints = {
+  /** Today's date as YYYY-MM-DD (local) */
+  todayISO() {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d.toISOString().slice(0, 10);
+  },
+
+  isWeekend(isoDate) {
+    if (!isoDate) return false;
+    const day = new Date(isoDate + "T00:00:00").getDay(); // 0 = Sun, 6 = Sat
+    return day === 0 || day === 6;
+  },
+
+  /** Next weekday on or after the given ISO date */
+  nextWeekday(isoDate) {
+    const d = new Date(isoDate + "T00:00:00");
+    while (d.getDay() === 0 || d.getDay() === 6) {
+      d.setDate(d.getDate() + 1);
+    }
+    return d.toISOString().slice(0, 10);
+  },
+
+  /**
+   * Apply global rules to any date input:
+   * - no past dates
+   * - no weekends (clears + warns if user picks one)
+   */
+  applyBasicRules(input) {
+    if (!input || input.type !== "date") return;
+
+    // Block past dates
+    input.min = this.todayISO();
+
+    const enforce = () => {
+      if (!input.value) return;
+
+      if (input.value < this.todayISO()) {
+        input.value = "";
+        MainApplication.notyf?.error?.("Past dates are not allowed");
+        return;
+      }
+
+      if (this.isWeekend(input.value)) {
+        input.value = "";
+        MainApplication.notyf?.error?.("Weekends are not allowed. Please choose a weekday.");
+      }
+    };
+
+    input.addEventListener("change", enforce);
+    input.addEventListener("input", enforce);
+  },
+
+  /**
+   * Make ProposedStartDate and EndDate depend on each other.
+   * - Start: today onward, weekdays only
+   * - End: on/after Start, weekdays only
+   * - When Start changes → End.min updates
+   * - When End is before Start → clear End
+   */
+  linkStartAndEnd(startInput, endInput) {
+    if (!startInput || !endInput) return;
+
+    this.applyBasicRules(startInput);
+    this.applyBasicRules(endInput);
+
+    const sync = () => {
+      const start = startInput.value;
+      const end = endInput.value;
+
+      if (start) {
+        // End cannot be before Start
+        const minEnd = this.nextWeekday(start);
+        endInput.min = minEnd;
+
+        if (end && end < start) {
+          endInput.value = "";
+          MainApplication.notyf?.error?.("End Date cannot be before Proposed Start Date");
+        }
+      } else {
+        // No start yet → End still can't be in the past
+        endInput.min = this.todayISO();
+      }
+    };
+
+    startInput.addEventListener("change", sync);
+    startInput.addEventListener("input", sync);
+    endInput.addEventListener("change", sync);
+    endInput.addEventListener("input", sync);
+
+    // Run once in case values are already filled
+    sync();
+  },
+
+  /** Apply basic rules to every date input currently in the DOM */
+  applyToAllDateInputs(root = document) {
+    root.querySelectorAll('input[type="date"]').forEach((input) => {
+      this.applyBasicRules(input);
+    });
+  },
 };
 
 whenLayoutLoaded();

@@ -429,12 +429,18 @@ MainApplication.NewRequestComponent.toggleModificationType = function (value) {
         `);
 
         MainApplication.NewRequestComponent.toggleMainForm(false);
+        MainApplication.DateConstraints.applyBasicRules(
+          document.querySelector('[speed-bind-validate="DateRequired"]')
+        );
 
     } else if (value === "Major") {
         // MainApplication.NewRequestComponent.prepareAllTables();
 
         $("#modificationDetailsContainer").empty();
         MainApplication.NewRequestComponent.toggleMainForm(true);
+        MainApplication.DateConstraints.applyBasicRules(
+          document.querySelector('[speed-bind-validate="DateRequired"]')
+        );
 
     } else {
 
@@ -468,6 +474,9 @@ MainApplication.NewRequestComponent.toggleMainForm = function (show) {
             $(this).attr("speed-validate-mode", "false");
         });
 
+        MainApplication.DateConstraints.applyBasicRules(
+          document.querySelector('[speed-bind-validate="DateRequired"]')
+        );
     } else {
         // Restore exactly what was active before the wrapper was hidden.
         $wrapper.find("[data-speed-bind-validate-backup]").each(function () {

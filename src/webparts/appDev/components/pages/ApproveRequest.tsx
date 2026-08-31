@@ -5,6 +5,7 @@ import { NewLoader } from "../../../../Global/NewLoader";
 // import CustomPeoplePicker from "../../../../Global/CustomPeoplePicker";
 
 require("approverequest");
+require("peoplepicker");
 
 export default class ApproveRequest extends React.Component<{}, {}> {
   public render(): React.ReactElement {
@@ -591,6 +592,10 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                 </div>
               </section>
             </div>
+
+            <div id="approverSection" className="AdrFormSection" />
+            <div id="devApproverSection" className="AdrFormSection" />
+
 
             <section className="AdrFormSection">
               <div className="commentContainer">

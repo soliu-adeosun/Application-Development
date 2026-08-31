@@ -14,7 +14,7 @@ GlobalDefinitionsManager.prototype.extendStages = function () {
     this.stageDefinitions.employee = "Employee";
     this.stageDefinitions.hod = "HOD";
     this.stageDefinitions.hodGroup = configProperties.HOD.setting;
-    // this.stageDefinitions.otherauditors = "OtherAuditors";
+    this.stageDefinitions.assigneddev = "Developer";
     // this.stageDefinitions.auditees = "Auditees";
 };
 
@@ -70,38 +70,70 @@ GlobalDefinitionsManager.prototype.SetWorkflowRouting = function (customWorkflow
                 users: []
             }]
         },
-        // {
-        //     code: "AA3",
-        //     initiationCode: "AA2",            
-        //     possibleRoutes: [{
-        //         name: globalDefinitions.stageDefinitions.management,
-        //         username: "",
-        //         condition: true,
-        //         authenticationType: customWorkflowEngine.stages.group,
-        //         authenticationValue: null,
-        //         actionType: "Actor",
-        //         emails: [],
-        //         doa: false,
-        //         flow: globalDefinitions.stageDefinitions.normalflow,
-        //         users: []
-        //     }]
-        // },
-        // {
-        //     code: "AA20",
-        //     initiationCode: "AA19",            
-        //     possibleRoutes: [{
-        //         name: globalDefinitions.stageDefinitions.ceo,
-        //         username: "",
-        //         condition: true,
-        //         authenticationType: customWorkflowEngine.stages.group,
-        //         authenticationValue: null,
-        //         actionType: "Actor",
-        //         emails: [],
-        //         doa: false,
-        //         flow: globalDefinitions.stageDefinitions.normalflow,
-        //         users: []
-        //     }]
-        // }        
+        {
+            code: "AA3",
+            initiationCode: "AA2",            
+            possibleRoutes: [{
+                name: globalDefinitions.stageDefinitions.assigneddev,
+                username: "",
+                condition: true,
+                authenticationType: customWorkflowEngine.stages.user,
+                authenticationValue: null,
+                actionType: "Actor",
+                emails: [],
+                doa: false,
+                flow: globalDefinitions.stageDefinitions.normalflow,
+                users: []
+            }]
+        },
+        {
+            code: "AA4",
+            initiationCode: "AA3",            
+            possibleRoutes: [{
+                name: globalDefinitions.stageDefinitions.assigneddev,
+                username: "",
+                condition: true,
+                authenticationType: customWorkflowEngine.stages.user,
+                authenticationValue: null,
+                actionType: "Actor",
+                emails: [],
+                doa: false,
+                flow: globalDefinitions.stageDefinitions.normalflow,
+                users: []
+            }]
+        },
+        {
+            code: "AA5",
+            initiationCode: "AA4",            
+            possibleRoutes: [{
+                name: globalDefinitions.stageDefinitions.management,
+                username: "",
+                condition: true,
+                authenticationType: customWorkflowEngine.stages.group,
+                authenticationValue: null,
+                actionType: "Actor",
+                emails: [],
+                doa: false,
+                flow: globalDefinitions.stageDefinitions.normalflow,
+                users: []
+            }]
+        },
+        {
+            code: "AA6",
+            initiationCode: "AA5",            
+            possibleRoutes: [{
+                name: globalDefinitions.stageDefinitions.hod,
+                username: "",
+                condition: true,
+                authenticationType: customWorkflowEngine.stages.user,
+                authenticationValue: null,
+                actionType: "Actor",
+                emails: [],
+                doa: false,
+                flow: globalDefinitions.stageDefinitions.normalflow,
+                users: []
+            }]
+        },        
     ];
 }
 
