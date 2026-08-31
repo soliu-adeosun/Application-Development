@@ -266,6 +266,7 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                                         <span class="required">*</span>
                                     </span>
                                     <select id="projectStatus" speed-bind-validate="Status" speed-bind-class="DevStatus">
+                                      <option value="" selected >Select a status</option>
                                       <option value="Not Started">Not Started</option>
                                       <option value="In Progress">In Progress</option>
                                       <option value="Completed">Completed</option>
@@ -662,20 +663,21 @@ MainApplication.ApproveRequestComponent.saveDataToList = function (
 ) {
   globalDefinitions.onActionClicked();
   var formData;
-  if (AppRequest.requestDetails.Current_Approver_Code === "AA2" ||
-    AppRequest.requestDetails.Current_Approver_Code === "AA3" ||
-    AppRequest.requestDetails.Current_Approver_Code === "AA4" ||
-    AppRequest.requestDetails.Current_Approver_Code === "AA5"
+  if (AppRequest.requestDetails.Current_Approver_Code === "AA2"
+    // ||
+    // AppRequest.requestDetails.Current_Approver_Code === "AA3" ||
+    // AppRequest.requestDetails.Current_Approver_Code === "AA4" ||
+    // AppRequest.requestDetails.Current_Approver_Code === "AA5"
   ) {
-    formData = $spcontext.bind({});
+    formData = $spcontext.bind({}, "DevObj");
     var pickerValues = PeoplePicker.getValue() || {};
     var people = PeoplePicker.getConfiguredValue() || {};
-  // } else if (AppRequest.requestDetails.Current_Approver_Code === "AA3") {
-  //   formData = $spcontext.bind({}, "Dev");
-  // } else if (AppRequest.requestDetails.Current_Approver_Code === "AA4") {
-  //   formData = $spcontext.bind({}, "DevStatus");
-  // } else if (AppRequest.requestDetails.Current_Approver_Code === "AA5") {
-  //   formData = $spcontext.bind({}, "UATData");
+  } else if (AppRequest.requestDetails.Current_Approver_Code === "AA3") {
+    formData = $spcontext.bind({}, "Dev");
+  } else if (AppRequest.requestDetails.Current_Approver_Code === "AA4") {
+    formData = $spcontext.bind({}, "DevStatus");
+  } else if (AppRequest.requestDetails.Current_Approver_Code === "AA5") {
+    formData = $spcontext.bind({}, "UatData");
   } else {
     formData = {};
   }
@@ -882,9 +884,10 @@ MainApplication.ApproveRequestComponent.renderModificationPeoplePicker = functio
                   focus:border-transparent transition-all
                   text-sm sm:text-base"
           custom-people="${pickerId}"
-          speed-bind="${pickerId}"
-          speed-validate-mode="false"
+          speed-bind-validate="${pickerId}"
+          speed-validate-mode="true"
           speed-include-control="true"
+          speed-bind-class="DevObj"
           speed-as-static="true"
           speed-validate-msg="Please select a Developer"
           control-value-type="people"
