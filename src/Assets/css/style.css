@@ -68,6 +68,9 @@
 .AdrStatsGrid p { margin: 5px 0 0; color: var(--adr-muted); font-size: 12px; }
 
 /* ---- Panels / forms ---- */
+.AdrFormSection {
+  margin: 10px 0;
+}
 .AdrPanel, .AdrFormSection { overflow: hidden; border-radius: 18px; background: #fff; box-shadow: var(--adr-shadow); }
 .AdrPanelHeader, .AdrSectionHeader { display: flex; align-items: center; gap: 14px; padding: 20px 24px; background: #fbf7f4; border-bottom: 1px solid #e6eaf7; }
 .AdrPanelHeader { justify-content: space-between; }

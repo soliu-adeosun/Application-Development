@@ -35,7 +35,7 @@ whenApproveRequestDependeciesLoaded = function () {
 
   $spcontext.filesDictionary = {};
 
-  $spcontext.validationProperties.text.extend["Comments"] = function (field) {
+  $spcontext.validationProperties.text.extend["Comment"] = function (field) {
     var passed = false;
     if (
       (field.trim() !== "" &&
@@ -166,7 +166,8 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
       "EndDate",
       "UATDate",
       "Status",
-      "Developer"
+      "Developer",
+      "IsOtherUsersNeeded"
     ];
 
     speedctxRoot.getListToControl(
@@ -194,22 +195,12 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                     // if (MainApplication.configuredTaskMembers[listProperties.Current_Approver].belongs) {
 
                     if (typeof error === "undefined") {
-                      if (listProperties.Current_Approver_Code === "AA2") {
+                      if (listProperties.Current_Approver_Code === "AA3") {
                         MainApplication.ApproveRequestComponent.renderModificationPeoplePicker(
                           {
                             pickerId: "Developer",
                             label: "Developer",
                             placeholder: "Select a Developer",
-                          },
-                        );
-                      }
-                      if (listProperties.Current_Approver_Code === "AA3") {
-                        MainApplication.ApproveRequestComponent.renderModificationPeoplePickerReadonly(
-                          {
-                            pickerId: "Developer",
-                            label: "Developer",
-                            placeholder: "Select a Developer",
-                            defaultValue: listProperties.PendingUserLogin
                           },
                         );
                         $("#devApproverSection").html(`
@@ -219,7 +210,7 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                                         Proposed Start Date
                                         <span class="required">*</span>
                                     </span>
-                                    <input type="date" speed-validate-msg="Please select a proposed start date" speed-bind-validate="ProposedStartDate" speed-bind-class="Dev" />
+                                    <input type="date" class="approval-data" speed-validate-msg="Please select a proposed start date" speed-bind-validate="ProposedStartDate" speed-bind-class="Dev" />
                                 </label>
 
                                 <label class="AdrField">
@@ -227,7 +218,7 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                                         End Date
                                         <span class="required">*</span>
                                     </span>
-                                    <input type="date" speed-validate-msg="Please select a proposed end date" speed-bind-validate="EndDate" speed-bind-class="Dev" />
+                                    <input type="date" class="approval-data" speed-validate-msg="Please select a proposed end date" speed-bind-validate="EndDate" speed-bind-class="Dev" />
                                 </label>
 
                             </div>
@@ -265,7 +256,7 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                                         Status
                                         <span class="required">*</span>
                                     </span>
-                                    <select id="projectStatus" speed-validate-msg="Please select a status" speed-bind-validate="Status" speed-bind-class="DevStatus">
+                                    <select id="projectStatus" class="approval-data" speed-validate-msg="Please select a status" speed-bind-validate="Status" speed-bind-class="DevStatus">
                                       <option value="" selected >Select a status</option>
                                       <option value="Not Started">Not Started</option>
                                       <option value="In Progress">In Progress</option>
@@ -312,7 +303,7 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                                         Proposed UAT Date
                                         <span class="required">*</span>
                                     </span>
-                                    <input type="date" speed-validate-msg="Please select a date for the UAT"  speed-bind-validate="UATDate" speed-bind-class="UatData" />
+                                    <input type="date" class="approval-data" speed-validate-msg="Please select a date for the UAT"  speed-bind-validate="UATDate" speed-bind-class="UatData" />
                                 </label>
 
                             </div>
@@ -361,6 +352,14 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                                 </label>
                    -         </div>
                         `);
+                      }
+
+                      if (listProperties.IsApprovalNeeded === "No") {
+                        $("#approvalStagesContainer").hide();
+                      }
+
+                      if (listProperties.IsOtherUsersNeeded === "No") {
+                        $("#userAccessContainer").hide();
                       }
                       listProperties.ProposedStartDate = $spcontext.stringnifyDate({
                         value: listProperties.ProposedStartDate,
@@ -499,6 +498,7 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                         });
 
                         if (listProperties.ModificationType === "Minor") {
+                          $("#minorModificationFields").removeClass("hidden");
                           MainApplication.renderField({
                             containerId: "modificationProcessNameContainer",
                             className: "top-space",
@@ -511,10 +511,10 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                           MainApplication.renderField({
                             containerId: "modificationApplicationLinkContainer",
                             className: "top-space",
-                            type: "textarea",
-                            value: listProperties.ExistingLink,
-                            rows: 1,
-                            readonly: true,
+                            type: "a",
+                            href: listProperties.ExistingLink,
+                            target: "_blank",
+                            text: "View Application"
                           });
 
                           MainApplication.renderField({
@@ -658,172 +658,220 @@ MainApplication.ApproveRequestComponent.actionConfirmed = function () {
   );
 };
 
-MainApplication.ApproveRequestComponent.saveDataToList = function (
-  actionTaken,
-) {
+MainApplication.ApproveRequestComponent.saveDataToList = function (actionTaken) {
   globalDefinitions.onActionClicked();
-  var formData;
-  if (AppRequest.requestDetails.Current_Approver_Code === "AA2"
-    // ||
-    // AppRequest.requestDetails.Current_Approver_Code === "AA3" ||
-    // AppRequest.requestDetails.Current_Approver_Code === "AA4" ||
-    // AppRequest.requestDetails.Current_Approver_Code === "AA5"
-  ) {
-    formData = $spcontext.bind({}, "DevObj");
-    var pickerValues = PeoplePicker.getValue() || {};
-    var people = PeoplePicker.getConfiguredValue() || {};
-  } else if (AppRequest.requestDetails.Current_Approver_Code === "AA3") {
-    formData = $spcontext.bind({}, "Dev");
-  } else if (AppRequest.requestDetails.Current_Approver_Code === "AA4") {
-    formData = $spcontext.bind({}, "DevStatus");
-  } else if (AppRequest.requestDetails.Current_Approver_Code === "AA5") {
-    formData = $spcontext.bind({}, "UatData");
-  } else {
-    formData = {};
+
+  const stageCode = AppRequest.requestDetails.Current_Approver_Code;
+  const isApproved = actionTaken === "Approved";
+  const isDeclined = actionTaken === "Declined";
+  const isRevise  = actionTaken === "Revise";
+
+  // ------------------------------------------------------------------
+  // 0. Always restore original validation attributes first
+  // ------------------------------------------------------------------
+  // This makes the function safe no matter the order of button clicks
+  $(".approval-data").each(function () {
+    const bindAttr = $(this).attr("speed-binds");
+    // Only restore if it currently has speed-bind and we previously moved it
+    if (bindAttr && !$(this).attr("speed-bind-validate")) {
+      $(this)
+        .attr("speed-bind-validate", bindAttr)
+        .removeAttr("speed-binds");
+    }
+  });
+
+  // ------------------------------------------------------------------
+  // 1. Dynamic validation preparation
+  // ------------------------------------------------------------------
+  // For Revise / Decline we convert speed-bind-validate → speed-bind
+  // so those fields are collected but NOT validated.
+  if (!isApproved) {
+    $(".approval-data").each(function () {
+      const validateAttr = $(this).attr("speed-bind-validate");
+      if (validateAttr) {
+        $(this)
+          .attr("speed-binds", validateAttr)
+          .removeAttr("speed-bind-validate");
+      }
+    });
   }
 
-  if ($spcontext.checkPassedValidation()) {
-    // if (CurrentUserProperties.title === AppRequest.requestDetails.EmployeeName) {
-    // var formData = $spcontext.bind({});
-    // } else {
-    // var formData = {};
-    // }
-    // var formData = {};
-    console.log("AppRequest", AppRequest.requestDetails);
-    if (AppRequest.requestDetails.Current_Approver_Code === "AA2") {
-      var developer = pickerValues.Developer;
-      formData.Developer = developer || null;
-      var developerEmail = people.Developer;
+  // Always start with a clean error state
+  $spcontext.clearValidation();
+
+  // ------------------------------------------------------------------
+  // 2. Collect formData (and run validation only when needed)
+  // ------------------------------------------------------------------
+  let formData = {};
+  let people = {};
+  let pickerValues = {};
+
+  if (isApproved) {
+    // Only Approve should enforce validation + stage-specific binding
+    switch (stageCode) {
+      case "AA3":
+        formData = $spcontext.bind({}, "Dev");
+        pickerValues = PeoplePicker.getValue() || {};
+        people = PeoplePicker.getConfiguredValue() || {};
+        formData.Developer = pickerValues.Developer || null;
+        break;
+
+      case "AA4":
+        formData = $spcontext.bind({}, "DevStatus");
+        break;
+
+      case "AA5":
+        formData = $spcontext.bind({}, "UatData");
+        break;
+
+      default:
+        // AA1, AA2, AA6 – no extra fields required
+        formData = {};
+        break;
     }
-
-    AppRequest.comment = $("#approvercomment").val();
-
-    formData.Comment = AppRequest.comment;
-    // Build custom message for history action
-    let historyActionMessage = "";
-
-    if (actionTaken === "Approved") {
-      if (AppRequest.requestDetails.Current_Approver_Code === "AA1") {
-        historyActionMessage = "HOD Acknowledged";
-      } else if (AppRequest.requestDetails.Current_Approver_Code === "AA2") {
-        historyActionMessage = "Management Reviewed";
-      } else if (AppRequest.requestDetails.Current_Approver_Code === "AA3") {
-        historyActionMessage = "Developer proposed a timeline";
-      } else if (AppRequest.requestDetails.Current_Approver_Code === "AA4") {
-        historyActionMessage = "Developer updated the status";
-      } else if (AppRequest.requestDetails.Current_Approver_Code === "AA5") {
-        historyActionMessage = "Management proposed UAT";
-      } else if (AppRequest.requestDetails.Current_Approver_Code === "AA6") {
-        historyActionMessage = "HOD acknowledged process completion";
-      } else {
-        // historyActionMessage = "RDC Submitted";
-        MainApplication.notyf.error("You can't act on this request :(...");
-        $spcontext.redirect("#/", false);
-        return;
-      }
-    } else if (actionTaken === "Declined") {
-      if (AppRequest.requestDetails.Current_Approver_Code === "AA1") {
-        historyActionMessage = "HOD rejected the request";
-      } else if (AppRequest.requestDetails.Current_Approver_Code === "AA2") {
-        historyActionMessage = "Management rejected the request";
-      } else if (AppRequest.requestDetails.Current_Approver_Code === "AA3") {
-        historyActionMessage = "Developer rejected the request";
-      } else if (AppRequest.requestDetails.Current_Approver_Code === "AA4") {
-        historyActionMessage = "Developer rejected the request";
-      } else if (AppRequest.requestDetails.Current_Approver_Code === "AA5") {
-        historyActionMessage = "Management rejected the request";
-      } else if (AppRequest.requestDetails.Current_Approver_Code === "AA6") {
-        historyActionMessage = "HOD rejected the request";
-      } else {
-        // historyActionMessage = "RDC Submitted";
-        MainApplication.notyf.error("You can't act on this process...");
-        $spcontext.redirect("#/", false);
-      }
-    }
-
-    var historyProp = {
-      stage: AppRequest.requestDetails.Current_Approver,
-      comment: AppRequest.comment,
-      action: historyActionMessage,
-    };
-
-    formData = customWorkflowEngine
-      .routeEngine(customWorkflowEngine)
-      .requestHistoryHandler(
-        formData,
-        AppRequest.requestDetails.Transaction_History,
-        historyProp,
-      );
-    // formData = customWorkflowEngine.routeEngine(customWorkflowEngine).runRouting(formData, AppRequest.requestDetails.Current_Approver_Code, actionTaken);
-    console.log("Action taken", actionTaken);
-    if (actionTaken === "Approved" || actionTaken === "Declined") {
-      if (AppRequest.requestDetails.Current_Approver_Code === "AA2") {
-        // 1. Resolve a reliable email / login
-        var developerEmail = (people && people.Developer) || null;
-        if (!developerEmail) {
-          MainApplication.notyf.error("Please select a Developer");
-          globalDefinitions.onActionFailed();
-          return;
-        }
-
-        // 2. Guard the staff lookup
-        var staff = MainApplication.staffDetails[developerEmail];
-        if (!staff) {
-          console.error("No staffDetails entry for", developerEmail);
-          MainApplication.notyf.error(
-            "Selected developer not found in staff list",
-          );
-          globalDefinitions.onActionFailed();
-          return;
-        }
-
-        // 3. Update the stage with the real person
-        customWorkflowEngine.updateStageByName({
-          name: globalDefinitions.stageDefinitions.assigneddev,
-          username: staff.Title,
-          authenticationValue: developerEmail,
-          emails: [developerEmail],
-        });
-
-        // 4. Call runRouting the same way as the other stages
-        //    (pass the current stage code + action so the engine knows which transition to take)
-        formData = customWorkflowEngine
-          .routeEngine(customWorkflowEngine)
-          .runRouting(
-            formData,
-            AppRequest.requestDetails.Current_Approver_Code, // "AA2"
-            actionTaken, // "Approved"
-          );
-      } else if (AppRequest.requestDetails.Current_Approver_Code === "AA4") {
-        if (formData.Status === "Completed") {
-          formData = customWorkflowEngine
-            .routeEngine(customWorkflowEngine)
-            .runRouting(
-              formData,
-              AppRequest.requestDetails.Current_Approver_Code,
-              actionTaken,
-            );
-        } else {
-          console.log(formData);
-        }
-      } else {
-        // existing non-AA2 path
-        formData = customWorkflowEngine
-          .routeEngine(customWorkflowEngine)
-          .runRouting(
-            formData,
-            AppRequest.requestDetails.Current_Approver_Code,
-            actionTaken,
-          );
-      }
-    }
-    console.log("Form Data to be submitted:", formData);
-    globalDefinitions.onActionCompleted();
-    MainApplication.ApproveRequestComponent.proceedToList(formData);
   } else {
+    // Revise / Decline → collect values but skip validation
+    // (attributes already converted above)
+    formData = {};
+    var tempData = $spcontext.bind({});
+  }
+
+  // ------------------------------------------------------------------
+  // 3. Stop if validation failed (only relevant for Approve)
+  // ------------------------------------------------------------------
+  if (!$spcontext.checkPassedValidation()) {
     globalDefinitions.HandlerError("", true);
     globalDefinitions.onActionFailed();
+    return;
   }
+
+  // ------------------------------------------------------------------
+  // 4. Always capture the comment
+  // ------------------------------------------------------------------
+  AppRequest.comment = $("#approvercomment").val();
+  formData.Comment = AppRequest.comment;
+
+  // ------------------------------------------------------------------
+  // 5. History message lookup
+  // ------------------------------------------------------------------
+  const historyMessages = {
+    Approved: {
+      AA1: "HOD Acknowledged",
+      AA2: "Management Reviewed",
+      AA3: "Product Manager assigned a Developer",
+      AA4: "Developer updated the status",
+      AA5: "Product Manager proposed UAT",
+      AA6: "HOD acknowledged process completion",
+    },
+    Declined: {
+      AA1: "HOD rejected the request",
+      AA2: "Management rejected the request",
+      AA3: "Product Manager rejected the request",
+      AA4: "Developer rejected the request",
+      AA5: "Product Manager rejected the request",
+      AA6: "HOD rejected the request",
+    },
+    Revise: {
+      AA1: "HOD needed more information",
+      AA2: "Management needed more information",
+      AA3: "Product Manager needed more information",
+      AA4: "Developer needed more information",
+      AA5: "Product Manager needed more information",
+      AA6: "HOD needed more information",
+    },
+  };
+
+  const historyActionMessage = historyMessages[actionTaken]?.[stageCode];
+
+  if (!historyActionMessage) {
+    MainApplication.notyf.error("You can't act on this request :(...");
+    $spcontext.redirect("#/", false);
+    return;
+  }
+
+  // ------------------------------------------------------------------
+  // 6. Attach history
+  // ------------------------------------------------------------------
+  const historyProp = {
+    stage: AppRequest.requestDetails.Current_Approver,
+    comment: AppRequest.comment,
+    action: historyActionMessage,
+  };
+
+  formData = customWorkflowEngine
+    .routeEngine(customWorkflowEngine)
+    .requestHistoryHandler(
+      formData,
+      AppRequest.requestDetails.Transaction_History,
+      historyProp
+    );
+
+  // ------------------------------------------------------------------
+  // 7. Routing / stage-specific logic
+  // ------------------------------------------------------------------
+  if (isApproved || isDeclined) {
+    if (stageCode === "AA3") {
+      // Developer is mandatory when approving at AA3
+      const developerEmail = (people && people.Developer) || null;
+
+      if (!developerEmail) {
+        MainApplication.notyf.error("Please select a Developer");
+        globalDefinitions.onActionFailed();
+        return;
+      }
+
+      const staff = MainApplication.staffDetails[developerEmail];
+      if (!staff) {
+        console.error("No staffDetails entry for", developerEmail);
+        MainApplication.notyf.error("Selected developer not found in staff list");
+        globalDefinitions.onActionFailed();
+        return;
+      }
+
+      customWorkflowEngine.updateStageByName({
+        name: globalDefinitions.stageDefinitions.assigneddev,
+        username: staff.Title,
+        authenticationValue: developerEmail,
+        emails: [developerEmail],
+      });
+
+      formData = customWorkflowEngine
+        .routeEngine(customWorkflowEngine)
+        .runRouting(formData, stageCode, actionTaken);
+    }
+    else if (stageCode === "AA4") {
+      // Only advance when Status === "Completed"
+      if (formData.Status === "Completed") {
+        formData = customWorkflowEngine
+          .routeEngine(customWorkflowEngine)
+          .runRouting(formData, stageCode, actionTaken);
+      } else {
+        console.log("AA4 – Status is not Completed, skipping routing", formData);
+      }
+    }
+    else {
+      // Normal path for AA1, AA2, AA5, AA6
+      formData = customWorkflowEngine
+        .routeEngine(customWorkflowEngine)
+        .runRouting(formData, stageCode, actionTaken);
+    }
+  }
+  else if (isRevise) {
+    // Send back to initiator
+    formData.Current_Approver       = globalDefinitions.stageDefinitions.employee;
+    formData.Current_Approver_Code  = "AA0";
+    formData.PendingUserLogin       = AppRequest.requestDetails.InitiatorEmailAddress;
+    formData.PendingUserEmail       = AppRequest.requestDetails.InitiatorEmailAddress;
+    formData.Approval_Status        = "Pending";
+    formData.ReturnForCorrection    = "Yes";
+  }
+
+  // ------------------------------------------------------------------
+  // 8. Finish
+  // ------------------------------------------------------------------
+  console.log("Form Data to be submitted:", formData);
+  globalDefinitions.onActionCompleted();
+  MainApplication.ApproveRequestComponent.proceedToList(formData);
 };
 
 MainApplication.ApproveRequestComponent.proceedToList = function (formData) {
@@ -867,13 +915,13 @@ MainApplication.ApproveRequestComponent.renderModificationPeoplePicker = functio
   wrapper.className = "AdrFormGrid";
 
   wrapper.innerHTML = `
-      <label
-          for="${pickerId.toLowerCase()}"
-          class="AdrField"
-      >
+    <label
+        for="${pickerId.toLowerCase()}"
+        class="AdrField"
+    >
       <span>
-          ${label}
-          <span class="required">*</span>
+        ${label}
+        <span class="required">*</span>
       </span>
 
       <select
@@ -882,12 +930,13 @@ MainApplication.ApproveRequestComponent.renderModificationPeoplePicker = functio
                   placeholder-slate-400 focus:outline-none
                   focus:ring-2 focus:ring-primary-500
                   focus:border-transparent transition-all
-                  text-sm sm:text-base"
+                  text-sm sm:text-base
+                  approval-data"
           custom-people="${pickerId}"
           speed-bind-validate="${pickerId}"
           speed-validate-mode="true"
           speed-include-control="true"
-          speed-bind-class="DevObj"
+          speed-bind-class="Dev"
           speed-as-static="true"
           speed-validate-msg="Please select a Developer"
           control-value-type="people"
@@ -895,28 +944,36 @@ MainApplication.ApproveRequestComponent.renderModificationPeoplePicker = functio
           placeholder="${placeholder}"
           ${multiple ? "multiple" : ""}
       ></select>
-      </label>
+    </label>
   `;
 
   container.appendChild(wrapper);
 
-  const picker = wrapper.querySelector(`[custom-people="${pickerId}"]`);
+  const picker = wrapper.querySelector(
+    `[custom-people="${pickerId}"]`
+  );
 
   // Set default value BEFORE initialization
   if (defaultValue) {
     PeoplePicker.setDefault(pickerId, defaultValue);
   }
 
-  // Initialize only this picker
-  // PeoplePicker.defaultValues = {};
-    PeoplePicker.initializePeoplePickers(MainApplication.staffList);
+  // Initialize PeoplePicker
+  PeoplePicker.initializePeoplePickers(MainApplication.developers);
 
-  // PeoplePicker.initializePeoplePickers(
-  //     MainApplication.staffList,
-  //     null,
-  //     "custom-people",
-  //     picker
-  // );
+  // Reconfigure Select2
+  const $picker = $(picker);
+
+  if ($picker.hasClass("select2-hidden-accessible")) {
+    $picker.select2("destroy");
+  }
+
+  $picker.select2({
+    placeholder: placeholder,
+    allowClear: true,
+    minimumInputLength: 0,
+    width: "100%"
+  });
 };
 
 MainApplication.ApproveRequestComponent.renderModificationPeoplePickerReadonly = function ({
@@ -970,7 +1027,7 @@ MainApplication.ApproveRequestComponent.renderModificationPeoplePickerReadonly =
   const picker = wrapper.querySelector(`[custom-people="${pickerId}"]`);
 
   // 1. Initialize first
-  PeoplePicker.initializePeoplePickers(MainApplication.staffList);
+  PeoplePicker.initializePeoplePickers(MainApplication.developers);
 
   // 2. Set default AFTER initialization (so getValue / bind actually see it)
   if (defaultValue) {

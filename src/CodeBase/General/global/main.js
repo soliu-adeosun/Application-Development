@@ -143,7 +143,7 @@ function whenLayoutLoaded() {
   //============================================================================================
   $spcontext.loadSPDependencies(function () {
     var dependenciesCount = 0;
-    var expectedDepenciesCount = 7;
+    var expectedDepenciesCount = 8;
     // speedctxRoot = new Speed();
     globalDefinitions = new GlobalDefinitionsManager();
 
@@ -386,6 +386,45 @@ function whenLayoutLoaded() {
           checkAppDependency();
         });
 
+        var developerQuery = [
+    {
+        ascending: "TRUE",
+        orderby: "Title"
+    }
+];
+
+speedctxRoot.getItem(
+    "Developers",
+    $spcontext.camlBuilder([developerQuery]),
+    function (_spMeta) {
+
+        MainApplication.developers = [];
+
+        var listEnumerator = _spMeta.getEnumerator();
+
+        while (listEnumerator.moveNext()) {
+
+            var currentItem = listEnumerator.get_current();
+
+            var title = $spcontext.checkNull(
+                currentItem.get_item("Title")
+            );
+
+            var email = $spcontext.checkNull(
+                currentItem.get_item("Email")
+            );
+
+            MainApplication.developers.push({
+                Title: title,
+                Email: email
+            });
+        }
+
+
+        checkAppDependency();
+    }
+);
+
       },
     );
 
@@ -442,6 +481,7 @@ function whenLayoutLoaded() {
           configPropertiesRoot.CEO.setting,
           configPropertiesRoot.REPORTADMIN.setting,
           configPropertiesRoot.HOD.setting,
+          configPropertiesRoot.PRODUCTMANAGER.setting
         ],
         { email: CurrentUserProperties.email, groupEmails: true },
         function (isUserMember, groupUserProperties) {
@@ -459,10 +499,14 @@ function whenLayoutLoaded() {
             false; // adjust key
           const isInReportAdmin =
             groupUserProperties[configPropertiesRoot.REPORTADMIN.setting]
-              ?.belongs || false; // adjust key
+              ?.belongs || false; 
+              
+          const isProductManager =
+            groupUserProperties[configPropertiesRoot.PRODUCTMANAGER.setting]
+              ?.belongs || false; 
 
           MainApplication.isPureHOD =
-            isInHOD && !isInManagement && !isInCEO && !isInReportAdmin;
+            isInHOD && !isInManagement && !isInCEO && !isInReportAdmin && !isProductManager;
           checkAppDependency();
         },
       );
@@ -634,7 +678,7 @@ MainApplication.populateSelect2 = function (divisions) {
 MainApplication.renderField = function (options) {
     const {
         containerId,
-        type = "input",
+        type = "input",          // "input" | "textarea" | "a"
         bindValidate = "",
         placeholder = "",
         inputType = "text",
@@ -642,7 +686,12 @@ MainApplication.renderField = function (options) {
         readonly = false,
         value = "",
         rows = 4,
-        className = ""
+        className = "",
+        // New options for <a>
+        href = "#",
+        target = "_self",
+        download = false,
+        text = ""               // preferred over "value" for links
     } = options;
 
     const $container = $("#" + containerId);
@@ -663,29 +712,47 @@ MainApplication.renderField = function (options) {
             placeholder: placeholder,
             rows: rows
         });
-
         $field.val(value);
 
+    } else if (type === "a" || type === "link") {
+        $field = $("<a>", {
+            class: className,
+            href: href,
+            target: target
+        });
+
+        // Prefer explicit "text", fall back to "value"
+        $field.text(text || value || href);
+
+        if (download) {
+            $field.attr("download", typeof download === "string" ? download : true);
+        }
+
     } else {
+        // Default: input
         $field = $("<input>", {
             type: inputType,
             class: className,
             placeholder: placeholder
         });
-
         $field.val(value);
     }
 
-    // Set boolean properties
-    $field.prop("required", required);
-    $field.prop("readonly", readonly);
+    // These only make sense for form controls
+    if (type !== "a" && type !== "link") {
+        $field.prop("required", required);
+        $field.prop("readonly", readonly);
 
-    // Add speed validation binding if supplied
-    if (bindValidate) {
-        $field.attr("speed-bind-validate", bindValidate);
+        // Add speed validation binding if supplied
+        if (bindValidate) {
+            $field.attr("speed-bind-validate", bindValidate);
+        }
     }
 
     $container.append($field);
+
+    // Optional: return the created element for further chaining
+    return $field;
 };
 
 MainApplication.DateConstraints = {

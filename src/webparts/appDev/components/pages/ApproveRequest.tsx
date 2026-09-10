@@ -30,7 +30,7 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                 </label>
               </div>
 
-              <div className="AdrFormGrid top-space">
+              <div className="AdrFormGrid top-space hidden" id="minorModificationFields">
                 <label className="AdrField" id="modificationProcessNameField">
                   <span>Process Name</span>
                   <div id="modificationProcessNameContainer" />
@@ -116,23 +116,6 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                   </label>
 
                   <label className="AdrField">
-                    <span>Requirement Statement</span>
-                    <textarea
-                      readOnly
-                      placeholder="Enter text"
-                      speed-bind="RequirementStatement"
-                    />
-                  </label>
-
-                  {/* <label className="AdrField">
-                  <span>Justification Statement</span>
-                  <textarea readOnly
-                    placeholder="Enter text"
-                    speed-bind="JustificationStatement"
-                  />
-                </label> */}
-
-                  <label className="AdrField">
                     <span>Date Required</span>
                     <input
                       type="text"
@@ -189,6 +172,7 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                           <th speed-array-prop="actors">
                             Who Does It / Who Is Involved
                           </th>
+                          <th speed-array-prop="template">Email Template</th>
                         </tr>
                       </thead>
                       <tbody id="stepByStepDescription" />
@@ -208,17 +192,6 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                       speed-bind="ExistingLink"
                     />
                   </label>
-
-                  {/* <label className="AdrField">
-                  <span>
-                    What are the biggest pain points or challenges with the
-                    current process?
-                  </span>
-                  <textarea readOnly
-                    placeholder="Enter text"
-                    speed-bind="PainPoints"
-                  />
-                </label> */}
 
                   <label className="AdrField">
                     <span>What marks the process as complete?</span>
@@ -304,7 +277,7 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                   </label>
                 </div>
 
-                <div className="table-wrapper">
+                <div className="table-wrapper" id="approvalStagesContainer">
                   <div className="tableLabel">
                     <span>List all approval stages in order</span>
                     {/* <button
@@ -389,60 +362,27 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                 <div className="AdrSectionHeader">
                   <span>4</span>
                   <div>
-                    <h3>Notifications & Communications</h3>
-                    {/* <p>Request owner and submission date.</p> */}
-                  </div>
-                </div>
-
-                <div className="table-wrapper">
-                  <div className="tableLabel">
-                    <span>
-                      Who should be notified and at what points in the process?
-                    </span>
-                    {/* <button
-                    className="AdrAddButton"
-                    id="addNotificationButton"
-                    type="button"
-                  >
-                    + Add New Row
-                  </button> */}
-                  </div>
-                  <div className="AdrTableShell">
-                    <table
-                      className="AdrTable"
-                      id="notifications"
-                      speed-serialno="true"
-                      speed-validate-mode="false"
-                      speed-bind-table="Notifications"
-                    >
-                      <thead>
-                        <tr>
-                          <th>S/N</th>
-                          <th speed-array-prop="event">
-                            Event/Trigger (e.g Request is submitted)
-                          </th>
-                          <th speed-array-prop="users">
-                            Who Should Be Notified? (Requestor, Line Manager)
-                          </th>
-                          <th speed-array-prop="template">Email Template</th>
-                        </tr>
-                      </thead>
-                      <tbody id="notificationsBody" />
-                    </table>
-                  </div>
-                </div>
-              </section>
-
-              <section className="AdrFormSection">
-                <div className="AdrSectionHeader">
-                  <span>5</span>
-                  <div>
                     <h3>User Roles & Access Control</h3>
                     {/* <p>Request owner and submission date.</p> */}
                   </div>
                 </div>
 
-                <div className="table-wrapper">
+                <div className="AdrFormGrid">
+                  <label className="AdrField">
+                    <span>
+                      Are there other Users to be considered in this process?
+                      <span className="required">*</span>
+                    </span>
+                    <input
+                      readOnly
+                      type="text"
+                      id="isOtherUsersNeeded"
+                      speed-bind="IsOtherUsersNeeded"
+                    />
+                  </label>
+                </div>
+
+                <div className="table-wrapper" id="userAccessContainer">
                   <div className="tableLabel">
                     <span>
                       Who are the different types of users of this system?
@@ -516,7 +456,7 @@ export default class ApproveRequest extends React.Component<{}, {}> {
 
               <section className="AdrFormSection">
                 <div className="AdrSectionHeader">
-                  <span>6</span>
+                  <span>5</span>
                   <div>
                     <h3>Other Features</h3>
                     {/* <p>Request owner and submission date.</p> */}
@@ -606,7 +546,7 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                     speed-bind-validate="Comment"
                     speed-include-control="false"
                     speed-as-static="true"
-                    speed-validate-type="Comments"
+                    speed-validate-type="Comment"
                     speed-event-switch="false"
                     speed-validate-msg="Please tell us why you want to decline this process!"
                   />

@@ -191,6 +191,9 @@ rsBAContext.bindListDirectives({
   $("#isApprovalsNeeded").on("change", function () {
       MainApplication.NewRequestComponent.toggleApprovalStages();
   });
+  $("#isOtherUsersNeeded").on("change", function () {
+      MainApplication.NewRequestComponent.toggleOtherUsersNeeded();
+  });
   $("#period").on("change", function () {
       MainApplication.NewRequestComponent.toggleOtherPeriod();
   });
@@ -260,6 +263,7 @@ $("#conditionalApproval").on("change", function () {
   MainApplication.NewRequestComponent.toggleRetentionPeriod();
   MainApplication.NewRequestComponent.toggleOtherPeriod();
   MainApplication.NewRequestComponent.toggleApprovalStages();
+  MainApplication.NewRequestComponent.toggleOtherUsersNeeded();
   MainApplication.NewRequestComponent.togglePullFromOtherSystem();
   MainApplication.NewRequestComponent.toggleRelatedProcess();
   MainApplication.NewRequestComponent.toggleRequestType();
@@ -663,14 +667,16 @@ MainApplication.NewRequestComponent.hydrateDynamicTables = function (savedData) 
 // Form submission processes
 MainApplication.NewRequestComponent.confirmSubmit = function (action) {
   if (action === "Draft") {
-        MainApplication.confirmAction = MainApplication.NewRequestComponent.saveConfirmed;
-        $("#confirmModal").modal("show");
-        console.log(action);
-    } else {
-        MainApplication.confirmAction = MainApplication.NewRequestComponent.actionConfirmed;
-        $("#confirmModal").modal("show");
-        console.log(action);
-    }
+      MainApplication.confirmAction = MainApplication.NewRequestComponent.saveConfirmed;
+      $("#confirmModal").modal("show");
+      console.log(action);
+  } else {
+      MainApplication.confirmAction = MainApplication.NewRequestComponent.actionConfirmed;
+      $("#confirmModal").modal("show");
+      console.log(action);
+  }
+
+  AppRequest.actionTaken = action;
 }
 
 MainApplication.NewRequestComponent.actionConfirmed = function () {
@@ -732,7 +738,7 @@ MainApplication.NewRequestComponent.saveDataToList = function () {
       formData.ReturnForCorrection = "No";
       formData = customWorkflowEngine
       .routeEngine(customWorkflowEngine)
-      .requestHistoryHandler(formData, AppRequest.transactionHistory, {
+      .requestHistoryHandler(formData, AppRequest.requestDetails.Transaction_History, {
         stage: globalDefinitions.stageDefinitions.employee,
         action: "Application Re-submitted",
       });
@@ -850,16 +856,23 @@ MainApplication.NewRequestComponent.proceedToList = function (formData) {
 				updateObj.SLA_COUNT_UPDATED = "No";
 
 				speedctxRoot.updateItems([updateObj], globalDefinitions.stageDefinitions.listname, function () {
-					globalDefinitions.HandlerSuccess(`Request submitted successfully`);
-					$spcontext.redirect("#/", false);
-					globalDefinitions.closeLoader();
+          if (AppRequest.actionTaken === "submit") {
+            globalDefinitions.HandlerSuccess(`Request submitted successfully`);
+            $spcontext.redirect("#/", false);
+            globalDefinitions.closeLoader();
 
-					globalDefinitions.AuditLogManager_SaveLog({
-						Action: `Submitted Request  ${AppRequest.requestDetails.WorkflowRequestID}`,
-					});
+            globalDefinitions.AuditLogManager_SaveLog({
+              Action: `Submitted Request  ${AppRequest.requestDetails.WorkflowRequestID}`,
+            });
 					// });
-
-					globalDefinitions.onActionCompleted();
+          } else {
+            globalDefinitions.HandlerSuccess(`Request saved as draft successfully`);
+            $spcontext.redirect("#/", false);
+            globalDefinitions.closeLoader();
+            globalDefinitions.AuditLogManager_SaveLog({
+              Action: `Saved Request  ${AppRequest.requestDetails.WorkflowRequestID}`,
+            });
+          }
 				});
 			});
 		} else {
@@ -873,22 +886,30 @@ MainApplication.NewRequestComponent.proceedToList = function (formData) {
       // });
 
 			speedctxRoot.updateItems([formData], globalDefinitions.stageDefinitions.listname, function () {
-				if (AppRequest.requestDetails.ReturnForCorrection !== "Yes") {
-					AppRequest.requestDetails.Current_Approver = formData.Current_Approver;
-				}
+				// if (AppRequest.requestDetails.ReturnForCorrection !== "Yes") {
+				// 	AppRequest.requestDetails.Current_Approver = formData.Current_Approver;
+				// }
 
-				setTimeout(() => {
-					globalDefinitions.closeLoader();
-				}, 2000);
-				globalDefinitions.HandlerSuccess("Request modified successfully");
+				if (AppRequest.actionTaken === "submit") {
+            globalDefinitions.HandlerSuccess(`Request submitted successfully`);
+            $spcontext.redirect("#/", false);
+            globalDefinitions.closeLoader();
 
-				globalDefinitions.AuditLogManager_SaveLog({
-					Action: `submitted request ${AppRequest.requestDetails.WorkflowRequestID}`
-				});
-				globalDefinitions.onActionCompleted();
-				$spcontext.redirect("#/", false);
+            globalDefinitions.AuditLogManager_SaveLog({
+              Action: `Submitted Request  ${AppRequest.requestDetails.WorkflowRequestID}`,
+            });
+					// });
+          } else {
+            globalDefinitions.HandlerSuccess(`Request saved as draft successfully`);
+            $spcontext.redirect("#/", false);
+            globalDefinitions.closeLoader();
+            globalDefinitions.AuditLogManager_SaveLog({
+              Action: `Saved Request  ${AppRequest.requestDetails.WorkflowRequestID}`,
+            });
+          }
 			});
 		}
+    globalDefinitions.onActionCompleted();
 	});
 };
 MainApplication.NewRequestComponent.toggleApprovalStages = function () {
@@ -948,6 +969,25 @@ MainApplication.NewRequestComponent.toggleApprovalStages = function () {
 
         // Clear table
         $("#approvalStages").empty();
+    }
+};
+
+MainApplication.NewRequestComponent.toggleOtherUsersNeeded = function () {
+    const isOtherUsersNeeded = $("#isOtherUsersNeeded").val() === "Yes";
+
+    const $container = $("#userAccessContainer");
+    const $table = $("#userAccess");
+
+    // User access table
+    $container.toggleClass("hidden", !isOtherUsersNeeded);
+    $table.attr(
+        "speed-validate-mode",
+        isOtherUsersNeeded ? "true" : "false"
+    );
+
+    if (!isOtherUsersNeeded) {
+        // Clear table
+        $("#userAccessBody").empty();
     }
 };
 
@@ -1062,7 +1102,7 @@ MainApplication.NewRequestComponent.recoverListData = function () {
         operator: "Eq",
         field: "Approval_Status",
         type: "Text",
-        val: "Revise",
+        val: "Pending",
       },
     ]);
 
@@ -1123,6 +1163,13 @@ MainApplication.NewRequestComponent.recoverListData = function () {
       "WhatShouldChange",
       "ModificationReason",
       "SystemsAffected",
+      "IsOtherUsersNeeded",
+      "ProposedStartDate",
+      "EndDate",
+      "UATDate",
+      "Status",
+      "Developer",
+      "IsOtherUsersNeeded"
     ];
 
     speedctxRoot.getListToControl(
@@ -1281,6 +1328,7 @@ MainApplication.NewRequestComponent.recoverListData = function () {
                       MainApplication.NewRequestComponent.toggleOtherPeriod(listProperties.Period);
                       MainApplication.NewRequestComponent.toggleRetentionPeriod(listProperties.RetentionPeriod);
                       MainApplication.NewRequestComponent.toggleApprovalStages();
+                      MainApplication.NewRequestComponent.toggleOtherUsersNeeded();
                       MainApplication.NewRequestComponent.togglePullFromOtherSystem(listProperties.PullDataFromAnotherSystem);
                       MainApplication.NewRequestComponent.toggleRelatedProcess(listProperties.RelatedProcessInformation);
 
@@ -1474,6 +1522,8 @@ MainApplication.NewRequestComponent.prepareAllTables = function () {
 
       actors: MainApplication.NewRequestComponent.textAreaColumn("actors"),
 
+      template: MainApplication.NewRequestComponent.textAreaColumn("template"),
+
       action:
         MainApplication.NewRequestComponent.deleteColumn(AppRequest.stepByStepCTX, "StepByStepProcess"),
     },
@@ -1499,27 +1549,6 @@ MainApplication.NewRequestComponent.prepareAllTables = function () {
 
       action:
         MainApplication.NewRequestComponent.deleteColumn(AppRequest.approvalTableCTX, "Approvers"),
-    },
-  });
-
-  MainApplication.NewRequestComponent.initializeDynamicTable({
-    ctx: AppRequest.notificationTableCTX,
-
-    tableName: "Notifications",
-
-    root: "notificationsBody",
-
-    addButton: "#addNotificationButton",
-
-    bindExtensions: {
-      event: MainApplication.NewRequestComponent.textColumn("event"),
-
-      users: MainApplication.NewRequestComponent.textColumn("users"),
-
-      template: MainApplication.NewRequestComponent.textColumn("template"),
-
-      action:
-        MainApplication.NewRequestComponent.deleteColumn(AppRequest.notificationTableCTX, "Notifications"),
     },
   });
 

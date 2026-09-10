@@ -15,6 +15,7 @@ GlobalDefinitionsManager.prototype.extendStages = function () {
     this.stageDefinitions.hod = "HOD";
     this.stageDefinitions.hodGroup = configProperties.HOD.setting;
     this.stageDefinitions.assigneddev = "Developer";
+    this.stageDefinitions.productManager = configProperties.PRODUCTMANAGER.setting;
     // this.stageDefinitions.auditees = "Auditees";
 };
 
@@ -74,10 +75,10 @@ GlobalDefinitionsManager.prototype.SetWorkflowRouting = function (customWorkflow
             code: "AA3",
             initiationCode: "AA2",            
             possibleRoutes: [{
-                name: globalDefinitions.stageDefinitions.assigneddev,
+                name: globalDefinitions.stageDefinitions.productManager,
                 username: "",
                 condition: true,
-                authenticationType: customWorkflowEngine.stages.user,
+                authenticationType: customWorkflowEngine.stages.group,
                 authenticationValue: null,
                 actionType: "Actor",
                 emails: [],
@@ -106,7 +107,7 @@ GlobalDefinitionsManager.prototype.SetWorkflowRouting = function (customWorkflow
             code: "AA5",
             initiationCode: "AA4",            
             possibleRoutes: [{
-                name: globalDefinitions.stageDefinitions.management,
+                name: globalDefinitions.stageDefinitions.productManager,
                 username: "",
                 condition: true,
                 authenticationType: customWorkflowEngine.stages.group,

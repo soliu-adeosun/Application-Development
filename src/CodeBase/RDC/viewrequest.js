@@ -151,7 +151,14 @@ MainApplication.ViewRequestComponent.recoverListData = function () {
       "CurrentFunctionality",
       "WhatShouldChange",
       "ModificationReason",
-      "SystemsAffected"
+      "SystemsAffected",
+      "IsOtherUsersNeeded",
+      "ProposedStartDate",
+      "EndDate",
+      "UATDate",
+      "Status",
+      "Developer",
+      "IsOtherUsersNeeded"
     ];
 
     speedctxRoot.getListToControl(
@@ -184,6 +191,14 @@ MainApplication.ViewRequestComponent.recoverListData = function () {
                         includeTime: false,
                         format: "dd/mm/yy",
                       });
+
+                      if (listProperties.IsApprovalNeeded === "No") {
+                        $("#approvalStagesContainer").hide();
+                      }
+
+                      if (listProperties.IsOtherUsersNeeded === "No") {
+                        $("#userAccessContainer").hide();
+                      }
 
                       listProperties.StepByStepProcess = $spcontext.JSONToObject(listProperties.StepByStepProcess);
                       listProperties.Approvers = $spcontext.JSONToObject(listProperties.Approvers);
@@ -278,7 +293,7 @@ MainApplication.ViewRequestComponent.recoverListData = function () {
                         });
 
                         if (listProperties.ModificationType === "Minor") {
-
+                          $("#minorModificationFields").removeClass("hidden");
                           MainApplication.renderField({
                               containerId: "modificationProcessNameContainer",
                               className: "top-space",

@@ -96,25 +96,6 @@ export default class NewRequest extends React.Component<{}, {}> {
 
                   <label className="AdrField">
                     <span>
-                      Requirement Statement
-                      <span className="required">*</span>
-                    </span>
-                    <textarea
-                      placeholder="Enter text"
-                      speed-bind-validate="RequirementStatement"
-                      speed-bind-class="ProcessOverview"
-                    />
-                  </label>
-
-                  {/* <label className="AdrField">
-                  <span>Justification Statement
-                    <span className="required">*</span>
-                  </span>
-                  <textarea placeholder="Enter text" speed-bind-validate="JustificationStatement" speed-bind-class="ProcessOverview" />
-                </label> */}
-
-                  <label className="AdrField">
-                    <span>
                       Date Required
                       <span className="required">*</span>
                     </span>
@@ -183,6 +164,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                           <th speed-array-prop="actors">
                             Who Does It / Who Is Involved
                           </th>
+                          <th speed-array-prop="template">Email Template</th>
                           <th
                             speed-array-prop="action"
                             speed-exclude-result="true"
@@ -246,6 +228,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                   <label className="AdrField">
                     <span>
                       Attach relevant forms and flowchart for this process
+                      <span className="required">*</span>
                     </span>
                     <input
                       type="file"
@@ -403,15 +386,6 @@ export default class NewRequest extends React.Component<{}, {}> {
                     <div id="approvalsContainer" />
                   </label>
 
-                  {/* <label className="AdrField">
-                  <span>
-                    What is the maximum time allowed at each approval stage
-                    <span className="required">*</span>
-                  </span>
-                  <input id="maxApprovalTime" placeholder="Enter number in hours" type="number"  speed-bind-validate="MaxApprovalTime"/>
-
-                </label> */}
-
                   <label className="AdrField">
                     <span>
                       Who can delegate or act on behalf of an approver when they
@@ -427,79 +401,34 @@ export default class NewRequest extends React.Component<{}, {}> {
                 </div>
               </section>
 
+
               <section className="AdrFormSection">
                 <div className="AdrSectionHeader">
                   <span>4</span>
-                  <div>
-                    <h3>Notifications & Communications</h3>
-                    {/* <p>Request owner and submission date.</p> */}
-                  </div>
-                </div>
-
-                <div className="table-wrapper">
-                  <div className="tableLabel">
-                    <span>
-                      Who should be notified and at what points in the process?
-                      <span className="required">*</span>
-                    </span>
-                    <button
-                      className="AdrAddButton"
-                      id="addNotificationButton"
-                      type="button"
-                    >
-                      + Add New Row
-                    </button>
-                  </div>
-                  <div className="AdrTableShell">
-                    <table
-                      className="AdrTable"
-                      id="notifications"
-                      speed-bind-class="Notifications"
-                      speed-json="false"
-                      speed-validate-mode="true"
-                      speed-bind-table="Notifications"
-                      speed-bind-auto="false"
-                    >
-                      <thead>
-                        <tr>
-                          <th>S/N</th>
-                          <th speed-array-prop="event">
-                            Event/Trigger{" "}
-                            <span style={{ fontStyle: "italic" }}>
-                              (e.g Request is submitted)
-                            </span>
-                          </th>
-                          <th speed-array-prop="users">
-                            Who Should Be Notified?{" "}
-                            <span style={{ fontStyle: "italic" }}>
-                              (Requestor, Line Manager)
-                            </span>
-                          </th>
-                          <th speed-array-prop="template">Email Template</th>
-                          <th
-                            speed-array-prop="action"
-                            speed-exclude-result="true"
-                          >
-                            Action
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody id="notificationsBody" />
-                    </table>
-                  </div>
-                </div>
-              </section>
-
-              <section className="AdrFormSection">
-                <div className="AdrSectionHeader">
-                  <span>5</span>
                   <div>
                     <h3>User Roles & Access Control</h3>
                     {/* <p>Request owner and submission date.</p> */}
                   </div>
                 </div>
 
-                <div className="table-wrapper">
+                <div className="AdrFormGrid">
+                  <label className="AdrField">
+                    <span>
+                      Are there other Users to be considered in this process?
+                      <span className="required">*</span>
+                    </span>
+                    <select
+                      id="isOtherUsersNeeded"
+                      speed-bind-validate="IsOtherUsersNeeded"
+                    >
+                      <option value="">Select a value</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </label>
+                </div>
+
+                <div className="table-wrapper hidden" id="userAccessContainer">
                   <div className="tableLabel">
                     <span>
                       Who are the different types of users of this system?
@@ -573,7 +502,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                     ></textarea>
                   </label>
 
-                  <label className="AdrField">
+                  {/* <label className="AdrField">
                     <span>
                       Who should be the Process Owner (main overseer) of this
                       system?
@@ -584,13 +513,13 @@ export default class NewRequest extends React.Component<{}, {}> {
                       type="text"
                       speed-bind-validate="ProcessOwner"
                     />
-                  </label>
+                  </label> */}
                 </div>
               </section>
 
               <section className="AdrFormSection">
                 <div className="AdrSectionHeader">
-                  <span>6</span>
+                  <span>5</span>
                   <div>
                     <h3>Other Features</h3>
                     {/* <p>Request owner and submission date.</p> */}
