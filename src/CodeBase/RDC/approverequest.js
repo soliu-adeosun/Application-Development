@@ -354,7 +354,7 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                         `);
                       }
 
-                      if (listProperties.IsApprovalNeeded === "No") {
+                      if (listProperties.IsApprovalsNeeded === "No") {
                         $("#approvalStagesContainer").hide();
                       }
 
@@ -422,8 +422,8 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                         "object",
                       );
 
-                      listProperties.Delegate =
-                        listProperties.Delegate.value || "";
+                      // was: listProperties.Delegate = listProperties.Delegate.value || "";
+listProperties.Delegate = (listProperties.Delegate && listProperties.Delegate.value) || "";
 
                       AppRequest.FolderUrl = listProperties.Attachment_Folder;
                       AppRequest.FileUrls = $spcontext.deferenceObject(

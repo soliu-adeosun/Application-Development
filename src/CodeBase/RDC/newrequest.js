@@ -1253,7 +1253,8 @@ MainApplication.NewRequestComponent.recoverListData = function () {
                         "object",
                       );
 
-                      listProperties.Delegate = listProperties.Delegate.email;
+                      // was: listProperties.Delegate = listProperties.Delegate.email;
+listProperties.Delegate = (listProperties.Delegate && (listProperties.Delegate.email || listProperties.Delegate.value)) || "";
 
                       AppRequest.FolderUrl = listProperties.Attachment_Folder;
                       AppRequest.FileUrls = $spcontext.deferenceObject(

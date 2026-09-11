@@ -2360,9 +2360,9 @@ Speed.prototype.htmlBind = function (listObjects, bindExtensions, bindClass) {
     bindExtensions = (typeof bindExtensions == "undefined") ? {} : bindExtensions;
     var useBindClass = (typeof bindClass == "undefined") ? false : bindClass;
     function defaultExecutor(columnPassedValue) {
-        columnPassedValue = (typeof columnPassedValue == "undefined") ? "" : columnPassedValue;
-        return speedContext.replaceSpecialkeysinString(columnPassedValue);
-    }
+    columnPassedValue = (columnPassedValue == null) ? "" : columnPassedValue;  // was only === "undefined"
+    return speedContext.replaceSpecialkeysinString(columnPassedValue);
+}
 
     for (var key in listObjects) {
         if (listObjects.hasOwnProperty(key)) {
@@ -5763,20 +5763,32 @@ Speed.prototype.deferenceObject = function (referenceObject) {
  * @returns {string} the result output.
  */
 Speed.prototype.replaceSpecialkeysinString = function (stringVal) {
+    // Guard null / undefined first
+    if (stringVal == null) {
+        return "";
+    }
+
     if (Object.prototype.toString.call(stringVal) === "[object Date]") {
         return this.stringnifyDate({
             value: stringVal,
             format: "dd/mm/yy"
         });
     }
-    else if (typeof stringVal == "number") {
+    else if (typeof stringVal === "number") {
         return stringVal;
     }
-    else {
+    else if (typeof stringVal === "string") {
         return stringVal.replace(/(?:\r\n|\r|\n)/g, '<br />');
     }
-
-}
+    else {
+        // objects, arrays, etc. – never call .replace on them
+        try {
+            return String(stringVal);
+        } catch (e) {
+            return "";
+        }
+    }
+};
 
 Speed.prototype.truncateByWords = function (text, wordLimit) {
     const words = text.trim().split(/\s+/); // splits by any whitespace
