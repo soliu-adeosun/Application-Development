@@ -1037,13 +1037,20 @@ MainApplication.NewRequestComponent.toggleOtherPeriod = function (savedPeriodVal
             <input
                 type="text"
                 id="otherPeriod"
-                placeholder="Please specify"
+                placeholder="Please specify (max 20 characters)"
                 speed-bind-validate="Period"
                 speed-bind-class="ProcessOverview"
                 class="top-space"
+                maxlength="20"
                 value="${isCustomValue ? savedPeriodValue : ""}"
             />
         `);
+
+        $("#otherPeriod").on("input", function () {
+            if (this.value.length >= 20) {
+                globalDefinitions.HandlerError("You cannot enter more than 20 characters");
+            }
+        });
     } else {
         $container.empty();
     }

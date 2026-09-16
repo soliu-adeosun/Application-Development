@@ -89,23 +89,18 @@ function MainStartPoint() {
         description: "Ability to save an incomplete form and return to it later.",
         defaultChecked: true
     },
-    {
-        id: "editAfterSubmission",
-        title: "Edit After Submission",
-        description: "Ability to edit a submitted record before approval.",
-        defaultChecked: true
-    },
+    
     {
         id: "exportExcel",
         title: "Export to Excel / CSV",
         description: "Download records as a spreadsheet.",
-        defaultChecked: false
+        defaultChecked: true
     },
     {
         id: "printPdf",
         title: "Print / Download as PDF",
         description: "Print or save records as PDF documents.",
-        defaultChecked: false
+        defaultChecked: true
     },
     {
         id: "dashboardSummary",
@@ -114,9 +109,15 @@ function MainStartPoint() {
         defaultChecked: true
     },
     {
-        id: "bulkActions",
-        title: "Bulk Actions",
-        description: "Approve, decline, or export multiple records at once.",
+        id: "sortFilter",
+        title: "Sort / Filter",
+        description: "Ability to rearrange and display data based on criteria.",
+        defaultChecked: true
+    },
+    {
+        id: "editAfterSubmission",
+        title: "Edit and Resubmit",
+        description: "Ability to edit a record and resubmit, if declined.",
         defaultChecked: false
     },
     {

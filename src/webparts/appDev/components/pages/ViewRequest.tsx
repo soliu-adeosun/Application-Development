@@ -169,7 +169,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                           <th speed-array-prop="actors">
                             Who Does It / Who Is Involved
                           </th>
-                          <th speed-array-prop="template">Email Template</th>
+                          <th speed-array-prop="template">Who To Be Notified</th>
                         </tr>
                       </thead>
                       <tbody id="stepByStepDescription" />
@@ -378,7 +378,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                 <div className="AdrFormGrid">
                   <label className="AdrField">
                     <span>
-                      Are there other Users to be considered in this process?
+                      Apart from the ones listed in Section 1, are there other users of this system?
                       <span className="required">*</span>
                     </span>
                     <input

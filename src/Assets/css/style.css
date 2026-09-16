@@ -82,7 +82,7 @@
 
 .AdrFormGrid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; padding: 22px 24px; }
 .AdrFormGrid.AdrFormGridFull { grid-template-columns: 1fr; }
-.AdrField span, .AdrDsdGrid span { display: block; margin-bottom: 7px; color: #667085; font-weight: 500; }
+.AdrField span, .AdrDsdGrid span { display: block; margin-bottom: 7px; color: #000; font-weight: 500; }
 .AdrField input, .AdrField select, .AdrField textarea { width: 100%; min-height: 43px; padding: 10px 12px; border: 1px solid #e0e3e8; border-radius: 10px; background: #fff; color: var(--adr-ink); outline: 0; font-family: inherit; font-size: 13px; }
 .AdrField textarea { min-height: 96px; resize: vertical; }
 .AdrField input:focus, .AdrField select:focus, .AdrField textarea:focus { border-color: var(--adr-accent); box-shadow: 0 0 0 3px rgba(52,84,209,.12); }
