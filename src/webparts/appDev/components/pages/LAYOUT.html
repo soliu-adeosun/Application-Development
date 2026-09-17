@@ -1,0 +1,934 @@
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap');
+
+    :root {
+      --page: #F7F6F3;
+      --surface: #FFFFFF;
+      --surface-soft: #FBFAF8;
+      --text: #191C1F;
+      --muted: #6E7178;
+      --muted-light: #8A8D93;
+      --border: #E7E4DF;
+      --border-light: #EFECE7;
+      --input-border: #DDD9D3;
+      --sidebar: #171A21;
+      --sidebar-muted: #9DA2AC;
+      --accent: #A0441D;
+      --accent-dark: #8A3916;
+      --accent-soft: #F6EFEA;
+      --success-bg: #EAF3EC;
+      --success: #256B3C;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #7D2D12;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    /* Layout */
+
+
+    .nav-link:hover {
+      background: rgba(255, 255, 255, .06);
+      color: #fff;
+    }
+
+    .nav-link.active {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* Header */
+
+    /* Main content */
+    .page-heading {
+      margin: 0;
+    }
+
+    .page-heading {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .eyebrow {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .page-heading h3 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -.02em;
+      line-height: 1.1;
+    }
+
+    .request-type {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .request-type-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 11px;
+      border-radius: 6px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12.5px;
+      font-weight: 600;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .main-column {
+      display: grid;
+      gap: 20px;
+      min-width: 0;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .section-number {
+      width: 24px;
+      height: 24px;
+      flex: 0 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .card-header h3 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -.01em;
+    }
+
+    .fields {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px 28px;
+      padding: 22px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .field-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .field-value {
+      font-size: 14.5px;
+      line-height: 1.55;
+      color: var(--text);
+    }
+
+    .tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: #F4F3F0;
+      border: 1px solid var(--border);
+      color: #3F434A;
+    }
+
+    .subsection {
+      padding: 0 22px 22px;
+    }
+
+    .subsection-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .table-wrap {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: auto;
+    }
+
+    .data-table {
+      min-width: 620px;
+    }
+
+    .data-table th {
+      padding: 10px 16px;
+      background: var(--surface-soft);
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--muted-light);
+      white-space: nowrap;
+    }
+
+    .data-table td {
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--border-light);
+      font-size: 13.5px;
+      vertical-align: top;
+    }
+
+    .data-table tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .number-cell {
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .extra-fields {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px 28px;
+      padding: 0 22px 22px;
+    }
+
+    .attachment {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 14px;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .attachment svg {
+      width: 15px;
+      height: 15px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Other features */
+    .feature-table {
+      min-width: 560px;
+    }
+
+    .feature-check {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 5px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 12px;
+    }
+
+    .feature-empty {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border-radius: 5px;
+      border: 1px solid var(--input-border);
+      background: #fff;
+    }
+
+    .feature-name {
+      font-weight: 600;
+    }
+
+    .feature-note {
+      color: var(--muted-light);
+      font-size: 12.5px;
+      margin-top: 2px;
+    }
+
+    .report-table {
+      min-width: 560px;
+    }
+
+    /* Audit */
+    .audit-table {
+      min-width: 620px;
+    }
+
+    .audit-table th:first-child,
+    .audit-table td:first-child {
+      padding-left: 22px;
+    }
+
+    .audit-table th:last-child,
+    .audit-table td:last-child {
+      padding-right: 22px;
+    }
+
+    .audit-name {
+      font-weight: 600;
+    }
+
+    .status-approved {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 9px;
+      border-radius: 5px;
+      background: var(--success-bg);
+      color: var(--success);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* Decision panel */
+    .decision-panel {
+      position: sticky;
+      top: 24px;
+      min-width: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .decision-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .decision-header h3 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -.01em;
+    }
+
+    .decision-header p {
+      margin: 6px 0 0;
+      color: var(--muted-light);
+      font-size: 12.5px;
+      line-height: 1.5;
+    }
+
+    .decision-form {
+      padding: 20px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .form-label {
+      display: grid;
+      gap: 7px;
+    }
+
+    .form-label > span {
+      font-size: 12px;
+      font-weight: 600;
+      color: #3F434A;
+    }
+
+    .required {
+      color: var(--accent);
+    }
+
+    .form-control {
+      width: 100%;
+      min-height: 40px;
+      padding: 0 10px;
+      border: 1px solid var(--input-border);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 13.5px;
+      outline: none;
+    }
+
+    .form-control:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(160, 68, 29, .08);
+    }
+
+    textarea.form-control {
+      min-height: 88px;
+      padding: 10px;
+      line-height: 1.5;
+      resize: vertical;
+    }
+
+    .date-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .decision-actions {
+      display: grid;
+      gap: 8px;
+      padding: 16px 20px;
+      border-top: 1px solid var(--border-light);
+      background: var(--surface-soft);
+    }
+
+    .btn {
+      width: 100%;
+      height: 42px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      border: 0;
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-dark);
+    }
+
+    .secondary-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-secondary {
+      flex: 1;
+      height: 40px;
+      border: 1px solid var(--input-border);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: #F4F3F0;
+    }
+
+    .cancel {
+      text-align: center;
+      color: var(--muted-light);
+      font-size: 12.5px;
+      padding-top: 4px;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+
+      .decision-panel {
+        position: relative;
+        top: 0;
+        max-width: none;
+        flex-basis: 100%;
+      }
+    }
+
+    @media (max-width: 600px) {
+
+      .page-heading h3 {
+        font-size: 23px;
+      }
+
+      .date-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card-header,
+      .fields,
+      .subsection,
+      .extra-fields {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+    }
+</style>
+
+<div class="page-heading">
+          <div>
+            <span class="eyebrow">Approve Request</span>
+            <h3>APPROVAL PAGE</h3>
+          </div>
+
+          <div class="request-type">
+            <span class="request-type-label">Request Type</span>
+            <span class="badge">New</span>
+          </div>
+        </div>
+
+        <div class="layout">
+
+          <div class="main-column">
+
+            <!-- Section 1 -->
+            <section class="card">
+              <div class="card-header">
+                <span class="section-number">1</span>
+                <h3>Process Overview</h3>
+              </div>
+
+              <div class="fields">
+                <div class="field">
+                  <span class="field-label">What is the name of the process you want to automate?</span>
+                  <div class="field-value">Application Development Process</div>
+                </div>
+
+                <div class="field">
+                  <span class="field-label">How often does this process happen?</span>
+                  <div class="field-value">Monthly</div>
+                </div>
+
+                <div class="field">
+                  <span class="field-label">Date Required</span>
+                  <div class="field-value">19/09/2026</div>
+                </div>
+
+                <div class="field">
+                  <span class="field-label">Which divisions/units/teams are involved in this process?</span>
+                  <div class="tags">
+                    <span class="tag">Digital Solutions</span>
+                    <span class="tag">Quality Health, Safety &amp; Environment</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="subsection">
+                <div class="subsection-label">Step-by-step description of the process</div>
+
+                <div class="table-wrap">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th style="width:64px">Stage</th>
+                        <th>What Happens (describe clearly)</th>
+                        <th>Who Does It / Who Is Involved</th>
+                        <th>Who To Be Notified</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="number-cell">1</td>
+                        <td>Request submitted through the App Dev Request form</td>
+                        <td>Process Owner</td>
+                        <td>Digital Solutions</td>
+                      </tr>
+                      <tr>
+                        <td class="number-cell">2</td>
+                        <td>Request reviewed and a developer assigned</td>
+                        <td>Digital Solutions Lead</td>
+                        <td>Requestor</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="extra-fields">
+                <div class="field">
+                  <span class="field-label">Are there any existing automated systems already handling part of this process?</span>
+                  <div class="field-value">No existing system currently covers this process.</div>
+                </div>
+
+                <div class="field">
+                  <span class="field-label">What marks the process as complete?</span>
+                  <div class="field-value">The Automation Committee signs off on the final workflow.</div>
+                </div>
+
+                <div class="field">
+                  <span class="field-label">Are there any related processes that connect to this one?</span>
+                  <div class="field-value">No</div>
+                </div>
+
+                <div class="field">
+                  <span class="field-label">Attach relevant forms and flowchart for this process</span>
+                  <a class="attachment" href="#">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M14 3v5h5"></path>
+                      <path d="M19 8v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7z"></path>
+                    </svg>
+                    process-flowchart.pdf
+                  </a>
+                </div>
+              </div>
+            </section>
+
+            <!-- Section 2 -->
+            <section class="card">
+              <div class="card-header">
+                <span class="section-number">2</span>
+                <h3>Data &amp; Information Requirements</h3>
+              </div>
+
+              <div class="fields">
+                <div class="field">
+                  <span class="field-label">Do you require any information to be automatically pulled from another system?</span>
+                  <div class="field-value">No</div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Section 3 -->
+            <section class="card">
+              <div class="card-header">
+                <span class="section-number">3</span>
+                <h3>Approvals, Reviews &amp; Workflow Routing</h3>
+              </div>
+
+              <div class="fields">
+                <div class="field">
+                  <span class="field-label">Does this process require any approvals or sign-offs?</span>
+                  <div class="field-value">Yes</div>
+                </div>
+              </div>
+
+              <div class="subsection">
+                <div class="subsection-label">List all approval stages in order</div>
+
+                <div class="table-wrap">
+                  <table class="data-table" style="min-width:760px">
+                    <thead>
+                      <tr>
+                        <th style="width:64px">Stage</th>
+                        <th>Approver (Job Title)</th>
+                        <th>What Triggers This Approval?</th>
+                        <th>What Happens If Approved?</th>
+                        <th>What Happens If Declined?</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="number-cell">1</td>
+                        <td>Division Head</td>
+                        <td>New request submitted</td>
+                        <td>Moves to Digital Solutions</td>
+                        <td>Returned to requestor</td>
+                      </tr>
+                      <tr>
+                        <td class="number-cell">2</td>
+                        <td>Digital Solutions Lead</td>
+                        <td>Division approval given</td>
+                        <td>Developer assigned</td>
+                        <td>Sent back for more information</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="extra-fields">
+                <div class="field">
+                  <span class="field-label">Are there any conditions that change the approval path?</span>
+                  <div class="field-value">No</div>
+                </div>
+
+                <div class="field">
+                  <span class="field-label">Who can delegate or act on behalf of an approver when they are unavailable?</span>
+                  <div class="field-value">Assistant Division Head</div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Section 4 -->
+            <section class="card">
+              <div class="card-header">
+                <span class="section-number">4</span>
+                <h3>User Roles &amp; Access Control</h3>
+              </div>
+
+              <div class="fields">
+                <div class="field">
+                  <span class="field-label">
+                    Apart from the ones listed in Section 1, are there other users of this system?
+                    <span class="required">*</span>
+                  </span>
+                  <div class="field-value">Yes</div>
+                </div>
+              </div>
+
+              <div class="subsection">
+                <div class="subsection-label">Who are the different types of users of this system?</div>
+
+                <div class="table-wrap">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th style="width:56px">S/N</th>
+                        <th>User Type / Role (e.g Requestor)</th>
+                        <th>What Can They Do in the System?</th>
+                        <th>Who Belongs to This Group?</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="number-cell">1</td>
+                        <td>Requestor</td>
+                        <td>Submit new requests, view own submissions</td>
+                        <td>All staff</td>
+                      </tr>
+                      <tr>
+                        <td class="number-cell">2</td>
+                        <td>Approver</td>
+                        <td>Review, approve, decline or request more info</td>
+                        <td>Division heads</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="extra-fields">
+                <div class="field">
+                  <span class="field-label">Are there records that some users should NOT be able to see?</span>
+                  <div class="field-value">Requests submitted by other divisions.</div>
+                </div>
+
+                <div class="field">
+                  <span class="field-label">Who should be the Process Owner (main overseer) of this system?</span>
+                  <div class="field-value">Digital Solutions Lead</div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Section 5 -->
+            <section class="card">
+              <div class="card-header">
+                <span class="section-number">5</span>
+                <h3>Other Features</h3>
+              </div>
+
+              <div class="subsection" style="padding-top:22px">
+                <div class="table-wrap">
+                  <table class="data-table feature-table">
+                    <thead>
+                      <tr>
+                        <th style="width:160px">Check box if needed</th>
+                        <th>Feature</th>
+                        <th>Note</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <span class="feature-check">✓</span>
+                        </td>
+                        <td>
+                          <strong class="feature-name">Email notifications</strong>
+                          <div class="feature-note">Notify stakeholders at each stage</div>
+                        </td>
+                        <td style="color:var(--muted-light)">-</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <span class="feature-empty"></span>
+                        </td>
+                        <td>
+                          <strong class="feature-name">Mobile access</strong>
+                          <div class="feature-note">Usable from a phone browser</div>
+                        </td>
+                        <td style="color:var(--muted)">Not required for this process</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="fields">
+                <div class="field">
+                  <span class="field-label">Are there any features not listed above that you think the system should have?</span>
+                  <div class="field-value">None</div>
+                </div>
+              </div>
+
+              <div class="subsection">
+                <div class="subsection-label">What reports/summaries/analytics do you need from this system?</div>
+
+                <div class="table-wrap">
+                  <table class="data-table report-table">
+                    <thead>
+                      <tr>
+                        <th style="width:56px">S/N</th>
+                        <th>Report Name / Description</th>
+                        <th>Who needs it?</th>
+                        <th>How often?</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="number-cell">1</td>
+                        <td>Monthly request volume by division</td>
+                        <td>Digital Solutions Lead</td>
+                        <td>Monthly</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+            <!-- Audit Log -->
+            <section class="card">
+              <div class="card-header">
+                <h3>Audit Log</h3>
+              </div>
+
+              <div class="table-wrap" style="border:0;border-radius:0">
+                <table class="data-table audit-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Stage</th>
+                      <th>Action</th>
+                      <th>Comment</th>
+                      <th>Action Time</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="audit-name">Inemesit U.</td>
+                      <td>Division Head</td>
+                      <td>
+                        <span class="status-approved">Approved</span>
+                      </td>
+                      <td style="color:var(--muted-light)">-</td>
+                      <td style="color:var(--muted)">02/09/2026 11:36</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+          </div>
+
+          <!-- Decision Panel -->
+          <aside class="decision-panel">
+
+            <div class="decision-header">
+              <h3>Your Decision</h3>
+              <p>Review the request details below, then record your decision here.</p>
+            </div>
+
+            <form class="decision-form">
+
+              <label class="form-label">
+                <span>
+                  Developer <span class="required">*</span>
+                </span>
+
+                <select class="form-control">
+                  <option value="">Select a Developer</option>
+                </select>
+              </label>
+
+              <div class="date-grid">
+                <label class="form-label">
+                  <span>
+                    Proposed Start Date <span class="required">*</span>
+                  </span>
+                  <input class="form-control" type="date">
+                </label>
+
+                <label class="form-label">
+                  <span>
+                    End Date <span class="required">*</span>
+                  </span>
+                  <input class="form-control" type="date">
+                </label>
+              </div>
+
+              <label class="form-label">
+                <span>Comment</span>
+                <textarea class="form-control" placeholder="Optional note for the requestor"></textarea>
+              </label>
+
+            </form>
+
+            <div class="decision-actions">
+              <button class="btn btn-primary" type="button">Approve</button>
+
+              <div class="secondary-actions">
+                <button class="btn btn-secondary" type="button">Decline</button>
+                <button class="btn btn-secondary" type="button">More Info</button>
+              </div>
+
+              <a class="cancel" href="#">Cancel</a>
+            </div>
+
+          </aside>
+
+        </div>
