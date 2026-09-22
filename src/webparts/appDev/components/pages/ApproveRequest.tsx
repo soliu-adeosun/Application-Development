@@ -1,8 +1,6 @@
 import * as React from "react";
 import ClientButton from "../../../../Global/ClientButton";
 import { NewLoader } from "../../../../Global/NewLoader";
-// import { NewLoader } from "../../../../Global/NewLoader";
-// import CustomPeoplePicker from "../../../../Global/CustomPeoplePicker";
 
 require("approverequest");
 require("peoplepicker");
@@ -14,601 +12,554 @@ export default class ApproveRequest extends React.Component<{}, {}> {
         <NewLoader />
         <section className="hidden" id="approval-page">
           <div className="AdrPage">
-            <section className="AdrCompactHero">
+            <div className="page-heading">
               <div>
-                <span className="AdrEyebrow">Approve Request</span>
-                <h3>APPROVAL PAGE</h3>
+                <p className="eyebrow">Reference ID: <span speed-bind="WorkflowRequestID" /></p>
+                {/* <h3>APPROVAL PAGE</h3> */}
               </div>
-            </section>
-
-            <section className="AdrFormSection">
-              <div className="AdrFormGrid">
-                <label className="AdrField">
-                  <span>Request Type</span>
-                  <input readOnly type="text" speed-bind="RequestType" />
-                  <div id="modificationTypeContainer" />
-                </label>
+              <div className="request-type">
+                <span className="request-type-label">Request Type</span>
+                <span className="badge" speed-bind="RequestType">
+                  —
+                </span>
+                <div id="modificationTypeContainer" />
               </div>
+            </div>
 
-              <div className="AdrFormGrid top-space hidden" id="minorModificationFields">
-                <label className="AdrField" id="modificationProcessNameField">
-                  <span>Process Name</span>
-                  <div id="modificationProcessNameContainer" />
-                </label>
+            
 
-                <label
-                  className="AdrField"
-                  id="modificationApplicationLinkField"
-                >
-                  <span>Link to Application</span>
-                  <div id="modificationApplicationLinkContainer" />
-                </label>
+            <div className="layout">
+              <div className="main-column">
+                <div id="mainRequestFormWrapper" className="hidden">
+                  <section className="card">
+                    <div className="card-header">
+                      <span className="section-number">1</span>
+                      <h3>Process Overview</h3>
+                    </div>
 
-                <label
-                  className="AdrField"
-                  id="modificationCurrentFunctionalityField"
-                >
-                  <span>
-                    Current functionality (What does the system do today?)
-                  </span>
-                  <div id="modificationCurrentFunctionalityContainer" />
-                </label>
+                    <div className="fields">
+                      <div className="field">
+                        <span className="field-label">
+                          What is the name of the process you want to automate?
+                        </span>
+                        <div className="field-value" speed-bind="ProcessName" />
+                      </div>
+                      <div className="field">
+                        <span className="field-label">
+                          How often does this process happen?
+                        </span>
+                        <div
+                          className="field-value"
+                          speed-bind="Period"
+                          id="period"
+                        />
+                      </div>
+                      <div className="field">
+                        <span className="field-label">Date Required</span>
+                        <div
+                          className="field-value"
+                          speed-bind="DateRequired"
+                        />
+                      </div>
+                      <div className="field">
+                        <span className="field-label">
+                          Which divisions/units/teams are involved in this
+                          process?
+                        </span>
+                        <select
+                          id="divisionsInvolved"
+                          className="js-select2"
+                          multiple
+                          speed-bind="DivisionsInvolved"
+                          speed-bind-class="MainRequest"
+                          speed-list-repeat="RSDivisions"
+                          speed-no-default="true"
+                          style={{ display: "none" }}
+                        >
+                          <option value="{{Title}}">
+                            {"{{"}Title{"}}"}
+                          </option>
+                        </select>
+                        <div className="tags" id="divisionsDisplay" />
+                      </div>
+                    </div>
 
-                <label
-                  className="AdrField"
-                  id="modificationWhatShouldChangeField"
-                >
-                  <span>What should change?</span>
-                  <div id="modificationWhatShouldChangeContainer" />
-                </label>
+                    <div className="subsection">
+                      <div className="subsection-label">
+                        Step-by-step description of the process
+                      </div>
+                      <div className="table-wrap">
+                        <table
+                          className="data-table"
+                          id="stepByStepTable"
+                          speed-serialno="true"
+                          speed-validate-mode="false"
+                          speed-bind-table="StepByStepProcess"
+                        >
+                          <thead>
+                            <tr>
+                              <th style={{ width: 64 }}>Stage</th>
+                              <th speed-array-prop="description">
+                                What Happens (describe clearly)
+                              </th>
+                              <th speed-array-prop="actors">
+                                Who Does It / Who Is Involved
+                              </th>
+                              <th speed-array-prop="template">
+                                Email Template
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody id="stepByStepDescription" />
+                        </table>
+                      </div>
+                    </div>
 
-                <label className="AdrField" id="modificationReasonField">
-                  <span>
-                    Reason / justification (Why is this change needed?)
-                  </span>
-                  <div id="modificationReasonContainer" />
-                </label>
+                    <div className="extra-fields">
+                      <div className="field">
+                        <span className="field-label">
+                          Are there any existing automated systems already
+                          handling part of this process?
+                        </span>
+                        <div className="field-value" speed-bind="ExistingLink" />
+                      </div>
+                      <div className="field">
+                        <span className="field-label">
+                          What marks the process as complete?
+                        </span>
+                        <div
+                          className="field-value"
+                          speed-bind="CriteriaForCompletion"
+                        />
+                      </div>
+                      <div className="field">
+                        <span className="field-label">
+                          Are there any related processes that connect to this
+                          one?
+                        </span>
+                        <div
+                          className="field-value"
+                          id="isProcessRelated"
+                          speed-bind="IsProcessRelated"
+                        />
+                        <div id="relatedProcessContainer" />
+                      </div>
+                      <div className="field">
+                        <span className="field-label">
+                          Attach relevant forms and flowchart for this process
+                        </span>
+                        <div
+                          speed-file-bind="SupportingDocuments"
+                          data-view-only
+                        />
+                      </div>
+                    </div>
+                  </section>
 
-                <label
-                  className="AdrField"
-                  id="modificationSystemsAffectedField"
-                >
-                  <span>Systems / users affected</span>
-                  <div id="modificationSystemsAffectedContainer" />
-                </label>
+                  <section className="card card-spacing">
+                    <div className="card-header">
+                      <span className="section-number">2</span>
+                      <h3>Data &amp; Information Requirements</h3>
+                    </div>
+                    <div className="fields">
+                      <div className="field">
+                        <span className="field-label">
+                          Do you require any information to be automatically
+                          pulled from another system?
+                        </span>
+                        <div
+                          className="field-value"
+                          speed-bind="PullDataFromAnotherSystem"
+                        />
+                        <div id="pullDataContainer" />
+                      </div>
+                      <div className="field" style={{ display: "none" }}>
+                        <span className="field-label">Retention period</span>
+                        <div
+                          className="field-value"
+                          speed-bind="RetentionPeriod"
+                        />
+                        <div id="retentionContainer" />
+                      </div>
+                    </div>
+                  </section>
 
-                <label className="AdrField" id="modificationDateNeededField">
-                  <span>Date needed</span>
-                  <div id="modificationDateNeededContainer" />
-                </label>
-              </div>
-            </section>
+                  <section className="card card-spacing">
+                    <div className="card-header">
+                      <span className="section-number">3</span>
+                      <h3>Approvals, Reviews &amp; Workflow Routing</h3>
+                    </div>
+                    <div className="fields">
+                      <div className="field">
+                        <span className="field-label">
+                          Does this process require any approvals or sign-offs?
+                        </span>
+                        <div
+                          className="field-value"
+                          speed-bind="IsApprovalsNeeded"
+                        />
+                      </div>
+                    </div>
+                    <div className="subsection" id="approvalStagesContainer">
+                      <div className="subsection-label">
+                        List all approval stages in order
+                      </div>
+                      <div className="table-wrap">
+                        <table
+                          className="data-table"
+                          style={{ minWidth: 760 }}
+                          id="approvalTable"
+                          speed-serialno="true"
+                          speed-validate-mode="false"
+                          speed-bind-table="Approvers"
+                        >
+                          <thead>
+                            <tr>
+                              <th style={{ width: 64 }}>Stage</th>
+                              <th speed-array-prop="approver">
+                                Approver (Job Title)
+                              </th>
+                              <th speed-array-prop="reason">
+                                What Triggers This Approval?
+                              </th>
+                              <th speed-array-prop="approved">
+                                What Happens If Approved?
+                              </th>
+                              <th speed-array-prop="declined">
+                                What Happens If Declined?
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody id="approvalStages" />
+                        </table>
+                      </div>
+                    </div>
+                    <div className="extra-fields">
+                      <div className="field">
+                        <span className="field-label">
+                          Are there any conditions that change the approval
+                          path?
+                        </span>
+                        <div
+                          className="field-value"
+                          id="retentionPeriod"
+                          speed-bind="ConditionalApproval"
+                        />
+                        <div id="approvalsContainer" />
+                      </div>
+                      <div className="field" style={{ display: "none" }}>
+                        <span className="field-label">Max approval time</span>
+                        <div
+                          className="field-value"
+                          speed-bind="MaxApprovalTime"
+                        />
+                      </div>
+                      <div className="field">
+                        <span className="field-label">
+                          Who can delegate or act on behalf of an approver when
+                          they are unavailable?
+                        </span>
+                        <div className="field-value" speed-bind="Delegate" />
+                      </div>
+                    </div>
+                  </section>
 
-            <div id="mainRequestFormWrapper" className="hidden">
-              <section className="AdrFormSection">
-                <div className="AdrSectionHeader">
-                  <span>1</span>
-                  <div>
-                    <h3>Process Overview</h3>
-                    {/* <p>Request owner and submission date.</p> */}
+                  <section className="card card-spacing">
+                    <div className="card-header">
+                      <span className="section-number">4</span>
+                      <h3>User Roles &amp; Access Control</h3>
+                    </div>
+                    <div className="fields">
+                      <div className="field">
+                        <span className="field-label">
+                          Apart from the ones listed in Section 1, are there
+                          other users of this system?{" "}
+                          <span className="required">*</span>
+                        </span>
+                        <div
+                          className="field-value"
+                          id="isOtherUsersNeeded"
+                          speed-bind="IsOtherUsersNeeded"
+                        />
+                      </div>
+                    </div>
+                    <div className="subsection" id="userAccessContainer">
+                      <div className="subsection-label">
+                        Who are the different types of users of this system?
+                      </div>
+                      <div className="table-wrap">
+                        <table
+                          className="data-table"
+                          id="userAccess"
+                          speed-serialno="true"
+                          speed-validate-mode="false"
+                          speed-bind-table="UserAccess"
+                        >
+                          <thead>
+                            <tr>
+                              <th style={{ width: 56 }}>S/N</th>
+                              <th speed-array-prop="role">
+                                User Type / Role (e.g Requestor)
+                              </th>
+                              <th speed-array-prop="feature">
+                                What Can They Do in the System?
+                              </th>
+                              <th speed-array-prop="user">
+                                Who Belongs to This Group?
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody id="userAccessBody" />
+                        </table>
+                      </div>
+                    </div>
+                    <div className="extra-fields">
+                      <div className="field">
+                        <span className="field-label">
+                          Are there records that some users should NOT be able
+                          to see?
+                        </span>
+                        <div
+                          className="field-value"
+                          id="revokeUser"
+                          speed-bind="RevokeUser"
+                        />
+                      </div>
+                      <div className="field">
+                        <span className="field-label">
+                          Who should be the Process Owner (main overseer) of
+                          this system?
+                        </span>
+                        <div
+                          className="field-value"
+                          speed-bind="ProcessOwner"
+                        />
+                      </div>
+                    </div>
+                  </section>
+
+                  <section className="card card-spacing">
+                    <div className="card-header">
+                      <span className="section-number">5</span>
+                      <h3>Other Features</h3>
+                    </div>
+                    <div className="subsection" style={{ paddingTop: 22 }}>
+                      <div className="table-wrap">
+                        <table
+                          className="data-table feature-table"
+                          id="extraFeaturesTable"
+                        >
+                          <thead>
+                            <tr>
+                              <th style={{ width: 160 }}>
+                                Check box if needed
+                              </th>
+                              <th>Feature</th>
+                              <th>Note</th>
+                            </tr>
+                          </thead>
+                          <tbody />
+                        </table>
+                      </div>
+                    </div>
+                    <div className="fields">
+                      <div className="field">
+                        <span className="field-label">
+                          Are there any features not listed above that you think
+                          the system should have?
+                        </span>
+                        <div
+                          className="field-value"
+                          id="otherFeatures"
+                          speed-bind="OtherFeatures"
+                        />
+                      </div>
+                    </div>
+                    <div className="subsection">
+                      <div className="subsection-label">
+                        What reports/summaries/analytics do you need from this
+                        system?
+                      </div>
+                      <div className="table-wrap">
+                        <table
+                          className="data-table report-table"
+                          id="reportTable"
+                          speed-serialno="true"
+                          speed-validate-mode="false"
+                          speed-bind-table="Reports"
+                        >
+                          <thead>
+                            <tr>
+                              <th style={{ width: 56 }}>S/N</th>
+                              <th speed-array-prop="name">
+                                Report Name / Description
+                              </th>
+                              <th speed-array-prop="users">Who needs it?</th>
+                              <th speed-array-prop="interval">How often?</th>
+                            </tr>
+                          </thead>
+                          <tbody id="reportsBody" />
+                        </table>
+                      </div>
+                    </div>
+                  </section>
+                </div>
+                <div
+              className="hidden"
+              id="minorModificationFields"
+              style={{ marginBottom: 20 }}
+            >
+              <section className="card card-spacing">
+                <div className="card-header">
+                  <span className="section-number">M</span>
+                  <h3>Modification Details</h3>
+                </div>
+                <div className="fields">
+                  <div className="field" id="modificationProcessNameField">
+                    <span className="field-label">Process Name</span>
+                    <div
+                      className="field-value"
+                      id="modificationProcessNameContainer"
+                    />
                   </div>
-                </div>
-                <div className="AdrFormGrid">
-                  <label className="AdrField">
-                    <span>
-                      What is the name of the process you want to automate?
-                    </span>
-                    <input
-                      readOnly
-                      placeholder="Enter text"
-                      speed-bind="ProcessName"
+                  <div className="field" id="modificationApplicationLinkField">
+                    <span className="field-label">Link to Application</span>
+                    <div
+                      className="field-value"
+                      id="modificationApplicationLinkContainer"
                     />
-                  </label>
-                  <label className="AdrField">
-                    <span>How often does this process happen?</span>
-                    <input
-                      type="text"
-                      readOnly
-                      name="period"
-                      speed-bind="Period"
-                      id="period"
-                    />
-                  </label>
-
-                  <label className="AdrField">
-                    <span>Date Required</span>
-                    <input
-                      type="text"
-                      readOnly
-                      placeholder="Enter text"
-                      speed-bind="DateRequired"
-                    />
-                  </label>
-                  <label className="AdrField">
-                    <span>
-                      Which divisions/units/teams are involved in this process?
-                    </span>
-                    <select
-                      id="divisionsInvolved"
-                      className="js-select2"
-                      multiple
-                      speed-bind="DivisionsInvolved"
-                      speed-bind-class="MainRequest"
-                      speed-list-repeat="RSDivisions"
-                      speed-no-default="true"
-                    >
-                      <option value="{{Title}}">
-                        {"{{"}Title{"}}"}
-                      </option>
-                    </select>
-                  </label>
-                </div>
-
-                <div className="table-wrapper">
-                  <div className="tableLabel">
-                    <span>Step-by-step description of the process</span>
-                    {/* <button
-                    className="AdrAddButton"
-                    id="stepByStepButton"
-                    type="button"
+                  </div>
+                  <div
+                    className="field"
+                    id="modificationCurrentFunctionalityField"
                   >
-                    + Add New Row
-                  </button> */}
-                  </div>
-                  <div className="AdrTableShell">
-                    <table
-                      className="AdrTable"
-                      id="stepByStepTable"
-                      speed-serialno="true"
-                      speed-validate-mode="false"
-                      speed-bind-table="StepByStepProcess"
-                    >
-                      <thead>
-                        <tr>
-                          <th>Stage</th>
-                          <th speed-array-prop="description">
-                            What Happens (describe clearly)
-                          </th>
-                          <th speed-array-prop="actors">
-                            Who Does It / Who Is Involved
-                          </th>
-                          <th speed-array-prop="template">Who To Be Notified</th>
-                        </tr>
-                      </thead>
-                      <tbody id="stepByStepDescription" />
-                    </table>
-                  </div>
-                </div>
-
-                <div className="AdrFormGrid">
-                  <label className="AdrField">
-                    <span>
-                      Are there any existing automated systems already handling
-                      part of this process?
+                    <span className="field-label">
+                      Current functionality (What does the system do today?)
                     </span>
-                    <textarea
-                      readOnly
-                      placeholder="Enter text"
-                      speed-bind="ExistingLink"
+                    <div
+                      className="field-value"
+                      id="modificationCurrentFunctionalityContainer"
                     />
-                  </label>
-
-                  <label className="AdrField">
-                    <span>What marks the process as complete?</span>
-                    <textarea
-                      readOnly
-                      placeholder="Enter text"
-                      speed-bind="CriteriaForCompletion"
+                  </div>
+                  <div className="field" id="modificationWhatShouldChangeField">
+                    <span className="field-label">What should change?</span>
+                    <div
+                      className="field-value"
+                      id="modificationWhatShouldChangeContainer"
                     />
-                  </label>
-
-                  <label className="AdrField">
-                    <span>
-                      Are there any related processes that connect to this one?
+                  </div>
+                  <div className="field" id="modificationReasonField">
+                    <span className="field-label">
+                      Reason / justification (Why is this change needed?)
                     </span>
-                    <input
-                      readOnly
-                      type="text"
-                      id="isProcessRelated"
-                      speed-bind="IsProcessRelated"
+                    <div
+                      className="field-value"
+                      id="modificationReasonContainer"
                     />
-                    <div id="relatedProcessContainer" />
-                  </label>
-                  <label className="AdrField">
-                    <span>
-                      Attach relevant forms and flowchart for this process
-                    </span>
-                    <div speed-file-bind="SupportingDocuments" data-view-only />
-                  </label>
-                </div>
-              </section>
-
-              <section className="AdrFormSection">
-                <div className="AdrSectionHeader">
-                  <span>2</span>
-                  <div>
-                    <h3>Data & Information Requirements</h3>
-                    {/* <p>Request owner and submission date.</p> */}
                   </div>
-                </div>
-
-                <div className="AdrFormGrid">
-                  <label className="AdrField">
-                    <span>
-                      Do you require any information to be automatically pulled
-                      from another system?
-                    </span>
-                    <input
-                      readOnly
-                      type="text"
-                      speed-bind="PullDataFromAnotherSystem"
+                  <div className="field" id="modificationSystemsAffectedField">
+                    <span className="field-label">Systems / users affected</span>
+                    <div
+                      className="field-value"
+                      id="modificationSystemsAffectedContainer"
                     />
-                    <div id="pullDataContainer" />
-                  </label>
-
-                  {/* <label className="AdrField">
-                  <span>How long should records be kept in the system?</span>
-                  <input readOnly type="text" speed-bind="RetentionPeriod" />
-
-                  <div id="retentionContainer" />
-                </label> */}
-                </div>
-              </section>
-
-              <section className="AdrFormSection">
-                <div className="AdrSectionHeader">
-                  <span>3</span>
-                  <div>
-                    <h3>Approvals, Reviews & Workflow Routing</h3>
-                    {/* <p>Request owner and submission date.</p> */}
                   </div>
-                </div>
-
-                <div className="AdrFormGrid">
-                  <label className="AdrField">
-                    <span>
-                      Does this process require any approvals or sign-offs?
-                    </span>
-                    <input
-                      readOnly
-                      type="text"
-                      speed-bind="IsApprovalsNeeded"
+                  <div className="field" id="modificationDateNeededField">
+                    <span className="field-label">Date needed</span>
+                    <div
+                      className="field-value"
+                      id="modificationDateNeededContainer"
                     />
-                  </label>
-                </div>
-
-                <div className="table-wrapper" id="approvalStagesContainer">
-                  <div className="tableLabel">
-                    <span>List all approval stages in order</span>
-                    {/* <button
-                    className="AdrAddButton"
-                    id="addApproverButton"
-                    type="button"
-                  >
-                    + Add New Row
-                  </button> */}
-                  </div>
-                  <div className="AdrTableShell">
-                    <table
-                      className="AdrTable"
-                      id="approvalTable"
-                      speed-serialno="true"
-                      speed-validate-mode="false"
-                      speed-bind-table="Approvers"
-                    >
-                      <thead>
-                        <tr>
-                          <th>Stage</th>
-                          <th speed-array-prop="approver">
-                            Approver (Job Title)
-                          </th>
-                          <th speed-array-prop="reason">
-                            What Triggers This Approval?
-                          </th>
-                          <th speed-array-prop="approved">
-                            What Happens If Approved?
-                          </th>
-                          <th speed-array-prop="declined">
-                            What Happens If Declined?
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody id="approvalStages" />
-                    </table>
-                  </div>
-                </div>
-                <div className="AdrFormGrid">
-                  <label className="AdrField">
-                    <span>
-                      Are there any conditions that change the approval path?
-                    </span>
-                    <input
-                      readOnly
-                      type="text"
-                      id="retentionPeriod"
-                      speed-bind="ConditionalApproval"
-                    />
-
-                    <div id="approvalsContainer" />
-                  </label>
-
-                  {/* <label className="AdrField">
-                  <span>
-                    What is the maximum time allowed at each approval stage
-                  </span>
-                  <input readOnly
-                    placeholder="Enter number in hours"
-                    type="number"
-                    speed-bind="MaxApprovalTime"
-                  />
-                </label> */}
-
-                  <label className="AdrField">
-                    <span>
-                      Who can delegate or act on behalf of an approver when they
-                      are unavailable?
-                    </span>
-                    <input
-                      readOnly
-                      placeholder="Enter text"
-                      type="text"
-                      speed-bind="Delegate"
-                    />
-                  </label>
-                </div>
-              </section>
-
-              <section className="AdrFormSection">
-                <div className="AdrSectionHeader">
-                  <span>4</span>
-                  <div>
-                    <h3>User Roles & Access Control</h3>
-                    {/* <p>Request owner and submission date.</p> */}
-                  </div>
-                </div>
-
-                <div className="AdrFormGrid">
-                  <label className="AdrField">
-                    <span>
-                      Apart from the ones listed in Section 1, are there other users of this system?
-                      <span className="required">*</span>
-                    </span>
-                    <input
-                      readOnly
-                      type="text"
-                      id="isOtherUsersNeeded"
-                      speed-bind="IsOtherUsersNeeded"
-                    />
-                  </label>
-                </div>
-
-                <div className="table-wrapper" id="userAccessContainer">
-                  <div className="tableLabel">
-                    <span>
-                      Who are the different types of users of this system?
-                    </span>
-                    {/* <button
-                    className="AdrAddButton"
-                    id="addUserAccessButton"
-                    type="button"
-                  >
-                    + Add New Row
-                  </button> */}
-                  </div>
-                  <div className="AdrTableShell">
-                    <table
-                      className="AdrTable"
-                      id="userAccess"
-                      speed-serialno="true"
-                      speed-validate-mode="false"
-                      speed-bind-table="UserAccess"
-                    >
-                      <thead>
-                        <tr>
-                          <th>S/N</th>
-                          <th speed-array-prop="role">
-                            User Type / Role (e.g Requestor)
-                          </th>
-                          <th speed-array-prop="feature">
-                            What Can They Do in the System? (e.g. Submit new
-                            requests, view own submissions, edit before
-                            submission)
-                          </th>
-                          <th speed-array-prop="user">
-                            Who Belongs to This Group? (e.g. All Staff)
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody id="userAccessBody" />
-                    </table>
-                  </div>
-                </div>
-
-                <div className="AdrFormGrid">
-                  <label className="AdrField">
-                    <span>
-                      Are there records that some users should NOT be able to
-                      see?
-                    </span>
-                    <textarea
-                      readOnly
-                      placeholder="Enter text"
-                      name="revokeUser"
-                      id="revokeUser"
-                      speed-bind="RevokeUser"
-                    ></textarea>
-                  </label>
-
-                  <label className="AdrField">
-                    <span>
-                      Who should be the Process Owner (main overseer) of this
-                      system?
-                    </span>
-                    <input
-                      readOnly
-                      placeholder="Enter text"
-                      type="text"
-                      speed-bind="ProcessOwner"
-                    />
-                  </label>
-                </div>
-              </section>
-
-              <section className="AdrFormSection">
-                <div className="AdrSectionHeader">
-                  <span>5</span>
-                  <div>
-                    <h3>Other Features</h3>
-                    {/* <p>Request owner and submission date.</p> */}
-                  </div>
-                </div>
-
-                <div className="AdrTableShell">
-                  <table className="AdrTable" id="extraFeaturesTable">
-                    <thead>
-                      <tr>
-                        <th>Check box if needed</th>
-                        <th>Feature</th>
-                        <th>Note</th>
-                      </tr>
-                    </thead>
-                    <tbody />
-                  </table>
-                </div>
-
-                <div className="AdrFormGrid">
-                  <label className="AdrField">
-                    <span>
-                      Are there any features not listed above that you think the
-                      system should have?
-                    </span>
-                    <textarea
-                      readOnly
-                      placeholder="Enter text"
-                      name="otherFeatures"
-                      id="otherFeatures"
-                      speed-bind="OtherFeatures"
-                    ></textarea>
-                  </label>
-                </div>
-
-                <div className="table-wrapper">
-                  <div className="tableLabel">
-                    <span>
-                      What reports/summaries/analytics do you need from this
-                      system?
-                    </span>
-                    {/* <button
-                    className="AdrAddButton"
-                    id="addReportButton"
-                    type="button"
-                  >
-                    + Add New Row
-                  </button> */}
-                  </div>
-                  <div className="AdrTableShell">
-                    <table
-                      className="AdrTable"
-                      id="reportTable"
-                      speed-serialno="true"
-                      speed-validate-mode="false"
-                      speed-bind-table="Reports"
-                    >
-                      <thead>
-                        <tr>
-                          <th>S/N</th>
-                          <th speed-array-prop="name">
-                            Report Name / Description
-                          </th>
-                          <th speed-array-prop="users">Who needs it?</th>
-                          <th speed-array-prop="interval">
-                            How often? (Daily/Weekly/Monthly/On Demand)
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody id="reportsBody" />
-                    </table>
                   </div>
                 </div>
               </section>
             </div>
 
-            <div id="approverSection" className="AdrFormSection" />
-            <div id="devApproverSection" className="AdrFormSection" />
-
-
-            <section className="AdrFormSection">
-              <div className="commentContainer">
-                <label className="AdrField">
-                  <span>Comment</span>
-                  <textarea
-                    id="approvercomment"
-                    speed-bind-validate="Comment"
-                    speed-include-control="false"
-                    speed-as-static="true"
-                    speed-validate-type="Comment"
-                    speed-event-switch="false"
-                    speed-validate-msg="Please tell us why you want to decline this process!"
-                  />
-                </label>
+                <section className="card">
+                  <div className="card-header">
+                    <h3>Audit Log</h3>
+                  </div>
+                  <div
+                    className="table-wrap"
+                    style={{ border: 0, borderRadius: 0 }}
+                  >
+                    <table className="data-table audit-table">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Stage</th>
+                          <th>Action</th>
+                          <th>Comment</th>
+                          <th>Action Time</th>
+                        </tr>
+                      </thead>
+                      <tbody id="logs" />
+                    </table>
+                  </div>
+                </section>
               </div>
-            </section>
-            <div className="AdrFormActions">
-              <a
-                href="#/"
-                className="AdrSecondaryButton center-text"
-                type="button"
-              >
-                Cancel
-              </a>
-              <ClientButton
-                func="ApproveRequestComponent.confirmSubmit"
-                clax="AdrSecondaryButton"
-                prop="Declined"
-                attr="id='declineBtn'"
-              >
-                Decline
-              </ClientButton>
 
-              <ClientButton
-                func="ApproveRequestComponent.confirmSubmit"
-                clax="AdrSecondaryButton"
-                prop="Revise"
-              >
-                More Info
-              </ClientButton>
-
-              <ClientButton
-                func="ApproveRequestComponent.confirmSubmit"
-                clax="AdrPrimaryButton"
-                prop="Approved"
-              >
-                Approve
-              </ClientButton>
-            </div>
-
-            <section className="AdrFormSection">
-              <div className="AdrSectionHeader">
-                <div>
-                  <h3>Audit Log</h3>
+              <aside className="decision-panel">
+                <div className="decision-header">
+                  <h3>Your Decision</h3>
+                  <p>
+                    Review the request details, then record your decision here.
+                  </p>
                 </div>
-              </div>
 
-              <div className="AdrTableShell">
-                <table className="AdrTable">
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Stage</th>
-                      <th>Action</th>
-                      <th>Comment</th>
-                      <th>Action Time</th>
-                    </tr>
-                  </thead>
-                  <tbody id="logs" />
-                </table>
-              </div>
-            </section>
+                <div className="decision-form">
+                  {/* People picker (Developer) injected here by JS */}
+                  <div id="approverSection" />
+                  {/* Dates / status fields injected here by JS */}
+                  <div id="devApproverSection" />
+
+                  <label className="form-label">
+                    <span>Comment</span>
+                    <textarea
+                      className="form-control"
+                      id="approvercomment"
+                      placeholder="Optional note for the requestor"
+                      speed-bind-validate="Comment"
+                      speed-include-control="false"
+                      speed-as-static="true"
+                      speed-validate-type="Comment"
+                      speed-event-switch="false"
+                      speed-validate-msg="Please tell us why you want to decline this process!"
+                    />
+                  </label>
+                </div>
+
+                <div className="decision-actions">
+                  <ClientButton
+                    func="ApproveRequestComponent.confirmSubmit"
+                    clax="AdrPrimaryButton"
+                    prop="Approved"
+                  >
+                    Approve
+                  </ClientButton>
+                  <div className="secondary-actions">
+                    <ClientButton
+                      func="ApproveRequestComponent.confirmSubmit"
+                      clax="AdrSecondaryButton"
+                      prop="Declined"
+                      attr="id='declineBtn'"
+                    >
+                      Decline
+                    </ClientButton>
+                    <ClientButton
+                      func="ApproveRequestComponent.confirmSubmit"
+                      clax="AdrSecondaryButton"
+                      prop="Revise"
+                    >
+                      More Info
+                    </ClientButton>
+                  </div>
+                  <a className="cancel" href="#/">
+                    Cancel
+                  </a>
+                </div>
+              </aside>
+            </div>
           </div>
         </section>
       </>

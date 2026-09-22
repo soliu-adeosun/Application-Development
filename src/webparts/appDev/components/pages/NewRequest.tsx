@@ -61,7 +61,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                 <div className="AdrFormGrid">
                   <label className="AdrField">
                     <span>
-                      What is the name of the process you want to automate?
+                      Process Name
                       <span className="required">*</span>
                     </span>
                     <input
@@ -72,7 +72,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                   </label>
                   <label className="AdrField">
                     <span>
-                      How often does this process happen?
+                      Process Frequecy
                       <span className="required">*</span>
                     </span>
                     <select
@@ -108,7 +108,7 @@ export default class NewRequest extends React.Component<{}, {}> {
 
                   <label className="AdrField">
                     <span>
-                      Which divisions/units/teams are involved in this process?
+                      Unit/Division Involved
                       <span className="required">*</span>
                     </span>
                     <select
@@ -181,8 +181,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                 <div className="AdrFormGrid">
                   <label className="AdrField">
                     <span>
-                      Are there any existing automated systems already handling
-                      part of this process?
+                      Any existing automation?
                       <span className="required">*</span>
                     </span>
                     <textarea
@@ -201,7 +200,7 @@ export default class NewRequest extends React.Component<{}, {}> {
 
                   <label className="AdrField">
                     <span>
-                      What marks the process as complete?
+                      Completion Criteria
                       <span className="required">*</span>
                     </span>
                     <textarea
@@ -212,7 +211,7 @@ export default class NewRequest extends React.Component<{}, {}> {
 
                   <label className="AdrField">
                     <span>
-                      Are there any related processes that connect to this one?
+                      Related Process / System
                       <span className="required">*</span>
                     </span>
                     <select
@@ -227,7 +226,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                   </label>
                   <label className="AdrField">
                     <span>
-                      Attach relevant forms and flowchart for this process
+                      Supporting Documents / Flowcharts
                       <span className="required">*</span>
                     </span>
                     <input
@@ -254,8 +253,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                 <div className="AdrFormGrid">
                   <label className="AdrField">
                     <span>
-                      Do you require any information to be automatically pulled
-                      from another system?
+                      Data required for from other systems?
                       <span className="required">*</span>
                     </span>
                     <select
@@ -300,7 +298,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                 <div className="AdrFormGrid">
                   <label className="AdrField">
                     <span>
-                      Does this process require any approvals or sign-offs?
+                      Approvals Needed?
                       <span className="required">*</span>
                     </span>
                     <select
@@ -371,7 +369,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                 <div className="AdrFormGrid" id="conditionalApprovalContainer">
                   <label className="AdrField">
                     <span>
-                      Are there any conditions that change the approval path?
+                      Conditional Approval?
                       <span className="required">*</span>
                     </span>
                     <select
@@ -388,8 +386,7 @@ export default class NewRequest extends React.Component<{}, {}> {
 
                   <label className="AdrField">
                     <span>
-                      Who can delegate or act on behalf of an approver when they
-                      are unavailable?
+                      Approval Delegate
                     </span>
                     {/* <input placeholder="Enter text" type="text"  speed-bind="Delegate"/> */}
                     <CustomPeoplePicker
@@ -414,7 +411,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                 <div className="AdrFormGrid">
                   <label className="AdrField">
                     <span>
-                      Apart from the ones listed in Section 1, are there other users of this system?
+                      Apart from the ones listed in Section 1, any additional users?
                       <span className="required">*</span>
                     </span>
                     <select

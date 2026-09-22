@@ -9,8 +9,8 @@ interface GlobalTopNavProps {
 const PAGE_TITLES: Record<string, string> = {
     "/": "Dashboard",
     "/newrequest": "",
-    "/approverequest": "My Approvals",
-    "/viewrequest": "Data Requirement Gathering Form",
+    "/approverequest": "",
+    "/viewrequest": "",
     "/report": "Report",
 };
 

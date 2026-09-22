@@ -659,21 +659,69 @@ MainApplication.renderReadOnlyTable = function (tableId, data) {
 
 MainApplication.populateSelect2 = function (divisions) {
   const $select = $("#divisionsInvolved");
-  $select.select2();
-  // Remove existing options
-  $select.empty();
+  const $tags = $("#divisionsDisplay");
 
-  // Add new options
-  $.each(divisions, function (_, division) {
-      $select.append(new Option(division, division));
-  });
+  // Normalize to an array of display names
+  var list = [];
+  if (Array.isArray(divisions)) {
+    list = divisions.map(function (d) {
+      if (d == null) return "";
+      if (typeof d === "string") return d;
+      if (typeof d === "object") {
+        return d.Title || d.title || d.Name || d.name || d.value || String(d);
+      }
+      return String(d);
+    }).filter(Boolean);
+  } else if (typeof divisions === "string" && divisions.trim()) {
+    try {
+      var parsed = JSON.parse(divisions);
+      if (Array.isArray(parsed)) {
+        list = parsed.map(function (d) {
+          if (typeof d === "string") return d;
+          if (d && typeof d === "object") {
+            return d.Title || d.title || d.Name || d.name || d.value || String(d);
+          }
+          return String(d);
+        }).filter(Boolean);
+      } else {
+        list = [divisions];
+      }
+    } catch (e) {
+      list = divisions.split(/[,;]/).map(function (s) { return s.trim(); }).filter(Boolean);
+    }
+  }
 
-  // Refresh Select2
-  
-  $select
-    .prop("disabled", true)
-    .trigger("change.select2");
-  
+  // Keep select for any legacy binding, but hide chrome
+  if ($select.length) {
+    try {
+      if ($select.hasClass("select2-hidden-accessible")) {
+        $select.select2("destroy");
+      }
+    } catch (e) {}
+    $select.empty();
+    $.each(list, function (_, division) {
+      $select.append(new Option(division, division, true, true));
+    });
+    $select.prop("disabled", true).hide();
+  }
+
+  // Render visible tags for Approval / View read-only layout
+  if ($tags.length) {
+    $tags.empty();
+    if (list.length === 0) {
+      $tags.append(
+        $("<span>", {
+          class: "field-value",
+          text: "—",
+          css: { color: "var(--ro-muted-light, #8A8D93)", fontWeight: 500 }
+        })
+      );
+    } else {
+      $.each(list, function (_, division) {
+        $tags.append($("<span>", { class: "tag", text: division }));
+      });
+    }
+  }
 }
 
 MainApplication.renderField = function (options) {
@@ -759,10 +807,13 @@ MainApplication.renderField = function (options) {
 MainApplication.DateConstraints = {
   /** Today's date as YYYY-MM-DD (local) */
   todayISO() {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    return d.toISOString().slice(0, 10);
-  },
+  const d = new Date();
+  return [
+    d.getFullYear(),
+    String(d.getMonth() + 1).padStart(2, "0"),
+    String(d.getDate()).padStart(2, "0"),
+  ].join("-");
+},
 
   isWeekend(isoDate) {
     if (!isoDate) return false;
@@ -772,12 +823,18 @@ MainApplication.DateConstraints = {
 
   /** Next weekday on or after the given ISO date */
   nextWeekday(isoDate) {
-    const d = new Date(isoDate + "T00:00:00");
-    while (d.getDay() === 0 || d.getDay() === 6) {
-      d.setDate(d.getDate() + 1);
-    }
-    return d.toISOString().slice(0, 10);
-  },
+  if (!isoDate) return this.todayISO();
+  const d = new Date(isoDate + "T00:00:00");
+  if (Number.isNaN(d.getTime())) return this.todayISO();
+  while (d.getDay() === 0 || d.getDay() === 6) {
+    d.setDate(d.getDate() + 1);
+  }
+  return [
+    d.getFullYear(),
+    String(d.getMonth() + 1).padStart(2, "0"),
+    String(d.getDate()).padStart(2, "0"),
+  ].join("-");
+},
 
   /**
    * Apply global rules to any date input:
