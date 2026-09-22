@@ -253,7 +253,7 @@ export default class NewRequest extends React.Component<{}, {}> {
                 <div className="AdrFormGrid">
                   <label className="AdrField">
                     <span>
-                      Data required for from other systems?
+                      Data required from other systems?
                       <span className="required">*</span>
                     </span>
                     <select

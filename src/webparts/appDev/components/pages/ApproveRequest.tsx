@@ -40,13 +40,13 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                     <div className="fields">
                       <div className="field">
                         <span className="field-label">
-                          What is the name of the process you want to automate?
+                          Process Name
                         </span>
                         <div className="field-value" speed-bind="ProcessName" />
                       </div>
                       <div className="field">
                         <span className="field-label">
-                          How often does this process happen?
+                          Process Frequency
                         </span>
                         <div
                           className="field-value"
@@ -63,8 +63,7 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                       </div>
                       <div className="field">
                         <span className="field-label">
-                          Which divisions/units/teams are involved in this
-                          process?
+                          Unit/Division Involved
                         </span>
                         <select
                           id="divisionsInvolved"
@@ -118,14 +117,13 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                     <div className="extra-fields">
                       <div className="field">
                         <span className="field-label">
-                          Are there any existing automated systems already
-                          handling part of this process?
+                          Any existing automation?
                         </span>
                         <div className="field-value" speed-bind="ExistingLink" />
                       </div>
                       <div className="field">
                         <span className="field-label">
-                          What marks the process as complete?
+                          Completion Criteria
                         </span>
                         <div
                           className="field-value"
@@ -134,8 +132,7 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                       </div>
                       <div className="field">
                         <span className="field-label">
-                          Are there any related processes that connect to this
-                          one?
+                          Related Process / System
                         </span>
                         <div
                           className="field-value"
@@ -146,7 +143,7 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                       </div>
                       <div className="field">
                         <span className="field-label">
-                          Attach relevant forms and flowchart for this process
+                          Supporting Documents / Flowcharts
                         </span>
                         <div
                           speed-file-bind="SupportingDocuments"
@@ -164,8 +161,7 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                     <div className="fields">
                       <div className="field">
                         <span className="field-label">
-                          Do you require any information to be automatically
-                          pulled from another system?
+                          Data required from other systems?
                         </span>
                         <div
                           className="field-value"
@@ -192,7 +188,7 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                     <div className="fields">
                       <div className="field">
                         <span className="field-label">
-                          Does this process require any approvals or sign-offs?
+                          Approvals Needed?
                         </span>
                         <div
                           className="field-value"
@@ -237,8 +233,7 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                     <div className="extra-fields">
                       <div className="field">
                         <span className="field-label">
-                          Are there any conditions that change the approval
-                          path?
+                          Conditional Approval?
                         </span>
                         <div
                           className="field-value"
@@ -256,8 +251,7 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                       </div>
                       <div className="field">
                         <span className="field-label">
-                          Who can delegate or act on behalf of an approver when
-                          they are unavailable?
+                          Approval Delegate
                         </span>
                         <div className="field-value" speed-bind="Delegate" />
                       </div>
@@ -272,8 +266,7 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                     <div className="fields">
                       <div className="field">
                         <span className="field-label">
-                          Apart from the ones listed in Section 1, are there
-                          other users of this system?{" "}
+                          Apart from the ones listed in Section 1, any additional users?{" "}
                           <span className="required">*</span>
                         </span>
                         <div
