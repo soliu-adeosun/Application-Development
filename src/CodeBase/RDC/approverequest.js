@@ -166,6 +166,8 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
       "EndDate",
       "UATDate",
       "Status",
+      "UATStatus",
+      "DetailedStatus",
       "Developer",
       "IsOtherUsersNeeded"
     ];
@@ -195,7 +197,10 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                     // if (MainApplication.configuredTaskMembers[listProperties.Current_Approver].belongs) {
 
                     if (typeof error === "undefined") {
+                      const devMail = listProperties.Developer?.email || null;
                       if (listProperties.Current_Approver_Code === "AA3") {
+                        $(".approveBtn").text("Submit");
+                        $("#secondaryActions").hide();
                         MainApplication.ApproveRequestComponent.renderModificationPeoplePicker(
                           {
                             pickerId: "Developer",
@@ -228,12 +233,14 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                         MainApplication.DateConstraints.linkStartAndEnd(startEl, endEl);
                       }
                       if (listProperties.Current_Approver_Code === "AA4") {
+                        $(".approveBtn").text("Update");
+                        $("#secondaryActions").hide();
                         MainApplication.ApproveRequestComponent.renderModificationPeoplePickerReadonly(
                           {
                             pickerId: "Developer",
                             label: "Developer",
                             placeholder: "Select a Developer",
-                            defaultValue: listProperties.PendingUserLogin
+                            defaultValue: devMail
                           },
                         );
                         $("#devApproverSection").html(`
@@ -253,7 +260,7 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                                 </label>
                                 <label class="AdrField">
                                     <span>
-                                        Status
+                                        Development
                                         <span class="required">*</span>
                                     </span>
                                     <select id="projectStatus" class="approval-data" speed-validate-msg="Please select a status" speed-bind-validate="Status" speed-bind-class="DevStatus">
@@ -268,12 +275,14 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                         `);
                       }
                       if (listProperties.Current_Approver_Code === "AA5") {
+                        $(".approveBtn").text("Update");
+                        $("#secondaryActions").hide();
                         MainApplication.ApproveRequestComponent.renderModificationPeoplePickerReadonly(
                           {
                             pickerId: "Developer",
                             label: "Developer",
                             placeholder: "Select a Developer",
-                            defaultValue: listProperties.PendingUserLogin
+                            defaultValue: devMail
                           },
                         );
                         $("#devApproverSection").html(`
@@ -293,33 +302,39 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                                 </label>
                                 <label class="AdrField">
                                     <span>
-                                        Status
+                                        Development
                                     </span>
                                     <input type="text" readonly speed-bind="Status" speed-bind-class="Dev" />
                                 </label>
 
                                 <label class="AdrField">
                                     <span>
-                                        Proposed UAT Date
+                                        UAT Status
                                         <span class="required">*</span>
                                     </span>
-                                    <input type="date" class="approval-data" speed-validate-msg="Please select a date for the UAT"  speed-bind-validate="UATDate" speed-bind-class="UatData" />
+                                    <select class="approval-data" speed-validate-msg="Please select UAT Status"  speed-bind-validate="UATStatus" speed-bind-class="UatData">
+                                        <option value="Pending">Pending</option>
+                                        <option value="In Progress">In Progress</option>
+                                        <option value="Completed">Completed</option>
+                                    </select>
                                 </label>
 
                             </div>
                         `);
 
-                        MainApplication.DateConstraints.applyBasicRules(
-                          document.querySelector('[speed-bind-validate="UATDate"]')
-                        );
+                        // MainApplication.DateConstraints.applyBasicRules(
+                        //   document.querySelector('[speed-bind-validate="UATDate"]')
+                        // );
                       }
                       if (listProperties.Current_Approver_Code === "AA6") {
+                        $(".approveBtn").text("Sign Off");
+                        $("#secondaryActions").hide();
                         MainApplication.ApproveRequestComponent.renderModificationPeoplePickerReadonly(
                           {
                             pickerId: "Developer",
                             label: "Developer",
                             placeholder: "Select a Developer",
-                            defaultValue: listProperties.PendingUserLogin
+                            defaultValue: devMail
                           },
                         );
                         $("#devApproverSection").html(`
@@ -340,15 +355,15 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
 
                                 <label class="AdrField">
                                     <span>
-                                        Status
+                                        Development
                                     </span>
                                     <input type="text" readonly speed-bind="Status" speed-bind-class="Dev" />
                                 </label>
                                 <label class="AdrField">
                                     <span>
-                                        UAT Date
+                                        UAT Status
                                     </span>
-                                    <input type="text" readonly speed-bind="UATDate" speed-bind-class="Dev" />
+                                    <input type="text" readonly speed-bind="UATStatus" speed-bind-class="Dev" />
                                 </label>
                    -         </div>
                         `);
@@ -371,11 +386,11 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                         includeTime: false,
                         format: "dd/mm/yy",
                       });
-                      listProperties.UATDate = $spcontext.stringnifyDate({
-                        value: listProperties.UATDate,
-                        includeTime: false,
-                        format: "dd/mm/yy",
-                      });
+                      // listProperties.UATDate = $spcontext.stringnifyDate({
+                      //   value: listProperties.UATDate,
+                      //   includeTime: false,
+                      //   format: "dd/mm/yy",
+                      // });
                       listProperties.RequestCreated = $spcontext.stringnifyDate(
                         {
                           value: listProperties.RequestCreated,
@@ -756,16 +771,16 @@ MainApplication.ApproveRequestComponent.saveDataToList = function (actionTaken) 
   // ------------------------------------------------------------------
   const historyMessages = {
     Approved: {
-      AA1: "HOD Acknowledged",
-      AA2: "Management Reviewed",
-      AA3: "Product Manager assigned a Developer",
-      AA4: "Developer updated the status",
-      AA5: "Product Manager proposed UAT",
+      AA1: "HOD Approved",
+      AA2: "QHSE Reviewed",
+      AA3: "Developer assigned and timeline set",
+      AA4: `Developer updated the status to "${formData.Status}"`,
+      AA5: `Product Manager updated UAT status to "${formData.UATStatus}"`,
       AA6: "HOD acknowledged process completion",
     },
     Declined: {
       AA1: "HOD rejected the request",
-      AA2: "Management rejected the request",
+      AA2: "QHSE rejected the request",
       AA3: "Product Manager rejected the request",
       AA4: "Developer rejected the request",
       AA5: "Product Manager rejected the request",
@@ -773,7 +788,7 @@ MainApplication.ApproveRequestComponent.saveDataToList = function (actionTaken) 
     },
     Revise: {
       AA1: "HOD needed more information",
-      AA2: "Management needed more information",
+      AA2: "QHSE needed more information",
       AA3: "Product Manager needed more information",
       AA4: "Developer needed more information",
       AA5: "Product Manager needed more information",
@@ -810,6 +825,28 @@ MainApplication.ApproveRequestComponent.saveDataToList = function (actionTaken) 
   // 7. Routing / stage-specific logic
   // ------------------------------------------------------------------
   if (isApproved || isDeclined) {
+    var approvedStatusMap = {
+      AA1: "HOD Approved",
+      AA2: "QHSE Reviewed",
+      AA3: "Developer assigned",
+      AA4: `Development ${formData.Status}`,
+      AA5: `UAT ${formData.UATStatus}`,
+      AA6: "Signed Off"
+    };
+
+    var declinedStatusMap = {
+      AA1: "HOD Declined",
+      AA2: "QHSE Declined",
+      AA3: "Developer Assignment Declined",
+      AA4: "Development Declined",
+      AA5: "UAT Declined",
+      AA6: "Request Declined"
+    };
+
+    // Set DetailedStatus based on the action taken
+    formData.DetailedStatus = isDeclined
+      ? declinedStatusMap[stageCode]
+      : approvedStatusMap[stageCode];
     if (stageCode === "AA3") {
       // Developer is mandatory when approving at AA3
       const developerEmail = (people && people.Developer) || null;
@@ -842,11 +879,22 @@ MainApplication.ApproveRequestComponent.saveDataToList = function (actionTaken) 
     else if (stageCode === "AA4") {
       // Only advance when Status === "Completed"
       if (formData.Status === "Completed") {
+        formData.UATStatus = "Pending";
         formData = customWorkflowEngine
           .routeEngine(customWorkflowEngine)
           .runRouting(formData, stageCode, actionTaken);
       } else {
         console.log("AA4 – Status is not Completed, skipping routing", formData);
+      }
+    }
+    else if (stageCode === "AA5") {
+      // Only advance when UATStatus === "Completed"
+      if (formData.UATStatus === "Completed") {
+        formData = customWorkflowEngine
+          .routeEngine(customWorkflowEngine)
+          .runRouting(formData, stageCode, actionTaken);
+      } else {
+        console.log("AA5 – UAT Status is not Completed, skipping routing", formData);
       }
     }
     else {

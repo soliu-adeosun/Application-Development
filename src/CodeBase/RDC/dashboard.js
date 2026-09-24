@@ -215,6 +215,20 @@ MainApplication.DashboardComponent.pendingRequests = function () {
     });
   }
 
+    if (
+    MainApplication.configuredTaskMembers[
+      globalDefinitions.stageDefinitions.productManager
+    ].belongs
+  ) {
+    queryCaml.push({
+      evaluator: "Or",
+      operator: "Eq",
+      field: "Current_Approver",
+      type: "Text",
+      val: globalDefinitions.stageDefinitions.productManager,
+    });
+  }
+
   if (
     MainApplication.configuredTaskMembers[
       globalDefinitions.stageDefinitions.ceo

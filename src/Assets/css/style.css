@@ -66,6 +66,9 @@
 .AdrStatsGrid span { color: var(--adr-muted); font-size: 11px; font-weight: 900; text-transform: uppercase; }
 .AdrStatsGrid strong { display: block; margin-top: 8px; font-size: 32px; }
 .AdrStatsGrid p { margin: 5px 0 0; color: var(--adr-muted); font-size: 12px; }
+.four-column-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
 
 /* ---- Panels / forms ---- */
 .AdrFormSection {
@@ -1085,7 +1088,7 @@
   gap: 20px;
   min-width: 0;
 }
-@media (max-width: 900px) {
+@media (max-width: 1280px) {
   #approval-page .layout {
     grid-template-columns: 1fr;
   }
@@ -1322,4 +1325,124 @@
 
 .card-spacing {
   margin-top: 10px;
+}
+
+/* ===== Report – compact filter bar ===== */
+.AdrFilterBar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px 14px;
+  align-items: end;
+  width: 100%;
+}
+
+.AdrField.compact {
+  margin: 0;
+  min-width: 0;
+}
+
+.AdrField.compact span {
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--adr-muted);
+  text-transform: uppercase;
+  letter-spacing: .03em;
+}
+
+.AdrField.compact input,
+.AdrField.compact select {
+  min-height: 38px;
+  padding: 8px 10px;
+  font-size: 12.5px;
+  border-radius: 9px;
+}
+
+.AdrField.date-range {
+  max-width: 150px;
+}
+
+.AdrField.search-field {
+  grid-column: span 1;
+  min-width: 180px;
+}
+
+.AdrPrimaryButton.compact-export {
+  min-height: 38px;
+  padding: 0 16px;
+  font-size: 12.5px;
+  white-space: nowrap;
+  align-self: end;
+}
+
+/* Live count badge in panel header */
+.AdrFilterCount {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #f6efe9;
+  color: var(--adr-accent-dark);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.AdrFilterCount strong {
+  font-weight: 800;
+  color: var(--adr-accent);
+}
+
+/* Make the 4-column KPI grid work */
+.AdrStatsGrid.four-column-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* Responsive tweaks */
+@media (max-width: 1100px) {
+  .AdrFilterBar {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .AdrField.search-field {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 900px) {
+  .AdrStatsGrid.four-column-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .AdrFilterBar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .AdrField.search-field,
+  .AdrPrimaryButton.compact-export {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 560px) {
+  .AdrFilterBar {
+    grid-template-columns: 1fr;
+  }
+  .AdrField.date-range {
+    max-width: none;
+  }
+}
+
+/* Keep existing .AdrReportControls padding but remove the old flex conflict */
+.AdrReportControls.filter-container {
+  display: block;          /* was flex – let the grid handle it */
+  padding: 18px 22px;
+}
+
+.export-button-container {
+  display: flex;
+  justify-content: flex-end;
+  margin: 10px 20px;
+}
+
+.norequest {
+  padding: 40px 20px;
 }

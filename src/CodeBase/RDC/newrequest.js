@@ -311,7 +311,7 @@ MainApplication.NewRequestComponent.toggleRelatedProcess = function (value) {
             className: "top-space",
             type: "textarea",
             bindValidate: "RelatedProcessInformation",
-            placeholder: "Describe the information to be pulled...",
+            placeholder: "Describe the process...",
             rows: 4,
             required: true
         });
@@ -712,6 +712,8 @@ MainApplication.NewRequestComponent.saveDataToList = function () {
       formData.DivisionsInvolved = $("#divisionsInvolved").val() || [];
       formData.DivisionsInvolved = JSON.stringify(formData.DivisionsInvolved);
       formData.EmployeeEmail = CurrentUserProperties.email;
+      formData.DetailedStatus = "Application Submitted";
+      formData.Due_Overdue = "On Track";
       
       formData.HOD = SP.FieldUserValue.fromUser(
         MainApplication.staffDetails[formData.EmployeeEmail].HodEmail,
@@ -812,6 +814,7 @@ MainApplication.NewRequestComponent.saveDataToListAsDraft = function () {
 
     formData = customWorkflowEngine.routeEngine(customWorkflowEngine).runRouting(formData, AppRequest.defaultStage, globalDefinitions.stageDefinitions.save);
     formData.Approval_Status = globalDefinitions.stageDefinitions.save;
+    formData.DetailedStatus = globalDefinitions.stageDefinitions.save;
     formData.Current_Approver = globalDefinitions.stageDefinitions.employee;
     globalDefinitions.onActionCompleted();
     console.log("Data at SaveAsDraft: ", formData);

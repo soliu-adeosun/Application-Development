@@ -132,7 +132,7 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                       </div>
                       <div className="field">
                         <span className="field-label">
-                          Related Process / System
+                          Any Related Process / System
                         </span>
                         <div
                           className="field-value"
@@ -511,7 +511,7 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                     <textarea
                       className="form-control"
                       id="approvercomment"
-                      placeholder="Optional note for the requestor"
+                      placeholder="Type here..."
                       speed-bind-validate="Comment"
                       speed-include-control="false"
                       speed-as-static="true"
@@ -525,12 +525,12 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                 <div className="decision-actions">
                   <ClientButton
                     func="ApproveRequestComponent.confirmSubmit"
-                    clax="AdrPrimaryButton"
+                    clax="AdrPrimaryButton approveBtn"
                     prop="Approved"
                   >
                     Approve
                   </ClientButton>
-                  <div className="secondary-actions">
+                  <div className="secondary-actions" id="secondaryActions">
                     <ClientButton
                       func="ApproveRequestComponent.confirmSubmit"
                       clax="AdrSecondaryButton"

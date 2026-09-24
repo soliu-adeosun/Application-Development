@@ -34,16 +34,14 @@ loadReportComponent = function () {
 //   this.nonConformanceCounter = 1;
 // };
 whenReportDependeciesLoaded = function () {
-  // console.log("Report Dependencies Loaded");
-  // globalDefinitions.callLoader();
   globalDefinitions.extendStages();
   globalDefinitions.sortResponse();
 
-  // $("#requeststrDate").datepicker({ dateFormat: 'yy-mm-dd', beforeShow: function () { jQuery(this).datepicker('option', 'maxDate', $('#requestendDate').val()); } });
-  // $("#requestendDate").datepicker({ dateFormat: 'yy-mm-dd', beforeShow: function () { jQuery(this).datepicker('option', 'minDate', $('#requeststrDate').val()); } });
   AppRequest = new MainApplication.NewRequestComponent.ApplicationDetails();
   AppRequest.fullTableData = [];
   AppRequest.dataForExport = [];
+
+  MainApplication.ReportComponent.populateDivisionFilter();
 
   customWorkflowEngine = new WorkflowManagerEngine(CurrentUserProperties);
 
@@ -57,55 +55,86 @@ whenReportDependeciesLoaded = function () {
 
   speedctxRoot.DataForTable.propertiesHandler = {
     Modified: function (valueToEva) {
-      var viewStr = `
-                <a href="#/viewrequest?itemId=${valueToEva.WorkflowRequestID}" class="btn btn-sm btn-primary btn-icon">
-                    <i class="fa-solid fa-eye" style="font-size:11px"></i>
-                </a>`;
-
-      return viewStr;
+      return `
+        <a href="#/viewrequest?itemId=${valueToEva.WorkflowRequestID}"
+           class="btn btn-sm btn-primary btn-icon">
+          <i class="fa-solid fa-eye" style="font-size:11px"></i>
+        </a>`;
+    },
+    ModificationType: function (valueToEva) {
+      return valueToEva.ModificationType || valueToEva.RequestType || "—";
     },
   };
 
-  // $("#searchbtn").click(() => {
-  //     MainApplication.ReportComponent.retrieveRequest();
-  // });
+  // ---- Bind all filter controls to one function ----
+  $("#status-filter, #division-filter, #overdue-filter, #requeststrDate, #requestendDate")
+    .on("change", MainApplication.ReportComponent.applyFilters);
 
-  // let debounceTimer;
+  $("#searchInput").on("keyup", MainApplication.ReportComponent.applyFilters);
 
-  $("#status-filter").on("keyup change", function () {
-    var searchQuery = $(this).val();
-    var data = AppRequest.fullTableData || [];
-    var filteredItems = MainApplication.reportSyncSearch(searchQuery, data);
-    MainApplication.ReportComponent.showTableData(filteredItems);
+  // Date min/max constraints
+  $("#requeststrDate, #requestendDate").on("change", function () {
+    MainApplication.ReportComponent.updateDateConstraints();
   });
 
   $("#exportToExcel").click(() => {
     MainApplication.ReportComponent.exportToExcel();
   });
 
-  $("#searchInput").on("keyup", function () {
-    var searchQuery = $(this).val();
-    var data = AppRequest.fullTableData || [];
-    var filteredItems = MainApplication.reportSyncSearch(searchQuery, data);
-    MainApplication.ReportComponent.showTableData(filteredItems);
+  MainApplication.ReportComponent.retrieveRequest();
+};
+
+MainApplication.ReportComponent.applyFilters = function () {
+  var data = AppRequest.fullTableData || [];
+  var workflow = ($("#status-filter").val() || "").trim();
+  var division = ($("#division-filter").val() || "").trim();
+  var overdue  = ($("#overdue-filter").val() || "").trim();
+  var search   = ($("#searchInput").val() || "").toLowerCase().trim();
+  var fromDate = $("#requeststrDate").val();   // yyyy-mm-dd
+  var toDate   = $("#requestendDate").val();
+
+  var filtered = data.filter(function (item) {
+    // Workflow (DetailedStatus)
+    if (workflow && (item.DetailedStatus || "") !== workflow) return false;
+
+    // Division
+    if (division && (item.Division || "") !== division) return false;
+
+    // Overdue / On Track
+    if (overdue && (item.Due_Overdue || "") !== overdue) return false;
+
+    // Free-text search (Requestor or Ref ID)
+    if (search) {
+      var haystack = (
+        (item.Title || "") + " " +
+        (item.WorkflowRequestID || "") + " " +
+        (item.ProcessName || "")
+      ).toLowerCase();
+      if (haystack.indexOf(search) === -1) return false;
+    }
+
+    // Date range – use Modified or RequestCreated (whichever you prefer)
+    var itemDateStr = item.Modified || item.RequestCreated;
+    if (itemDateStr && (fromDate || toDate)) {
+      var itemDate = new Date(itemDateStr);
+      itemDate.setHours(0, 0, 0, 0);
+
+      if (fromDate) {
+        var from = new Date(fromDate);
+        from.setHours(0, 0, 0, 0);
+        if (itemDate < from) return false;
+      }
+      if (toDate) {
+        var to = new Date(toDate);
+        to.setHours(23, 59, 59, 999);
+        if (itemDate > to) return false;
+      }
+    }
+
+    return true;
   });
 
-
-
-  // if (MainApplication.isUserAnActor) {
-    MainApplication.ReportComponent.retrieveRequest();
-  // } else {
-  //   globalDefinitions.HandlerError(
-  //     "You are not authorized to access this page...",
-  //   );
-  //   $spcontext.redirect("#/", false);
-  //   globalDefinitions.closeLoader();
-  // }
-  // setTimeout(function () {
-  //     globalDefinitions.closeLoader();
-  //     $("#report-page").addClass("active");
-  //     $("#newLoader").hide();
-  // }, 2000);
+  MainApplication.ReportComponent.showTableData(filtered);
 };
 
 MainApplication.ReportComponent.retrieveRequest = function () {
@@ -181,7 +210,22 @@ MainApplication.ReportComponent.retrieveRequest = function () {
       "DateRequired",
       "RelatedProcessInformation",
       "SystemInformation",
-      "ConditionalApprovalInformation"
+      "ConditionalApprovalInformation",
+      "RequestType",
+      "ModificationType",
+      "CurrentFunctionality",
+      "WhatShouldChange",
+      "ModificationReason",
+      "SystemsAffected",
+      "ProposedStartDate",
+      "EndDate",
+      "UATDate",
+      "Status",
+      "UATStatus",
+      "DetailedStatus",
+      "Developer",
+      "IsOtherUsersNeeded",
+      "Due_Overdue",
     ],
   };
 
@@ -202,12 +246,17 @@ MainApplication.ReportComponent.retrieveRequest = function () {
       var pendingItems = tableData.filter(function (item) {
         return item.Approval_Status === "Pending";
       });
+
+      var overdueItems = tableData.filter(function (item) {
+        return item.Due_Overdue === "Overdue";
+      });
       
 
       $("#totalRequest").text(tableData.length);
       $("#pendingRequest").text(pendingItems.length);
       $("#completedRequest").text(completedItems.length);
-
+      $("#overdueRequest").text(overdueItems.length);
+      
       MainApplication.ReportComponent.showTableData(tableData);
     },
   );
@@ -215,20 +264,41 @@ MainApplication.ReportComponent.retrieveRequest = function () {
 
 MainApplication.ReportComponent.showTableData = function (tableData) {
   AppRequest.dataForExport = tableData;
+
+  // Update the live count
+  var total = (AppRequest.fullTableData || []).length;
+  $("#filteredCount").text(tableData.length);
+  $("#totalCount").text(total);
+
   if (tableData.length === 0) {
     $("#tasktable").hide();
     $("#speed-data-table").empty();
-    $(".threport").hide();
     $(".norequest").show();
+    $('#myrequestpagination').hide();
   } else {
     $("#tasktable").show();
-    $(".threport").show();
     $(".norequest").hide();
+    $('#myrequestpagination').show();
     speedctxRoot.manualTable(tableData);
   }
+
   $("#newLoader").hide();
   $("#report-page").removeClass("hidden");
   globalDefinitions.closeLoader();
+};
+
+MainApplication.ReportComponent.populateDivisionFilter = function () {
+  var $sel = $("#division-filter");
+  var divisions = MainApplication.newDivisions || [];
+
+  // keep the "All" option, clear the rest
+  $sel.find("option:not(:first)").remove();
+
+  divisions.forEach(function (d) {
+    if (d) {
+      $sel.append($("<option>").val(d).text(d));
+    }
+  });
 };
 
 MainApplication.ReportComponent.exportToExcel = function () {
