@@ -325,6 +325,7 @@ MainApplication.ApproveRequestComponent.recoverListData = function () {
                         // MainApplication.DateConstraints.applyBasicRules(
                         //   document.querySelector('[speed-bind-validate="UATDate"]')
                         // );
+                        $("#devApproverSection select[speed-bind-validate='UATStatus']").val(listProperties.UATStatus);
                       }
                       if (listProperties.Current_Approver_Code === "AA6") {
                         $(".approveBtn").text("Sign Off");
