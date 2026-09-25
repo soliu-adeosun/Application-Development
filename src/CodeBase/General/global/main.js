@@ -435,7 +435,7 @@ speedctxRoot.getItem(
         console.log("Dependency count: ", dependenciesCount);
         console.log("Expected Dependencies: ", expectedDepenciesCount);
         globalDefinitions.AuditLogManager_SaveLog({
-          Action: `Logged into/Opened Vehicle Inspection application`,
+          Action: `Logged into/Opened Application Development`,
           Message: `user logged in to application at ${$spcontext.stringnifyDate({ format: "dd/mm/yy", includeTime: true })}`,
         });
 
@@ -480,7 +480,7 @@ speedctxRoot.getItem(
         [
           configPropertiesRoot.MANAGEMENT.setting,
           configPropertiesRoot.CEO.setting,
-          configPropertiesRoot.REPORTADMIN.setting,
+          configPropertiesRoot.ADMINAPPDEV.setting,
           configPropertiesRoot.HOD.setting,
           configPropertiesRoot.PRODUCTMANAGER.setting
         ],
@@ -499,7 +499,7 @@ speedctxRoot.getItem(
             groupUserProperties[configPropertiesRoot.CEO.setting]?.belongs ||
             false; // adjust key
           const isInReportAdmin =
-            groupUserProperties[configPropertiesRoot.REPORTADMIN.setting]
+            groupUserProperties[configPropertiesRoot.ADMINAPPDEV.setting]
               ?.belongs || false; 
               
           const isProductManager =
@@ -513,7 +513,7 @@ speedctxRoot.getItem(
       );
 
       $spcontext.isCurrentUserMemberOfGroup(
-        configPropertiesRoot.REPORTADMIN.setting,
+        configPropertiesRoot.ADMINAPPDEV.setting,
         function (isAdmin) {
           MainApplication.cachedState.isReportAdmin = isAdmin || false;
           checkAppDependency();
