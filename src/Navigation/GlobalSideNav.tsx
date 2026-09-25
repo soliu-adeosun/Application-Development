@@ -92,7 +92,7 @@ const GlobalSideNav: React.FC<GlobalSideNavProps> = ({isOpen, onClose}) => {
                         </svg>
                     </span>
                     <div>
-                        <h1>App Dev Request</h1>
+                        <h1>Application Development Request</h1>
                     </div>
                 </div>
 
