@@ -97,7 +97,7 @@ export default class Report extends React.Component<{}, {}> {
                   </label>
 
                   <label className="AdrField compact">
-                    <span>Overdue</span>
+                    <span>Development Status</span>
                     <select id="overdue-filter">
                       <option value="">All</option>
                       <option value="On Track">On Track</option>
