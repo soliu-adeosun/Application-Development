@@ -530,7 +530,7 @@ listProperties.Delegate = (listProperties.Delegate && listProperties.Delegate.va
                             type: "a",
                             href: listProperties.ExistingLink,
                             target: "_blank",
-                            text: "View Application"
+                            text: listProperties.ExistingLink
                           });
 
                           MainApplication.renderField({

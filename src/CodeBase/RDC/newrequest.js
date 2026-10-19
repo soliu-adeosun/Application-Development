@@ -633,9 +633,6 @@ MainApplication.NewRequestComponent.hydrateDynamicTables = function (savedData) 
     var rows = savedData[tableName];
 
     if (!ctx || !root || !Array.isArray(rows) || rows.length === 0) {
-      // Nothing saved for this section yet - keep the single blank row
-      // that initializeDynamicTable() already added, so the user still
-      // has somewhere to start typing.
       return;
     }
 

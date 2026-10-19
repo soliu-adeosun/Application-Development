@@ -305,12 +305,12 @@ listProperties.Delegate = (listProperties.Delegate && listProperties.Delegate.va
                           });
 
                           MainApplication.renderField({
-                              containerId: "modificationApplicationLinkContainer",
-                              className: "top-space",
-                              type: "textarea",
-                              value: listProperties.ExistingLink,
-                              rows: 1,
-                              readonly: true
+                            containerId: "modificationApplicationLinkContainer",
+                            className: "top-space",
+                            type: "a",
+                            href: listProperties.ExistingLink,
+                            target: "_blank",
+                            text: listProperties.ExistingLink
                           });
 
                           MainApplication.renderField({
