@@ -304,14 +304,38 @@ listProperties.Delegate = (listProperties.Delegate && listProperties.Delegate.va
                               readonly: true
                           });
 
-                          MainApplication.renderField({
-                            containerId: "modificationApplicationLinkContainer",
-                            className: "top-space",
-                            type: "a",
-                            href: listProperties.ExistingLink,
-                            target: "_blank",
-                            text: listProperties.ExistingLink
-                          });
+                          if (listProperties.ExistingLink) {
+                            var modLinkValue = String(
+                              listProperties.ExistingLink,
+                            ).trim();
+                            var isModLinkUrl =
+                              /^(https?:\/\/|www\.)/i.test(modLinkValue);
+                            if (isModLinkUrl) {
+                              var modHref = modLinkValue;
+                              if (/^www\./i.test(modHref)) {
+                                modHref = "https://" + modHref;
+                              }
+                              MainApplication.renderField({
+                                containerId:
+                                  "modificationApplicationLinkContainer",
+                                className: "top-space",
+                                type: "a",
+                                href: modHref,
+                                target: "_blank",
+                                text: modLinkValue,
+                              });
+                            } else {
+                              MainApplication.renderField({
+                                containerId:
+                                  "modificationApplicationLinkContainer",
+                                className: "top-space",
+                                type: "textarea",
+                                value: modLinkValue,
+                                rows: 1,
+                                readonly: true,
+                              });
+                            }
+                          }
 
                           MainApplication.renderField({
                               containerId: "modificationCurrentFunctionalityContainer",
@@ -379,7 +403,26 @@ listProperties.Delegate = (listProperties.Delegate && listProperties.Delegate.va
 
                       $spcontext.htmlBind(listProperties);
 
-                      
+                      if (listProperties.ExistingLink) {
+                        var existingLinkValue = String(listProperties.ExistingLink).trim();
+                        var isExistingLinkUrl =
+                          /^(https?:\/\/|www\.)/i.test(existingLinkValue);
+                        if (isExistingLinkUrl) {
+                          var href = existingLinkValue;
+                          if (/^www\./i.test(href)) {
+                            href = "https://" + href;
+                          }
+                          MainApplication.renderField({
+                            containerId: "existingLinkContainer",
+                            type: "a",
+                            href: href,
+                            target: "_blank",
+                            text: existingLinkValue,
+                          });
+                        } else {
+                          $("#existingLinkContainer").text(existingLinkValue);
+                        }
+                      }
 
                       // if (AppRequest.requestDetails.Current_Approver !== 'Employee'){
                       $spcontext.attachmentLinkBind(

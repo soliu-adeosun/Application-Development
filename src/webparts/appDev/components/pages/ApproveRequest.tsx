@@ -119,7 +119,10 @@ export default class ApproveRequest extends React.Component<{}, {}> {
                         <span className="field-label">
                           Any existing automation?
                         </span>
-                        <div className="field-value" speed-bind="ExistingLink" />
+                        <div
+                          className="field-value"
+                          id="existingLinkContainer"
+                        />
                       </div>
                       <div className="field">
                         <span className="field-label">

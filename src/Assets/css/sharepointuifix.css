@@ -491,3 +491,12 @@ img.custom-picker-li-image {
 .p_cAiF2_1x34n {
   width: 100% !important;
 }
+
+
+/* Hide the SharePoint site navigation header */
+[data-automationid="MinimalHeader"],
+[data-automation-id="SiteHeader"],
+[data-automationid="SiteHeader"],
+[data-automationid="SiteHeader"] {
+    display: none !important;
+}
